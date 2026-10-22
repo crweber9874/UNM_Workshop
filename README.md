@@ -30,3 +30,6 @@ Western States Survey, 2020 (n = 3,600) and 2024 (n = 4,000), AZ/CO/NV/NM/UT; fi
 
 ## Contributing
 Pull first, work on a branch, open a pull request. See the [git workflow](https://crweber9874.github.io/UNM_Workshop/git.html).
+
+## Updating the website
+`quarto publish gh-pages` (renders and pushes to the gh-pages branch).
