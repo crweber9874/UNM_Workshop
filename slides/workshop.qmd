@@ -54,6 +54,8 @@ execute:
 
 ::: {.slide-source}
 Slides, instructions, and data: <https://crweber9874.github.io/UNM_Workshop/> · Repository: <https://github.com/crweber9874/UNM_Workshop>
+
+A built example of all of this, live: the **Arizona Voter Project** — <https://voterproject.arizona.edu>
 :::
 
 <!-- AI-drafted (Claude Code); reviewed by CRW -->
