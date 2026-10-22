@@ -21,3 +21,4 @@ rsconnect/
 /.quarto/
 **/*.quarto_ipynb
 data/wss_clean.rds
+Rplots.pdf
