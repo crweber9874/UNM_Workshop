@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>AI as a Research Tool – AI as a Research Tool — UNM</title>
+<title>AI as a Research Tool</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -40,7 +40,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-5b4ad623e5705c0698d39aec6f10cf02.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-7fde2353a1653dff68e90c120e76db82.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -68,6 +68,8 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700;800&amp;display=swap" rel="stylesheet">
 
 
 </head>
@@ -80,7 +82,7 @@ ul.task-list li input[type="checkbox"] {
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="./index.html">
-    <span class="navbar-title">AI as a Research Tool — UNM</span>
+    <span class="navbar-title">AI as a Research Tool</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -94,12 +96,16 @@ ul.task-list li input[type="checkbox"] {
 <span class="menu-text">Agenda</span></a>
   </li>  
   <li class="nav-item">
+    <a class="nav-link" href="./framing.html"> 
+<span class="menu-text">0. Framing</span></a>
+  </li>  
+  <li class="nav-item">
     <a class="nav-link" href="./setup.html"> 
 <span class="menu-text">1. Setup</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="./git.html"> 
-<span class="menu-text">2. Git workflow</span></a>
+<span class="menu-text">2. Git</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="./agents.html"> 
@@ -107,7 +113,11 @@ ul.task-list li input[type="checkbox"] {
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="./project.html"> 
-<span class="menu-text">4. Project</span></a>
+<span class="menu-text">4. Pipeline</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./verify.html"> 
+<span class="menu-text">5. Verify</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="./slides/workshop.html"> 
@@ -128,94 +138,51 @@ ul.task-list li input[type="checkbox"] {
     </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">On this page</h2>
-   
-  <ul>
-  <li><a href="#agenda" id="toc-agenda" class="nav-link active" data-scroll-target="#agenda">Agenda</a></li>
-  <li><a href="#goals" id="toc-goals" class="nav-link" data-scroll-target="#goals">Goals</a></li>
-  </ul>
-</nav>
-    </div>
+    
 <!-- main -->
-<main class="content" id="quarto-document-content">
+<main class="content column-page" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
 
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title">AI as a Research Tool</h1>
-<p class="subtitle lead">UNM Workshop · Christopher Weber</p>
+
+
+
+<div class="masthead">
+<div class="mast-title">
+<p>AI as a Research Tool</p>
 </div>
-
-
-
-<div class="quarto-title-meta">
-
-    
-  
-    
-  </div>
-  
-
-
-</header>
-
-
-<section id="agenda" class="level2">
-<h2 class="anchored" data-anchor-id="agenda">Agenda</h2>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th></th>
-<th>Section</th>
-<th>What we do</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>0</td>
-<td>Welcome &amp; goals</td>
-<td>What agents can and can’t do for research</td>
-</tr>
-<tr class="even">
-<td>1</td>
-<td><a href="./setup.html">Setup</a></td>
-<td>GitHub, Copilot, Codespaces, Claude Code</td>
-</tr>
-<tr class="odd">
-<td>2</td>
-<td><a href="./git.html">Git workflow</a></td>
-<td>Pull, branch, commit, push, pull request — together</td>
-</tr>
-<tr class="even">
-<td>3</td>
-<td><a href="./agents.html">Agents</a></td>
-<td><code>AGENTS.md</code> / <code>CLAUDE.md</code>, slash commands, shortcuts</td>
-</tr>
-<tr class="odd">
-<td>4</td>
-<td><a href="./project.html">Project</a></td>
-<td>Did Latino voters pivot to Trump? Recode → analyze → Shiny</td>
-</tr>
-<tr class="even">
-<td>5</td>
-<td>Wrap-up</td>
-<td>Verification, reproducibility, what to trust</td>
-</tr>
-</tbody>
-</table>
-</section>
+<div class="mast-sub">
+<p>A hands-on workshop</p>
+</div>
+<div class="mast-venue">
+<p>University of New Mexico · Albuquerque · Christopher Weber, University of Arizona</p>
+</div>
+</div>
+<div class="lede">
+<p>A coding agent is a collaborator with no memory and no stake in being right. It writes plausible code quickly, and plausible is not the same as correct. So the useful question is not <em>can it fit the model</em> — it is <strong>what can I delegate, and how do I check it?</strong> Six modules, one shared repository, and one real research question: did Latino voters in the Western states shift toward Trump between 2020 and 2024?</p>
+</div>
+<div class="strip">
+<p><a href="./slides/workshop.html" class="primary">Slides</a> <a href="https://github.com/crweber9874/UNM_Workshop">Repository</a> <a href="https://codespaces.new/crweber9874/UNM_Workshop">Open a Codespace</a> <a href="codebooks/wss2020_codebook.pdf">2020 codebook</a> <a href="codebooks/wss2024_codebook.pdf">2024 codebook</a></p>
+</div>
+<div class="modules">
+<p><a href="./framing.html" class="module"><span class="mod-num">0</span><span class="mod-body"><span class="mod-name">Framing: what is “AI” here?</span><span class="mod-desc">What an agent does, where it fails silently, and why research code is the hard case.</span></span><span class="mod-meta">read</span></a></p>
+<p><a href="./setup.html" class="module"><span class="mod-num">1</span><span class="mod-body"><span class="mod-name">Setup</span><span class="mod-desc">GitHub, Git, Copilot, Claude Code — or skip all of it and run a Codespace in the browser.</span></span><span class="mod-meta">do</span></a></p>
+<p><a href="./git.html" class="module"><span class="mod-num">2</span><span class="mod-body"><span class="mod-name">Git workflow</span><span class="mod-desc">Clone, pull, branch, commit, push, pull request. Conflicts and undo. We all share one repo.</span></span><span class="mod-meta">do</span></a></p>
+<p><a href="./agents.html" class="module"><span class="mod-num">3</span><span class="mod-body"><span class="mod-name">Agents: instructions &amp; shortcuts</span><span class="mod-desc"><code>AGENTS.md</code> and <code>CLAUDE.md</code> as the project brief; the commands worth memorizing; spending less.</span></span><span class="mod-meta">do</span></a></p>
+<p><a href="./project.html" class="module"><span class="mod-num">4</span><span class="mod-body"><span class="mod-name">The pipeline &amp; the group project</span><span class="mod-desc">Raw data → recode → model → Shiny → published site. Four teams, one merged pull request each.</span></span><span class="mod-meta">build</span></a></p>
+<p><a href="./verify.html" class="module"><span class="mod-num">5</span><span class="mod-body"><span class="mod-name">Verification</span><span class="mod-desc">Reading the diff, citing the codebook, reporting <em>n</em>, and turning a check into a test.</span></span><span class="mod-meta">read</span></a></p>
+</div>
 <section id="goals" class="level2">
 <h2 class="anchored" data-anchor-id="goals">Goals</h2>
 <ol type="1">
-<li>Everyone can clone, edit, and push to a shared repo.</li>
-<li>Everyone has an AI assistant that <em>knows the project</em> via an instructions file.</li>
-<li>We answer one substantive question together — and check the AI’s work.</li>
+<li>Everyone can <strong>clone, branch, and open a pull request</strong> on a shared project.</li>
+<li>Everyone has an agent that <strong>knows this project</strong> through an instruction file.</li>
+<li>We answer one substantive question together — and <strong>check the machine’s work</strong>.</li>
 </ol>
-<p><a href="./slides/workshop.html">Slides</a> · <a href="https://github.com/crweber9874/UNM_Workshop">Repository</a></p>
+<div class="note">
+<p><span class="note-head">Before you arrive</span> A GitHub account, and your username sent to me so I can add you as a collaborator. Everything else can be done in the browser through <a href="./setup.html">Module 1</a>.</p>
+</div>
 
 
 </section>
@@ -308,6 +275,11 @@ ul.task-list li input[type="checkbox"] {
           if (link.dataset.originalHref !== undefined) {
             link.href = link.dataset.originalHref;
           }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
         }
       }
     function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
@@ -622,6 +594,19 @@ ul.task-list li input[type="checkbox"] {
   });
   </script>
 </div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Christopher Weber · University of Arizona</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p><a href="https://github.com/crweber9874/UNM_Workshop">Repository</a> · <a href="./slides/workshop.html">Slides</a></p>
+</div>
+  </div>
+</footer>
 
 
 

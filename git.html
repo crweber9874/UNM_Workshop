@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>2. Git workflow – AI as a Research Tool — UNM</title>
+<title>2. Git workflow – AI as a Research Tool</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -75,7 +75,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-5b4ad623e5705c0698d39aec6f10cf02.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-7fde2353a1653dff68e90c120e76db82.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -103,6 +103,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Search"
   }
 }</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700;800&amp;display=swap" rel="stylesheet">
 
 
 </head>
@@ -115,7 +117,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="./index.html">
-    <span class="navbar-title">AI as a Research Tool — UNM</span>
+    <span class="navbar-title">AI as a Research Tool</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -129,12 +131,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span class="menu-text">Agenda</span></a>
   </li>  
   <li class="nav-item">
+    <a class="nav-link" href="./framing.html"> 
+<span class="menu-text">0. Framing</span></a>
+  </li>  
+  <li class="nav-item">
     <a class="nav-link" href="./setup.html"> 
 <span class="menu-text">1. Setup</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link active" href="./git.html" aria-current="page"> 
-<span class="menu-text">2. Git workflow</span></a>
+<span class="menu-text">2. Git</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="./agents.html"> 
@@ -142,7 +148,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="./project.html"> 
-<span class="menu-text">4. Project</span></a>
+<span class="menu-text">4. Pipeline</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./verify.html"> 
+<span class="menu-text">5. Verify</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="./slides/workshop.html"> 
@@ -170,11 +180,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <nav id="TOC" role="doc-toc" class="toc-active">
     <h2 id="toc-title">On this page</h2>
    
-  <ul>
+  <ul class="collapse">
   <li><a href="#the-model" id="toc-the-model" class="nav-link active" data-scroll-target="#the-model">The model</a></li>
-  <li><a href="#everyday-loop" id="toc-everyday-loop" class="nav-link" data-scroll-target="#everyday-loop">Everyday loop</a></li>
-  <li><a href="#working-together-we-are-all-in-one-repo" id="toc-working-together-we-are-all-in-one-repo" class="nav-link" data-scroll-target="#working-together-we-are-all-in-one-repo">Working together (we are all in one repo)</a></li>
-  <li><a href="#rules-of-the-road" id="toc-rules-of-the-road" class="nav-link" data-scroll-target="#rules-of-the-road">Rules of the road</a></li>
+  <li><a href="#fork-vs.-clone" id="toc-fork-vs.-clone" class="nav-link" data-scroll-target="#fork-vs.-clone">Fork vs.&nbsp;clone</a></li>
+  <li><a href="#the-everyday-loop" id="toc-the-everyday-loop" class="nav-link" data-scroll-target="#the-everyday-loop">The everyday loop</a></li>
+  <li><a href="#working-together-in-one-repository" id="toc-working-together-in-one-repository" class="nav-link" data-scroll-target="#working-together-in-one-repository">Working together in one repository</a></li>
+  <li><a href="#when-to-use-what" id="toc-when-to-use-what" class="nav-link" data-scroll-target="#when-to-use-what">When to use what</a></li>
   <li><a href="#merge-conflicts" id="toc-merge-conflicts" class="nav-link" data-scroll-target="#merge-conflicts">Merge conflicts</a></li>
   <li><a href="#undo" id="toc-undo" class="nav-link" data-scroll-target="#undo">Undo</a></li>
   </ul>
@@ -207,32 +218,99 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <pre><code>Working directory → Staging area → Local repo → Remote (GitHub)
      (edit)            (add)        (commit)        (push)
                                          ←  (pull)  ←</code></pre>
+<p>Changes move left to right, one deliberate step at a time, and come back with <code>git pull</code>. The staging area exists so you can commit <em>some</em> of your changes — the finished recode, not the half-written one beside it.</p>
 </section>
-<section id="everyday-loop" class="level2">
-<h2 class="anchored" data-anchor-id="everyday-loop">Everyday loop</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> pull                     <span class="co"># ALWAYS first: get others' work</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> status                   <span class="co"># what changed?</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add R/01_recode.R        <span class="co"># stage specific files (avoid `git add .` blindly)</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">"Recode age into generations"</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> push</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="fork-vs.-clone" class="level2">
+<h2 class="anchored" data-anchor-id="fork-vs.-clone">Fork vs.&nbsp;clone</h2>
+<p><strong>Fork</strong> makes a copy of someone else’s repository under <em>your account</em>, on the GitHub website. Use it when you want to contribute to a project you cannot write to. Fork + clone + pull request is how open-source collaboration works.</p>
+<p><strong>Clone</strong> makes a copy on <em>your computer</em>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/crweber9874/UNM_Workshop.git</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> UNM_Workshop</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Your edits stay local until you push, and you can only push to repositories you have access to.</p>
+<div class="note">
+<p><span class="note-head">Today</span> Everyone is a collaborator on one repository, so you <strong>clone and work on branches</strong>. If you would rather keep your work separate, fork first and open pull requests from your fork — the workflow below is otherwise identical.</p>
+</div>
 </section>
-<section id="working-together-we-are-all-in-one-repo" class="level2">
-<h2 class="anchored" data-anchor-id="working-together-we-are-all-in-one-repo">Working together (we are all in one repo)</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> pull</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> switch <span class="at">-c</span> yourname-topic          <span class="co"># your own branch</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># ...edit, add, commit...</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> push <span class="at">-u</span> origin yourname-topic</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="ex">gh</span> pr create <span class="at">--fill</span>                   <span class="co"># open a pull request</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Merge on GitHub after a quick review. Then everyone: <code>git switch main &amp;&amp; git pull</code>.</p>
+<section id="the-everyday-loop" class="level2">
+<h2 class="anchored" data-anchor-id="the-everyday-loop">The everyday loop</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> pull                     <span class="co"># ALWAYS first: get everyone else's work</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> status                   <span class="co"># what changed?</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add R/01_recode.R        <span class="co"># stage specific files (avoid `git add .` blindly)</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">"Recode age into generations"</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> push</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A <strong>commit</strong> is a snapshot of your changes with a unique ID and a message. The message is for the version of you who, in four months, needs to know why <code>age_group</code> has four categories. Write it for that person.</p>
 </section>
-<section id="rules-of-the-road" class="level2">
-<h2 class="anchored" data-anchor-id="rules-of-the-road">Rules of the road</h2>
-<ul>
-<li>Pull before you start; push when you stop.</li>
-<li>One person per file at a time where possible (recode vs analysis vs app).</li>
-<li>Small commits with clear messages.</li>
-<li>Never commit data you weren’t given, passwords, or <code>.Renviron</code>.</li>
-</ul>
+<section id="working-together-in-one-repository" class="level2">
+<h2 class="anchored" data-anchor-id="working-together-in-one-repository">Working together in one repository</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> pull</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> switch <span class="at">-c</span> weber-recode-generation     <span class="co"># your own branch</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># ...edit, add, commit...</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> push <span class="at">-u</span> origin weber-recode-generation</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="ex">gh</span> pr create <span class="at">--fill</span>                       <span class="co"># open a pull request</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Someone reviews the pull request on GitHub and merges it. Then everyone returns to a common base:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> switch main <span class="kw">&amp;&amp;</span> <span class="fu">git</span> pull</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="when-to-use-what" class="level2">
+<h2 class="anchored" data-anchor-id="when-to-use-what">When to use what</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Action</th>
+<th>When</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Fork</strong></td>
+<td>Contributing without write access</td>
+<td>on github.com</td>
+</tr>
+<tr class="even">
+<td><strong>Clone</strong></td>
+<td>Getting a repo onto your machine</td>
+<td><code>git clone &lt;url&gt;</code></td>
+</tr>
+<tr class="odd">
+<td><strong>Pull</strong></td>
+<td>Before you start working</td>
+<td><code>git pull</code></td>
+</tr>
+<tr class="even">
+<td><strong>Branch</strong></td>
+<td>Any change you are not sure of</td>
+<td><code>git switch -c name-topic</code></td>
+</tr>
+<tr class="odd">
+<td><strong>Add</strong></td>
+<td>Choosing what goes in the commit</td>
+<td><code>git add R/01_recode.R</code></td>
+</tr>
+<tr class="even">
+<td><strong>Commit</strong></td>
+<td>Saving a coherent step locally</td>
+<td><code>git commit -m "message"</code></td>
+</tr>
+<tr class="odd">
+<td><strong>Push</strong></td>
+<td>Publishing your branch</td>
+<td><code>git push -u origin name-topic</code></td>
+</tr>
+<tr class="even">
+<td><strong>Pull request</strong></td>
+<td>Asking for review and a merge</td>
+<td><code>gh pr create --fill</code></td>
+</tr>
+</tbody>
+</table>
+<div class="warn">
+<p><span class="warn-head">Rules of the road</span> Pull before you start, push when you stop · one person per file where possible (recode / analysis / app) · small commits with clear messages · never commit data you were not given, passwords, or <code>.Renviron</code>.</p>
+</div>
 </section>
 <section id="merge-conflicts" class="level2">
 <h2 class="anchored" data-anchor-id="merge-conflicts">Merge conflicts</h2>
@@ -241,7 +319,7 @@ your version
 =======
 their version
 &gt;&gt;&gt;&gt;&gt;&gt;&gt; main</code></pre>
-<p>Keep what’s right, delete the markers, then <code>git add</code> + <code>git commit</code>. Or ask the agent: <em>“resolve the merge conflict in R/01_recode.R, keeping both recodes.”</em> — then <strong>read its diff</strong>.</p>
+<p>Keep what is right, delete the markers, then <code>git add</code> and <code>git commit</code>. You can ask the agent — <em>“resolve the merge conflict in <code>R/01_recode.R</code>, keeping both recodes”</em> — and then <strong>read its diff</strong>.</p>
 </section>
 <section id="undo" class="level2">
 <h2 class="anchored" data-anchor-id="undo">Undo</h2>
@@ -254,23 +332,35 @@ their version
 </thead>
 <tbody>
 <tr class="odd">
+<td>See what you changed</td>
+<td><code>git diff</code></td>
+</tr>
+<tr class="even">
 <td>Discard edits to a file</td>
 <td><code>git restore file.R</code></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>Unstage</td>
 <td><code>git restore --staged file.R</code></td>
 </tr>
-<tr class="odd">
-<td>Fix last commit message</td>
+<tr class="even">
+<td>Fix the last commit message</td>
 <td><code>git commit --amend</code> (before pushing)</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>Undo a pushed commit</td>
 <td><code>git revert &lt;hash&gt;</code></td>
 </tr>
+<tr class="even">
+<td>Look at the history</td>
+<td><code>git log --oneline -10</code></td>
+</tr>
 </tbody>
 </table>
+<div class="turn">
+<p><span class="turn-head">Your turn</span> Create a branch, add <code>tmp/&lt;lastname&gt;.qmd</code> with a sentence about your own data, commit it, push it, and open a pull request. Then review someone else’s.</p>
+</div>
+<p><a href="./setup.html">← Setup</a> · <a href="./agents.html">Next: Agents →</a></p>
 
 
 </section>
@@ -363,6 +453,11 @@ their version
           if (link.dataset.originalHref !== undefined) {
             link.href = link.dataset.originalHref;
           }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
         }
       }
     function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
@@ -677,6 +772,19 @@ their version
   });
   </script>
 </div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Christopher Weber · University of Arizona</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p><a href="https://github.com/crweber9874/UNM_Workshop">Repository</a> · <a href="./slides/workshop.html">Slides</a></p>
+</div>
+  </div>
+</footer>
 
 
 

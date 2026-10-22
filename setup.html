@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>1. Setup – AI as a Research Tool — UNM</title>
+<title>1. Setup – AI as a Research Tool</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -75,7 +75,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-5b4ad623e5705c0698d39aec6f10cf02.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-7fde2353a1653dff68e90c120e76db82.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -103,6 +103,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Search"
   }
 }</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700;800&amp;display=swap" rel="stylesheet">
 
 
 </head>
@@ -115,7 +117,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="./index.html">
-    <span class="navbar-title">AI as a Research Tool — UNM</span>
+    <span class="navbar-title">AI as a Research Tool</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -129,12 +131,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span class="menu-text">Agenda</span></a>
   </li>  
   <li class="nav-item">
+    <a class="nav-link" href="./framing.html"> 
+<span class="menu-text">0. Framing</span></a>
+  </li>  
+  <li class="nav-item">
     <a class="nav-link active" href="./setup.html" aria-current="page"> 
 <span class="menu-text">1. Setup</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="./git.html"> 
-<span class="menu-text">2. Git workflow</span></a>
+<span class="menu-text">2. Git</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="./agents.html"> 
@@ -142,7 +148,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="./project.html"> 
-<span class="menu-text">4. Project</span></a>
+<span class="menu-text">4. Pipeline</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./verify.html"> 
+<span class="menu-text">5. Verify</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="./slides/workshop.html"> 
@@ -170,8 +180,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <nav id="TOC" role="doc-toc" class="toc-active">
     <h2 id="toc-title">On this page</h2>
    
-  <ul>
-  <li><a href="#github" id="toc-github" class="nav-link active" data-scroll-target="#github">GitHub</a></li>
+  <ul class="collapse">
+  <li><a href="#why-a-repository-at-all" id="toc-why-a-repository-at-all" class="nav-link active" data-scroll-target="#why-a-repository-at-all">Why a repository at all</a></li>
+  <li><a href="#what-a-repository-looks-like" id="toc-what-a-repository-looks-like" class="nav-link" data-scroll-target="#what-a-repository-looks-like">What a repository looks like</a></li>
+  <li><a href="#github" id="toc-github" class="nav-link" data-scroll-target="#github">GitHub</a></li>
+  <li><a href="#r-and-rstudio" id="toc-r-and-rstudio" class="nav-link" data-scroll-target="#r-and-rstudio">R and RStudio</a></li>
   <li><a href="#copilot" id="toc-copilot" class="nav-link" data-scroll-target="#copilot">Copilot</a></li>
   <li><a href="#claude-code" id="toc-claude-code" class="nav-link" data-scroll-target="#claude-code">Claude Code</a></li>
   <li><a href="#no-local-setup-use-a-codespace" id="toc-no-local-setup-use-a-codespace" class="nav-link" data-scroll-target="#no-local-setup-use-a-codespace">No local setup? Use a Codespace</a></li>
@@ -200,43 +213,95 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
+<section id="why-a-repository-at-all" class="level2">
+<h2 class="anchored" data-anchor-id="why-a-repository-at-all">Why a repository at all</h2>
+<p>GitHub hosts code, data, and documents on the web. Four reasons it matters for research:</p>
+<ul>
+<li><strong>Transparency</strong> — the work is open to inspection.</li>
+<li><strong>Reproducibility</strong> — others can recreate and extend your analysis.</li>
+<li><strong>Collaboration</strong> — several people contribute to one project without emailing files.</li>
+<li><strong>Version control</strong> — every change is tracked, and reverting is trivial.</li>
+</ul>
+<div class="note">
+<p><span class="note-head">And for working with agents</span> An agent edits files in place. The repository is what makes that safe: you can see exactly what changed (<code>git diff</code>) and undo it (<code>git restore</code>). Without version control, you are letting a confident stranger type into your manuscript.</p>
+</div>
+</section>
+<section id="what-a-repository-looks-like" class="level2">
+<h2 class="anchored" data-anchor-id="what-a-repository-looks-like">What a repository looks like</h2>
+<p>A repository is a folder with your code, data, documentation, and the complete history of changes. This one:</p>
+<pre><code>UNM_Workshop/
+├── AGENTS.md              the brief every AI agent reads
+├── CLAUDE.md              one line: @AGENTS.md
+├── data/
+│   ├── wss_2020_2024.csv  analysis file (read-only)
+│   └── wss_clean.rds      built by R/01_recode.R
+├── codebooks/             2020 &amp; 2024 survey codebooks (PDF)
+├── R/
+│   ├── 00_build_data.R    raw Stata → csv (instructor only)
+│   ├── 01_recode.R        all recoding lives here
+│   └── 02_analysis.R      models and figures → output/
+├── app/app.R              Shiny explorer
+├── tests/testthat/        checks on the recodes
+├── slides/                workshop slides (Quarto revealjs)
+└── .devcontainer/         one-click Codespace</code></pre>
+<p>Numbered scripts, one job each, strict order. <strong>Recodes never live in analysis scripts</strong> — that single rule is what keeps four people and an agent from quietly disagreeing about what <code>latino</code> means.</p>
+</section>
 <section id="github" class="level2">
 <h2 class="anchored" data-anchor-id="github">GitHub</h2>
 <ol type="1">
-<li>Create an account at <a href="https://github.com" class="uri">https://github.com</a>. Students/faculty: apply for <a href="https://education.github.com">GitHub Education</a> — free Copilot Pro.</li>
-<li>Send your username to the instructor to be added as a collaborator (or fork the repo).</li>
+<li>Create an account at <a href="https://github.com" class="uri">https://github.com</a>. Students and faculty: apply for <a href="https://education.github.com">GitHub Education</a> — it includes free Copilot Pro.</li>
+<li>Send me your username to be added as a collaborator (or fork the repo — see <a href="./git.html">Module 2</a>).</li>
 <li>Install Git: macOS <code>xcode-select --install</code>; Windows <a href="https://git-scm.com" class="uri">https://git-scm.com</a>.</li>
 <li>Identify yourself once:</li>
 </ol>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> config <span class="at">--global</span> user.name <span class="st">"Your Name"</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> config <span class="at">--global</span> user.email <span class="st">"you@unm.edu"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> config <span class="at">--global</span> user.name <span class="st">"Your Name"</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> config <span class="at">--global</span> user.email <span class="st">"you@unm.edu"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <ol start="5" type="1">
-<li>Authenticate: install the <a href="https://cli.github.com">GitHub CLI</a> and run <code>gh auth login</code>.</li>
+<li>Authenticate: install the <a href="https://cli.github.com">GitHub CLI</a>, then:</li>
 </ol>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">gh</span> auth login</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">gh</span> auth status      <span class="co"># confirm</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="r-and-rstudio" class="level2">
+<h2 class="anchored" data-anchor-id="r-and-rstudio">R and RStudio</h2>
+<ul>
+<li>Work from the <strong>terminal</strong> for Git commands. In RStudio: <strong>Tools → Terminal → New Terminal</strong>.</li>
+<li>The <strong>Git</strong> tab gives you the same operations by point-and-click. The commands are identical underneath, and the terminal is what you can explain to a collaborator — or to an agent.</li>
+<li>Open <code>UNM_Workshop.Rproj</code> so that relative paths (<code>data/wss_clean.rds</code>) resolve.</li>
+</ul>
 </section>
 <section id="copilot" class="level2">
 <h2 class="anchored" data-anchor-id="copilot">Copilot</h2>
 <ul>
-<li>VS Code → Extensions → <strong>GitHub Copilot</strong> + <strong>Copilot Chat</strong> → sign in.</li>
-<li>RStudio → <em>Tools → Global Options → Copilot → Enable</em>.</li>
-<li>Copilot reads <code>.github/copilot-instructions.md</code> (here, it points to <code>AGENTS.md</code>).</li>
+<li><strong>VS Code</strong> → Extensions → <strong>GitHub Copilot</strong> + <strong>GitHub Copilot Chat</strong> → sign in.</li>
+<li><strong>RStudio</strong> → <em>Tools → Global Options → Copilot → Enable</em>.</li>
+<li>Copilot reads <code>.github/copilot-instructions.md</code>, which here points at <code>AGENTS.md</code>.</li>
 </ul>
 </section>
 <section id="claude-code" class="level2">
 <h2 class="anchored" data-anchor-id="claude-code">Claude Code</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> install <span class="at">-g</span> @anthropic-ai/claude-code   <span class="co"># or: brew install claude-code</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> UNM_Workshop <span class="kw">&amp;&amp;</span> <span class="ex">claude</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Requires a Claude Pro/Max account or API key. VS Code extension: search “Claude Code”.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> install <span class="at">-g</span> @anthropic-ai/claude-code    <span class="co"># or: brew install claude-code</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> UNM_Workshop</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ex">claude</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Requires a Claude Pro/Max account or an API key. There is also a VS Code extension — search “Claude Code”. On first run, try <code>/init</code> and read what it writes about this project.</p>
 </section>
 <section id="no-local-setup-use-a-codespace" class="level2">
 <h2 class="anchored" data-anchor-id="no-local-setup-use-a-codespace">No local setup? Use a Codespace</h2>
-<p>On the repo page: <strong>Code → Codespaces → Create codespace on main</strong>. The container (<code>.devcontainer/devcontainer.json</code>) installs R + tidyverse, RStudio Server (port 8787), Quarto, Copilot, and Claude Code. Free tier: 60 core-hours/month. <strong>Stop your codespace when done.</strong></p>
+<p>On the repository page: <strong>Code → Codespaces → Create codespace on main</strong>.</p>
+<p>The container (<code>.devcontainer/devcontainer.json</code>) installs R and tidyverse, RStudio Server on port 8787, Quarto, Copilot, and Claude Code — in a browser tab, identical for everyone in the room.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><a href="https://codespaces.new/crweber9874/UNM_Workshop"><img src="https://github.com/codespaces/badge.svg" class="img-fluid figure-img"></a></p>
 <figcaption>Open in Codespaces</figcaption>
 </figure>
 </div>
+<div class="warn">
+<p><span class="warn-head">Housekeeping</span> The free tier is 60 core-hours a month. <strong>Stop your codespace when you are done</strong> — it bills while it idles.</p>
+</div>
+<div class="turn">
+<p><span class="turn-head">Your turn</span> 1. Start a codespace, or clone the repo locally. 2. Run <code>gh auth status</code> — are you signed in? 3. Start <code>claude</code>, run <code>/init</code>, and read the result against <code>AGENTS.md</code>.</p>
+</div>
+<p><a href="./framing.html">← Framing</a> · <a href="./git.html">Next: Git workflow →</a></p>
 
 
 </section>
@@ -329,6 +394,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           if (link.dataset.originalHref !== undefined) {
             link.href = link.dataset.originalHref;
           }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
         }
       }
     function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
@@ -643,6 +713,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   });
   </script>
 </div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Christopher Weber · University of Arizona</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p><a href="https://github.com/crweber9874/UNM_Workshop">Repository</a> · <a href="./slides/workshop.html">Slides</a></p>
+</div>
+  </div>
+</footer>
 
 
 

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>4. Project: Did Latino voters pivot to Trump? – AI as a Research Tool — UNM</title>
+<title>4. The pipeline &amp; the group project – AI as a Research Tool</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -19,6 +19,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -40,7 +75,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-5b4ad623e5705c0698d39aec6f10cf02.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-7fde2353a1653dff68e90c120e76db82.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -68,6 +103,8 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700;800&amp;display=swap" rel="stylesheet">
 
 
 </head>
@@ -80,7 +117,7 @@ ul.task-list li input[type="checkbox"] {
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="./index.html">
-    <span class="navbar-title">AI as a Research Tool — UNM</span>
+    <span class="navbar-title">AI as a Research Tool</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -94,12 +131,16 @@ ul.task-list li input[type="checkbox"] {
 <span class="menu-text">Agenda</span></a>
   </li>  
   <li class="nav-item">
+    <a class="nav-link" href="./framing.html"> 
+<span class="menu-text">0. Framing</span></a>
+  </li>  
+  <li class="nav-item">
     <a class="nav-link" href="./setup.html"> 
 <span class="menu-text">1. Setup</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="./git.html"> 
-<span class="menu-text">2. Git workflow</span></a>
+<span class="menu-text">2. Git</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="./agents.html"> 
@@ -107,7 +148,11 @@ ul.task-list li input[type="checkbox"] {
   </li>  
   <li class="nav-item">
     <a class="nav-link active" href="./project.html" aria-current="page"> 
-<span class="menu-text">4. Project</span></a>
+<span class="menu-text">4. Pipeline</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./verify.html"> 
+<span class="menu-text">5. Verify</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="./slides/workshop.html"> 
@@ -135,11 +180,13 @@ ul.task-list li input[type="checkbox"] {
         <nav id="TOC" role="doc-toc" class="toc-active">
     <h2 id="toc-title">On this page</h2>
    
-  <ul>
-  <li><a href="#data" id="toc-data" class="nav-link active" data-scroll-target="#data">Data</a></li>
-  <li><a href="#pipeline" id="toc-pipeline" class="nav-link" data-scroll-target="#pipeline">Pipeline</a></li>
-  <li><a href="#starting-point-weighted-two-party-trump-share" id="toc-starting-point-weighted-two-party-trump-share" class="nav-link" data-scroll-target="#starting-point-weighted-two-party-trump-share">Starting point (weighted two-party Trump share)</a></li>
-  <li><a href="#group-tasks" id="toc-group-tasks" class="nav-link" data-scroll-target="#group-tasks">Group tasks</a></li>
+  <ul class="collapse">
+  <li><a href="#the-question" id="toc-the-question" class="nav-link active" data-scroll-target="#the-question">The question</a></li>
+  <li><a href="#one-stage-one-script" id="toc-one-stage-one-script" class="nav-link" data-scroll-target="#one-stage-one-script">One stage, one script</a></li>
+  <li><a href="#run-it-end-to-end" id="toc-run-it-end-to-end" class="nav-link" data-scroll-target="#run-it-end-to-end">Run it end to end</a></li>
+  <li><a href="#where-we-start" id="toc-where-we-start" class="nav-link" data-scroll-target="#where-we-start">Where we start</a></li>
+  <li><a href="#four-teams" id="toc-four-teams" class="nav-link" data-scroll-target="#four-teams">Four teams</a></li>
+  <li><a href="#starting-prompts-worth-stealing" id="toc-starting-prompts-worth-stealing" class="nav-link" data-scroll-target="#starting-prompts-worth-stealing">Starting prompts worth stealing</a></li>
   </ul>
 </nav>
     </div>
@@ -148,7 +195,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">4. Project: Did Latino voters pivot to Trump?</h1>
+<h1 class="title">4. The pipeline &amp; the group project</h1>
 </div>
 
 
@@ -165,51 +212,167 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="data" class="level2">
-<h2 class="anchored" data-anchor-id="data">Data</h2>
-<p>Western States Survey (YouGov), 2020 (n = 3,600) and 2024 (n = 4,000): Arizona, Colorado, Nevada, New Mexico, Utah. Codebooks: <a href="codebooks/wss2020_codebook.pdf">2020</a>, <a href="codebooks/wss2024_codebook.pdf">2024</a>. Latino = <code>race == "Hispanic"</code> (YouGov <code>race</code> item). Authoritarianism = mean of four child-rearing pairs (independence/respect for elders, etc.), 0–1.</p>
+<section id="the-question" class="level2">
+<h2 class="anchored" data-anchor-id="the-question">The question</h2>
+<p><strong>Did Latino voters in the Western states shift toward Trump between 2020 and 2024, and does authoritarianism condition that shift?</strong></p>
+<p>Western States Survey (YouGov), 2020 (n = 3,600) and 2024 (n = 4,000): Arizona, Colorado, Nevada, New Mexico, Utah. Codebooks: <a href="codebooks/wss2020_codebook.pdf">2020</a>, <a href="codebooks/wss2024_codebook.pdf">2024</a>.</p>
+<ul>
+<li><code>latino</code> — the YouGov <code>race</code> item (Hispanic).</li>
+<li><code>authoritarianism</code> — mean of four child-rearing pairs, 0–1, 1 = authoritarian response (<code>auth1</code>–<code>auth4</code>).</li>
+<li><code>trump_vote</code> — 1 Trump, 0 Biden/Harris, <code>NA</code> otherwise.</li>
+<li>Weights — <code>weight</code> in 2020, <code>weight_all</code> in 2024, combined as <code>weight</code>.</li>
+</ul>
+<div class="note">
+<p><span class="note-head">Cite the codebook, not the agent</span> Every claim about a variable on this page traces to <code>codebooks/</code> and the variable list in <code>AGENTS.md</code>. When an agent tells you what a variable means, that is a hypothesis.</p>
+</div>
 </section>
-<section id="pipeline" class="level2">
-<h2 class="anchored" data-anchor-id="pipeline">Pipeline</h2>
-<pre><code>R/00_build_data.R   raw .dta → data/wss_2020_2024.csv   (instructor only)
-R/01_recode.R       csv → data/wss_clean.rds            (recoding team)
-R/02_analysis.R     models + figures → output/          (analysis team)
-app/app.R           interactive explorer                (Shiny team)</code></pre>
-</section>
-<section id="starting-point-weighted-two-party-trump-share" class="level2">
-<h2 class="anchored" data-anchor-id="starting-point-weighted-two-party-trump-share">Starting point (weighted two-party Trump share)</h2>
+<section id="one-stage-one-script" class="level2">
+<h2 class="anchored" data-anchor-id="one-stage-one-script">One stage, one script</h2>
+<div class="pipeline">
+<div class="stage">
+<p><span class="name">00 build</span></p>
+<p><span class="sub">raw Stata → csv</span></p>
+</div>
+<div class="stage">
+<p><span class="name">01 recode</span></p>
+<p><span class="sub">csv → wss_clean.rds</span></p>
+</div>
+<div class="stage">
+<p><span class="name">02 analysis</span></p>
+<p><span class="sub">models → output/</span></p>
+</div>
+<div class="stage">
+<p><span class="name">app</span></p>
+<p><span class="sub">Shiny explorer</span></p>
+</div>
+<div class="stage">
+<p><span class="name">publish</span></p>
+<p><span class="sub">quarto → gh-pages</span></p>
+</div>
+</div>
 <table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
 <thead>
 <tr class="header">
-<th>Year</th>
-<th>Non-Latino</th>
-<th>Latino</th>
+<th>Stage</th>
+<th>File</th>
+<th>Owner today</th>
+<th>Produces</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>2020</td>
-<td>.50</td>
-<td>.40</td>
+<td>Build</td>
+<td><code>R/00_build_data.R</code></td>
+<td>instructor</td>
+<td><code>data/wss_2020_2024.csv</code></td>
 </tr>
 <tr class="even">
-<td>2024</td>
-<td>.51</td>
-<td>.42</td>
+<td>Recode</td>
+<td><code>R/01_recode.R</code></td>
+<td>recode team</td>
+<td><code>data/wss_clean.rds</code></td>
+</tr>
+<tr class="odd">
+<td>Analyze</td>
+<td><code>R/02_analysis.R</code></td>
+<td>analysis team</td>
+<td><code>output/*.png</code>, model summaries</td>
+</tr>
+<tr class="even">
+<td>Explore</td>
+<td><code>app/app.R</code></td>
+<td>Shiny team</td>
+<td>interactive app</td>
+</tr>
+<tr class="odd">
+<td>Check</td>
+<td><code>tests/testthat/</code></td>
+<td>everyone</td>
+<td>pass / fail</td>
+</tr>
+<tr class="even">
+<td>Publish</td>
+<td><code>quarto publish gh-pages</code></td>
+<td>instructor</td>
+<td>this website</td>
 </tr>
 </tbody>
 </table>
-<p>n_obs = 6,495 two-party voters; n_miss = 1,105 (non-voters, other candidates, ineligible). The Latino shift in this sample is small and imprecise — far from the national exit-poll story. <strong>Why?</strong> That’s the group task.</p>
 </section>
-<section id="group-tasks" class="level2">
-<h2 class="anchored" data-anchor-id="group-tasks">Group tasks</h2>
+<section id="run-it-end-to-end" class="level2">
+<h2 class="anchored" data-anchor-id="run-it-end-to-end">Run it end to end</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> R/01_recode.R                       <span class="co"># csv  -&gt; data/wss_clean.rds</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> R/02_analysis.R                     <span class="co"># models, figures -&gt; output/</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">'testthat::test_dir("tests/testthat")'</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">'shiny::runApp("app")'</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>R/00_build_data.R</code> needs the raw Stata files, which are not distributed; the CSV it produces is in the repository.</p>
+<div class="note">
+<p><span class="note-head">Why the order is enforced</span> Every number traces back through exactly one path. If the recode changes, the analysis and the app change with it, because neither keeps its own private copy of the recoding logic. Ask an agent to add a recode to <code>02_analysis.R</code> and it will happily do it — this is the rule you are enforcing against your own convenience.</p>
+</div>
+</section>
+<section id="where-we-start" class="level2">
+<h2 class="anchored" data-anchor-id="where-we-start">Where we start</h2>
+<p>Weighted two-party Trump share:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th></th>
+<th>2020</th>
+<th>2024</th>
+<th>Change</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Non-Latino</td>
+<td>.503 (n = 1,944)</td>
+<td>.511 (n = 2,828)</td>
+<td>+.008</td>
+</tr>
+<tr class="even">
+<td>Latino</td>
+<td>.398 (n = 937)</td>
+<td>.419 (n = 786)</td>
+<td>+.021</td>
+</tr>
+</tbody>
+</table>
+<p>n_obs = 6,495 two-party voters · n_miss = 1,105 (non-voters, other candidates, ineligible) of 7,600 respondents.</p>
+<div class="warn">
+<p><span class="warn-head">The puzzle</span> A two-point Latino shift, estimated on 786 Latino respondents in 2024, is far from the double-digit national exit-poll story. Sample? Weights? Mode? Reported versus intended vote? <strong>That is the group task</strong> — not to reproduce a headline, but to establish what this sample can and cannot support.</p>
+</div>
+<p>Source: <code>R/02_analysis.R</code> run on <code>data/wss_clean.rds</code>. The intervals in that script use a Kish effective <em>n</em>, not a design-based variance — fixing that is a legitimate first contribution.</p>
+</section>
+<section id="four-teams" class="level2">
+<h2 class="anchored" data-anchor-id="four-teams">Four teams</h2>
 <ol type="1">
-<li><strong>Recode team</strong> — add generation, income terciles, a strength-of-partisanship measure. Check each against the codebook.</li>
-<li><strong>Analysis team</strong> — Bayesian logit with <code>brms</code>; predicted probabilities by authoritarianism × Latino × year. Does the gap between reported and intended vote (<code>vote_type</code>) matter?</li>
-<li><strong>Shiny team</strong> — add a state-by-year panel and a download button.</li>
-<li><strong>Skeptics</strong> — Is the sample representative of Latino voters? Weighting? Mode? Compare with external estimates.</li>
+<li><strong>Recode team</strong> — add generation, income terciles, and a strength-of-partisanship measure to <code>R/01_recode.R</code>. Check each against the codebook, and add a test per variable.</li>
+<li><strong>Analysis team</strong> — Bayesian logit with <code>brms</code>; predicted probabilities for authoritarianism × Latino × year. Does the reported/intended distinction (<code>vote_type</code>) matter?</li>
+<li><strong>Shiny team</strong> — add a state-by-year panel and a download button to <code>app/app.R</code>.</li>
+<li><strong>Skeptics</strong> — is this sample representative of Latino voters? Interrogate the weights, the mode, and the comparison with external estimates.</li>
 </ol>
-<p>Each team: branch → commit → pull request.</p>
+<div class="turn">
+<p><span class="turn-head">Workflow for every team</span> Branch → work with your agent → <strong>read the diff</strong> → report <code>n_obs</code> and <code>n_miss</code> → commit → pull request. Review someone else’s PR before you ask for yours.</p>
+</div>
+</section>
+<section id="starting-prompts-worth-stealing" class="level2">
+<h2 class="anchored" data-anchor-id="starting-prompts-worth-stealing">Starting prompts worth stealing</h2>
+<pre class="text"><code>Read AGENTS.md and R/01_recode.R. Add an income-tercile variable built from
+faminc, using survey weights. Do not touch anything else. Show me the diff.
+
+Read codebooks/wss2024_codebook.pdf for pid7 and tell me whether
+R/01_recode.R codes party3 correctly. Quote the codebook.
+
+Refit the model in R/02_analysis.R with brms, bernoulli family, weakly
+informative priors. Report n_obs and n_miss. Do not drop the weights.</code></pre>
+<p>Each of these is narrow, names its files, and asks for evidence. That is the whole technique.</p>
+<p><a href="./agents.html">← Agents</a> · <a href="./verify.html">Next: Verification →</a></p>
 
 
 </section>
@@ -302,6 +465,11 @@ app/app.R           interactive explorer                (Shiny team)</code></pre
           if (link.dataset.originalHref !== undefined) {
             link.href = link.dataset.originalHref;
           }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
         }
       }
     function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
@@ -616,6 +784,19 @@ app/app.R           interactive explorer                (Shiny team)</code></pre
   });
   </script>
 </div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Christopher Weber · University of Arizona</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p><a href="https://github.com/crweber9874/UNM_Workshop">Repository</a> · <a href="./slides/workshop.html">Slides</a></p>
+</div>
+  </div>
+</footer>
 
 
 
