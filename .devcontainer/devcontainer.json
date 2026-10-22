@@ -1,0 +1,15 @@
+{
+  "name": "UNM Workshop (R + tidyverse)",
+  "image": "ghcr.io/rocker-org/devcontainer/tidyverse:4.4",
+  "features": {
+    "ghcr.io/rocker-org/devcontainer-features/rstudio-server:0": {},
+    "ghcr.io/rocker-org/devcontainer-features/quarto-cli:1": {},
+    "ghcr.io/anthropics/devcontainer-features/claude-code:1": {}
+  },
+  "postCreateCommand": "R -q -e 'install.packages(c(\"shiny\",\"here\"))'",
+  "forwardPorts": [8787],
+  "portsAttributes": { "8787": { "label": "RStudio" } },
+  "customizations": {
+    "vscode": { "extensions": ["REditorSupport.r", "quarto.quarto", "GitHub.copilot", "GitHub.copilot-chat"] }
+  }
+}

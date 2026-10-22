@@ -1,0 +1,29 @@
+project:
+  type: website
+  render: ["*.qmd", "slides/*.qmd"]
+  resources: ["codebooks/*.pdf"]
+website:
+  title: "AI as a Research Tool — UNM"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Agenda
+      - href: setup.qmd
+        text: 1. Setup
+      - href: git.qmd
+        text: 2. Git workflow
+      - href: agents.qmd
+        text: 3. Agents
+      - href: project.qmd
+        text: 4. Project
+      - href: slides/workshop.qmd
+        text: Slides
+    right:
+      - icon: github
+        href: https://github.com/crweber9874/UNM_Workshop
+format:
+  html:
+    theme: cosmo
+    toc: true
+execute:
+  eval: false

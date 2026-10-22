@@ -1,0 +1,58 @@
+---
+title: "3. Agents: instructions & shortcuts"
+---
+
+## How an agent "sees" this repo
+1. On start, it loads instruction files: `CLAUDE.md` (Claude Code), `AGENTS.md` (Copilot, Codex, Cursor…), `.github/copilot-instructions.md` (Copilot).
+2. It reads files you mention (`@R/01_recode.R`) or that it searches for.
+3. It runs commands (R, git) — with your permission.
+
+So the instructions file is the **project brief**: layout, variable meanings, rules. Here `CLAUDE.md` is one line — `@AGENTS.md` — so every tool shares a single source of truth.
+
+## Writing a good AGENTS.md / CLAUDE.md
+- What the project is (one sentence) and the research question.
+- Where things live; which files are read-only.
+- Variable definitions and **where to cite them** (codebook).
+- Conventions: language, style, where recodes go.
+- Guardrails: report N and missingness, use weights, don't push to main.
+- Keep it short; agents follow concise rules better than essays.
+
+Bootstrap one: run `/init` in Claude Code, then edit it yourself.
+Personal, all-project preferences go in `~/.claude/CLAUDE.md`.
+
+## Claude Code shortcuts
+| Command / key | Does |
+|---|---|
+| `/init` | Draft a CLAUDE.md from the codebase |
+| `/memory` | Edit instruction/memory files |
+| `/agents` | Create & manage subagents (e.g., a “codebook checker”) |
+| `/clear` | Fresh context (cheap; use between tasks) |
+| `/compact` | Summarize long conversation |
+| `/model` | Switch model (smaller = cheaper) |
+| `/cost`, `/usage` | Track spending |
+| `/review` | Review a pull request |
+| `/permissions` | What it may run without asking |
+| `/resume` | Return to an earlier session |
+| `/mcp` | Connect external tools |
+| `@file` | Put a file in context |
+| `!cmd` | Run a shell command directly |
+| `Shift+Tab` | Cycle modes (plan / auto-accept) |
+| `Esc` / `Esc Esc` | Interrupt / rewind |
+
+## Copilot shortcuts
+| Key / command | Does |
+|---|---|
+| `Tab` / `Esc` | Accept / dismiss suggestion |
+| `Ctrl/Cmd+I` | Inline chat |
+| `/explain`, `/fix`, `/tests`, `/doc` | Chat slash commands |
+| `@workspace`, `#file` | Add repo or file context |
+| Agent mode | Multi-file edits that run commands |
+
+## Saving credits
+- `/clear` between unrelated tasks; long context costs every turn.
+- Point at files (`@R/02_analysis.R`) rather than “look around.”
+- Use plan mode for big changes; approve the plan, then execute.
+- Smaller model for routine edits.
+
+## Verify, always
+Agents produce plausible code. Check variable coding against the codebook, check Ns, and rerun the script yourself.

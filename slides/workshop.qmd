@@ -1,0 +1,147 @@
+---
+title: "AI as a Research Tool"
+subtitle: "GitHub · Copilot · Claude Code · a shared R project"
+author: "Christopher Weber"
+format:
+  revealjs:
+    theme: simple
+    slide-number: true
+    incremental: false
+---
+
+# Welcome
+
+## Today
+1. Setup: GitHub, Copilot, Codespaces, Claude Code
+2. Git workflow — we all share one repo
+3. Agents: `AGENTS.md`, `CLAUDE.md`, shortcuts
+4. Group project: did Latino voters pivot to Trump?
+
+## The repository
+<https://github.com/crweber9874/UNM_Workshop>
+
+```
+data/        wss_2020_2024.csv   joined 2020 + 2024 survey
+codebooks/   original codebooks (PDF)
+R/           01_recode.R  →  02_analysis.R
+app/         Shiny explorer
+AGENTS.md    the brief every AI agent reads
+.devcontainer/  one-click Codespace
+```
+Organized by **recoding** then **analysis**: recodes never live in analysis scripts.
+
+# 1. Setup
+
+## Accounts & tools
+- GitHub account → [education.github.com](https://education.github.com) for free Copilot
+- Git + `gh auth login`
+- Copilot in VS Code or RStudio
+- Claude Code: `npm i -g @anthropic-ai/claude-code`, then `claude`
+
+## Can't install? Codespace
+**Code → Codespaces → Create codespace on main**
+
+R, tidyverse, RStudio (port 8787), Quarto, Copilot, Claude Code — in the browser.
+
+Stop it when done (60 free core-hours/month).
+
+# 2. Git
+
+## The model
+```
+Working dir → Staging → Local repo → GitHub
+   (edit)      (add)     (commit)     (push)
+                              ←  (pull)
+```
+
+## Get the repo
+```bash
+git clone https://github.com/crweber9874/UNM_Workshop.git
+cd UNM_Workshop
+```
+
+## Everyday loop
+```bash
+git pull                       # first, always
+git status
+git add R/01_recode.R
+git commit -m "Add generation recode"
+git push
+```
+
+## Sharing one repo safely
+```bash
+git pull
+git switch -c yourname-topic
+# edit → add → commit
+git push -u origin yourname-topic
+gh pr create --fill
+```
+Merge on GitHub → everyone `git switch main && git pull`
+
+## Conflicts
+```
+<<<<<<< HEAD
+yours
+=======
+theirs
+>>>>>>> main
+```
+Edit, remove markers, `add`, `commit`. Agents can help — **read the diff**.
+
+# 3. Agents
+
+## How an agent sees a repo
+- Loads **instruction files** at start: `CLAUDE.md`, `AGENTS.md`, `.github/copilot-instructions.md`
+- Reads what you `@mention` or what it searches
+- Runs commands — with permission
+
+## Our AGENTS.md
+```markdown
+## Rules
+- R + tidyverse, native pipe |>
+- New recodes go in R/01_recode.R
+- Always report n_obs and n_miss
+- Use survey weights; say when you don't
+- Don't push to main without approval
+```
+`CLAUDE.md` = `@AGENTS.md` → one source of truth. Start one with `/init`.
+
+## Claude Code shortcuts
+| | |
+|---|---|
+| `/init` `/memory` | create / edit instructions |
+| `/agents` | build subagents |
+| `/clear` `/compact` | manage context (and cost) |
+| `/model` `/cost` | choose model, track spend |
+| `/review` `/resume` | PR review, past sessions |
+| `@file` `!cmd` | add file, run shell |
+| `Shift+Tab` `Esc Esc` | plan mode, rewind |
+
+## Copilot shortcuts
+`Tab` accept · `Ctrl/Cmd+I` inline chat · `/explain /fix /tests` · `@workspace` · agent mode
+
+# 4. Project
+
+## Did Latino voters pivot to Trump?
+Western States Survey 2020 & 2024 (AZ, CO, NV, NM, UT)
+
+| Weighted Trump share | Non-Latino | Latino |
+|---|---|---|
+| 2020 | .50 | .40 |
+| 2024 | .51 | .42 |
+
+n_obs = 6,495; n_miss = 1,105. Small shift. Why the gap with exit polls?
+
+## Teams
+- **Recode**: generations, income, partisan strength
+- **Analysis**: `brms` logit, authoritarianism × Latino × year
+- **Shiny**: state panels, downloads
+- **Skeptics**: sample, weights, intended vs. reported vote
+
+Branch → commit → PR.
+
+## Verify the machine
+- Check coding against the codebook
+- Check N and missingness
+- Rerun it yourself

@@ -1,0 +1,22 @@
+---
+title: "AI as a Research Tool"
+subtitle: "UNM Workshop · Christopher Weber"
+---
+
+## Agenda
+
+| | Section | What we do |
+|---|---|---|
+| 0 | Welcome & goals | What agents can and can't do for research |
+| 1 | [Setup](setup.qmd) | GitHub, Copilot, Codespaces, Claude Code |
+| 2 | [Git workflow](git.qmd) | Pull, branch, commit, push, pull request — together |
+| 3 | [Agents](agents.qmd) | `AGENTS.md` / `CLAUDE.md`, slash commands, shortcuts |
+| 4 | [Project](project.qmd) | Did Latino voters pivot to Trump? Recode → analyze → Shiny |
+| 5 | Wrap-up | Verification, reproducibility, what to trust |
+
+## Goals
+1. Everyone can clone, edit, and push to a shared repo.
+2. Everyone has an AI assistant that *knows the project* via an instructions file.
+3. We answer one substantive question together — and check the AI's work.
+
+[Slides](slides/workshop.qmd) · [Repository](https://github.com/crweber9874/UNM_Workshop)
