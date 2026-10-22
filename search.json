@@ -1,0 +1,303 @@
+[
+  {
+    "objectID": "slides/workshop.html#today",
+    "href": "slides/workshop.html#today",
+    "title": "AI as a Research Tool",
+    "section": "Today",
+    "text": "Today\n\nSetup: GitHub, Copilot, Codespaces, Claude Code\nGit workflow — we all share one repo\nAgents: AGENTS.md, CLAUDE.md, shortcuts\nGroup project: did Latino voters pivot to Trump?"
+  },
+  {
+    "objectID": "slides/workshop.html#the-repository",
+    "href": "slides/workshop.html#the-repository",
+    "title": "AI as a Research Tool",
+    "section": "The repository",
+    "text": "The repository\nhttps://github.com/crweber9874/UNM_Workshop\ndata/        wss_2020_2024.csv   joined 2020 + 2024 survey\ncodebooks/   original codebooks (PDF)\nR/           01_recode.R  →  02_analysis.R\napp/         Shiny explorer\nAGENTS.md    the brief every AI agent reads\n.devcontainer/  one-click Codespace\nOrganized by recoding then analysis: recodes never live in analysis scripts."
+  },
+  {
+    "objectID": "slides/workshop.html#accounts-tools",
+    "href": "slides/workshop.html#accounts-tools",
+    "title": "AI as a Research Tool",
+    "section": "Accounts & tools",
+    "text": "Accounts & tools\n\nGitHub account → education.github.com for free Copilot\nGit + gh auth login\nCopilot in VS Code or RStudio\nClaude Code: npm i -g @anthropic-ai/claude-code, then claude"
+  },
+  {
+    "objectID": "slides/workshop.html#cant-install-codespace",
+    "href": "slides/workshop.html#cant-install-codespace",
+    "title": "AI as a Research Tool",
+    "section": "Can’t install? Codespace",
+    "text": "Can’t install? Codespace\nCode → Codespaces → Create codespace on main\nR, tidyverse, RStudio (port 8787), Quarto, Copilot, Claude Code — in the browser.\nStop it when done (60 free core-hours/month)."
+  },
+  {
+    "objectID": "slides/workshop.html#the-model",
+    "href": "slides/workshop.html#the-model",
+    "title": "AI as a Research Tool",
+    "section": "The model",
+    "text": "The model\nWorking dir → Staging → Local repo → GitHub\n   (edit)      (add)     (commit)     (push)\n                              ←  (pull)"
+  },
+  {
+    "objectID": "slides/workshop.html#get-the-repo",
+    "href": "slides/workshop.html#get-the-repo",
+    "title": "AI as a Research Tool",
+    "section": "Get the repo",
+    "text": "Get the repo\ngit clone https://github.com/crweber9874/UNM_Workshop.git\ncd UNM_Workshop"
+  },
+  {
+    "objectID": "slides/workshop.html#everyday-loop",
+    "href": "slides/workshop.html#everyday-loop",
+    "title": "AI as a Research Tool",
+    "section": "Everyday loop",
+    "text": "Everyday loop\ngit pull                       # first, always\ngit status\ngit add R/01_recode.R\ngit commit -m \"Add generation recode\"\ngit push"
+  },
+  {
+    "objectID": "slides/workshop.html#sharing-one-repo-safely",
+    "href": "slides/workshop.html#sharing-one-repo-safely",
+    "title": "AI as a Research Tool",
+    "section": "Sharing one repo safely",
+    "text": "Sharing one repo safely\ngit pull\ngit switch -c yourname-topic\n# edit → add → commit\ngit push -u origin yourname-topic\ngh pr create --fill\nMerge on GitHub → everyone git switch main && git pull"
+  },
+  {
+    "objectID": "slides/workshop.html#conflicts",
+    "href": "slides/workshop.html#conflicts",
+    "title": "AI as a Research Tool",
+    "section": "Conflicts",
+    "text": "Conflicts\n&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD\nyours\n=======\ntheirs\n&gt;&gt;&gt;&gt;&gt;&gt;&gt; main\nEdit, remove markers, add, commit. Agents can help — read the diff."
+  },
+  {
+    "objectID": "slides/workshop.html#how-an-agent-sees-a-repo",
+    "href": "slides/workshop.html#how-an-agent-sees-a-repo",
+    "title": "AI as a Research Tool",
+    "section": "How an agent sees a repo",
+    "text": "How an agent sees a repo\n\nLoads instruction files at start: CLAUDE.md, AGENTS.md, .github/copilot-instructions.md\nReads what you @mention or what it searches\nRuns commands — with permission"
+  },
+  {
+    "objectID": "slides/workshop.html#our-agents.md",
+    "href": "slides/workshop.html#our-agents.md",
+    "title": "AI as a Research Tool",
+    "section": "Our AGENTS.md",
+    "text": "Our AGENTS.md\n## Rules\n- R + tidyverse, native pipe |&gt;\n- New recodes go in R/01_recode.R\n- Always report n_obs and n_miss\n- Use survey weights; say when you don't\n- Don't push to main without approval\nCLAUDE.md = @AGENTS.md → one source of truth. Start one with /init."
+  },
+  {
+    "objectID": "slides/workshop.html#claude-code-shortcuts",
+    "href": "slides/workshop.html#claude-code-shortcuts",
+    "title": "AI as a Research Tool",
+    "section": "Claude Code shortcuts",
+    "text": "Claude Code shortcuts\n\n\n\n/init /memory\ncreate / edit instructions\n\n\n/agents\nbuild subagents\n\n\n/clear /compact\nmanage context (and cost)\n\n\n/model /cost\nchoose model, track spend\n\n\n/review /resume\nPR review, past sessions\n\n\n@file !cmd\nadd file, run shell\n\n\nShift+Tab Esc Esc\nplan mode, rewind"
+  },
+  {
+    "objectID": "slides/workshop.html#copilot-shortcuts",
+    "href": "slides/workshop.html#copilot-shortcuts",
+    "title": "AI as a Research Tool",
+    "section": "Copilot shortcuts",
+    "text": "Copilot shortcuts\nTab accept · Ctrl/Cmd+I inline chat · /explain /fix /tests · @workspace · agent mode"
+  },
+  {
+    "objectID": "slides/workshop.html#did-latino-voters-pivot-to-trump",
+    "href": "slides/workshop.html#did-latino-voters-pivot-to-trump",
+    "title": "AI as a Research Tool",
+    "section": "Did Latino voters pivot to Trump?",
+    "text": "Did Latino voters pivot to Trump?\nWestern States Survey 2020 & 2024 (AZ, CO, NV, NM, UT)\n\n\n\nWeighted Trump share\nNon-Latino\nLatino\n\n\n\n\n2020\n.50\n.40\n\n\n2024\n.51\n.42\n\n\n\nn_obs = 6,495; n_miss = 1,105. Small shift. Why the gap with exit polls?"
+  },
+  {
+    "objectID": "slides/workshop.html#teams",
+    "href": "slides/workshop.html#teams",
+    "title": "AI as a Research Tool",
+    "section": "Teams",
+    "text": "Teams\n\nRecode: generations, income, partisan strength\nAnalysis: brms logit, authoritarianism × Latino × year\nShiny: state panels, downloads\nSkeptics: sample, weights, intended vs. reported vote\n\nBranch → commit → PR."
+  },
+  {
+    "objectID": "slides/workshop.html#verify-the-machine",
+    "href": "slides/workshop.html#verify-the-machine",
+    "title": "AI as a Research Tool",
+    "section": "Verify the machine",
+    "text": "Verify the machine\n\nCheck coding against the codebook\nCheck N and missingness\nRerun it yourself"
+  },
+  {
+    "objectID": "project.html",
+    "href": "project.html",
+    "title": "4. Project: Did Latino voters pivot to Trump?",
+    "section": "",
+    "text": "Western States Survey (YouGov), 2020 (n = 3,600) and 2024 (n = 4,000): Arizona, Colorado, Nevada, New Mexico, Utah. Codebooks: 2020, 2024. Latino = race == \"Hispanic\" (YouGov race item). Authoritarianism = mean of four child-rearing pairs (independence/respect for elders, etc.), 0–1."
+  },
+  {
+    "objectID": "project.html#data",
+    "href": "project.html#data",
+    "title": "4. Project: Did Latino voters pivot to Trump?",
+    "section": "",
+    "text": "Western States Survey (YouGov), 2020 (n = 3,600) and 2024 (n = 4,000): Arizona, Colorado, Nevada, New Mexico, Utah. Codebooks: 2020, 2024. Latino = race == \"Hispanic\" (YouGov race item). Authoritarianism = mean of four child-rearing pairs (independence/respect for elders, etc.), 0–1."
+  },
+  {
+    "objectID": "project.html#pipeline",
+    "href": "project.html#pipeline",
+    "title": "4. Project: Did Latino voters pivot to Trump?",
+    "section": "Pipeline",
+    "text": "Pipeline\nR/00_build_data.R   raw .dta → data/wss_2020_2024.csv   (instructor only)\nR/01_recode.R       csv → data/wss_clean.rds            (recoding team)\nR/02_analysis.R     models + figures → output/          (analysis team)\napp/app.R           interactive explorer                (Shiny team)"
+  },
+  {
+    "objectID": "project.html#starting-point-weighted-two-party-trump-share",
+    "href": "project.html#starting-point-weighted-two-party-trump-share",
+    "title": "4. Project: Did Latino voters pivot to Trump?",
+    "section": "Starting point (weighted two-party Trump share)",
+    "text": "Starting point (weighted two-party Trump share)\n\n\n\nYear\nNon-Latino\nLatino\n\n\n\n\n2020\n.50\n.40\n\n\n2024\n.51\n.42\n\n\n\nn_obs = 6,495 two-party voters; n_miss = 1,105 (non-voters, other candidates, ineligible). The Latino shift in this sample is small and imprecise — far from the national exit-poll story. Why? That’s the group task."
+  },
+  {
+    "objectID": "project.html#group-tasks",
+    "href": "project.html#group-tasks",
+    "title": "4. Project: Did Latino voters pivot to Trump?",
+    "section": "Group tasks",
+    "text": "Group tasks\n\nRecode team — add generation, income terciles, a strength-of-partisanship measure. Check each against the codebook.\nAnalysis team — Bayesian logit with brms; predicted probabilities by authoritarianism × Latino × year. Does the gap between reported and intended vote (vote_type) matter?\nShiny team — add a state-by-year panel and a download button.\nSkeptics — Is the sample representative of Latino voters? Weighting? Mode? Compare with external estimates.\n\nEach team: branch → commit → pull request."
+  },
+  {
+    "objectID": "git.html",
+    "href": "git.html",
+    "title": "2. Git workflow",
+    "section": "",
+    "text": "Working directory → Staging area → Local repo → Remote (GitHub)\n     (edit)            (add)        (commit)        (push)\n                                         ←  (pull)  ←"
+  },
+  {
+    "objectID": "git.html#the-model",
+    "href": "git.html#the-model",
+    "title": "2. Git workflow",
+    "section": "",
+    "text": "Working directory → Staging area → Local repo → Remote (GitHub)\n     (edit)            (add)        (commit)        (push)\n                                         ←  (pull)  ←"
+  },
+  {
+    "objectID": "git.html#everyday-loop",
+    "href": "git.html#everyday-loop",
+    "title": "2. Git workflow",
+    "section": "Everyday loop",
+    "text": "Everyday loop\ngit pull                     # ALWAYS first: get others' work\ngit status                   # what changed?\ngit add R/01_recode.R        # stage specific files (avoid `git add .` blindly)\ngit commit -m \"Recode age into generations\"\ngit push"
+  },
+  {
+    "objectID": "git.html#working-together-we-are-all-in-one-repo",
+    "href": "git.html#working-together-we-are-all-in-one-repo",
+    "title": "2. Git workflow",
+    "section": "Working together (we are all in one repo)",
+    "text": "Working together (we are all in one repo)\ngit pull\ngit switch -c yourname-topic          # your own branch\n# ...edit, add, commit...\ngit push -u origin yourname-topic\ngh pr create --fill                   # open a pull request\nMerge on GitHub after a quick review. Then everyone: git switch main && git pull."
+  },
+  {
+    "objectID": "git.html#rules-of-the-road",
+    "href": "git.html#rules-of-the-road",
+    "title": "2. Git workflow",
+    "section": "Rules of the road",
+    "text": "Rules of the road\n\nPull before you start; push when you stop.\nOne person per file at a time where possible (recode vs analysis vs app).\nSmall commits with clear messages.\nNever commit data you weren’t given, passwords, or .Renviron."
+  },
+  {
+    "objectID": "git.html#merge-conflicts",
+    "href": "git.html#merge-conflicts",
+    "title": "2. Git workflow",
+    "section": "Merge conflicts",
+    "text": "Merge conflicts\n&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD\nyour version\n=======\ntheir version\n&gt;&gt;&gt;&gt;&gt;&gt;&gt; main\nKeep what’s right, delete the markers, then git add + git commit. Or ask the agent: “resolve the merge conflict in R/01_recode.R, keeping both recodes.” — then read its diff."
+  },
+  {
+    "objectID": "git.html#undo",
+    "href": "git.html#undo",
+    "title": "2. Git workflow",
+    "section": "Undo",
+    "text": "Undo\n\n\n\nSituation\nCommand\n\n\n\n\nDiscard edits to a file\ngit restore file.R\n\n\nUnstage\ngit restore --staged file.R\n\n\nFix last commit message\ngit commit --amend (before pushing)\n\n\nUndo a pushed commit\ngit revert &lt;hash&gt;"
+  },
+  {
+    "objectID": "agents.html",
+    "href": "agents.html",
+    "title": "3. Agents: instructions & shortcuts",
+    "section": "",
+    "text": "On start, it loads instruction files: CLAUDE.md (Claude Code), AGENTS.md (Copilot, Codex, Cursor…), .github/copilot-instructions.md (Copilot).\nIt reads files you mention (@R/01_recode.R) or that it searches for.\nIt runs commands (R, git) — with your permission.\n\nSo the instructions file is the project brief: layout, variable meanings, rules. Here CLAUDE.md is one line — @AGENTS.md — so every tool shares a single source of truth."
+  },
+  {
+    "objectID": "agents.html#how-an-agent-sees-this-repo",
+    "href": "agents.html#how-an-agent-sees-this-repo",
+    "title": "3. Agents: instructions & shortcuts",
+    "section": "",
+    "text": "On start, it loads instruction files: CLAUDE.md (Claude Code), AGENTS.md (Copilot, Codex, Cursor…), .github/copilot-instructions.md (Copilot).\nIt reads files you mention (@R/01_recode.R) or that it searches for.\nIt runs commands (R, git) — with your permission.\n\nSo the instructions file is the project brief: layout, variable meanings, rules. Here CLAUDE.md is one line — @AGENTS.md — so every tool shares a single source of truth."
+  },
+  {
+    "objectID": "agents.html#writing-a-good-agents.md-claude.md",
+    "href": "agents.html#writing-a-good-agents.md-claude.md",
+    "title": "3. Agents: instructions & shortcuts",
+    "section": "Writing a good AGENTS.md / CLAUDE.md",
+    "text": "Writing a good AGENTS.md / CLAUDE.md\n\nWhat the project is (one sentence) and the research question.\nWhere things live; which files are read-only.\nVariable definitions and where to cite them (codebook).\nConventions: language, style, where recodes go.\nGuardrails: report N and missingness, use weights, don’t push to main.\nKeep it short; agents follow concise rules better than essays.\n\nBootstrap one: run /init in Claude Code, then edit it yourself. Personal, all-project preferences go in ~/.claude/CLAUDE.md."
+  },
+  {
+    "objectID": "agents.html#claude-code-shortcuts",
+    "href": "agents.html#claude-code-shortcuts",
+    "title": "3. Agents: instructions & shortcuts",
+    "section": "Claude Code shortcuts",
+    "text": "Claude Code shortcuts\n\n\n\nCommand / key\nDoes\n\n\n\n\n/init\nDraft a CLAUDE.md from the codebase\n\n\n/memory\nEdit instruction/memory files\n\n\n/agents\nCreate & manage subagents (e.g., a “codebook checker”)\n\n\n/clear\nFresh context (cheap; use between tasks)\n\n\n/compact\nSummarize long conversation\n\n\n/model\nSwitch model (smaller = cheaper)\n\n\n/cost, /usage\nTrack spending\n\n\n/review\nReview a pull request\n\n\n/permissions\nWhat it may run without asking\n\n\n/resume\nReturn to an earlier session\n\n\n/mcp\nConnect external tools\n\n\n@file\nPut a file in context\n\n\n!cmd\nRun a shell command directly\n\n\nShift+Tab\nCycle modes (plan / auto-accept)\n\n\nEsc / Esc Esc\nInterrupt / rewind"
+  },
+  {
+    "objectID": "agents.html#copilot-shortcuts",
+    "href": "agents.html#copilot-shortcuts",
+    "title": "3. Agents: instructions & shortcuts",
+    "section": "Copilot shortcuts",
+    "text": "Copilot shortcuts\n\n\n\nKey / command\nDoes\n\n\n\n\nTab / Esc\nAccept / dismiss suggestion\n\n\nCtrl/Cmd+I\nInline chat\n\n\n/explain, /fix, /tests, /doc\nChat slash commands\n\n\n@workspace, #file\nAdd repo or file context\n\n\nAgent mode\nMulti-file edits that run commands"
+  },
+  {
+    "objectID": "agents.html#saving-credits",
+    "href": "agents.html#saving-credits",
+    "title": "3. Agents: instructions & shortcuts",
+    "section": "Saving credits",
+    "text": "Saving credits\n\n/clear between unrelated tasks; long context costs every turn.\nPoint at files (@R/02_analysis.R) rather than “look around.”\nUse plan mode for big changes; approve the plan, then execute.\nSmaller model for routine edits."
+  },
+  {
+    "objectID": "agents.html#verify-always",
+    "href": "agents.html#verify-always",
+    "title": "3. Agents: instructions & shortcuts",
+    "section": "Verify, always",
+    "text": "Verify, always\nAgents produce plausible code. Check variable coding against the codebook, check Ns, and rerun the script yourself."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "AI as a Research Tool",
+    "section": "",
+    "text": "Section\nWhat we do\n\n\n\n\n0\nWelcome & goals\nWhat agents can and can’t do for research\n\n\n1\nSetup\nGitHub, Copilot, Codespaces, Claude Code\n\n\n2\nGit workflow\nPull, branch, commit, push, pull request — together\n\n\n3\nAgents\nAGENTS.md / CLAUDE.md, slash commands, shortcuts\n\n\n4\nProject\nDid Latino voters pivot to Trump? Recode → analyze → Shiny\n\n\n5\nWrap-up\nVerification, reproducibility, what to trust"
+  },
+  {
+    "objectID": "index.html#agenda",
+    "href": "index.html#agenda",
+    "title": "AI as a Research Tool",
+    "section": "",
+    "text": "Section\nWhat we do\n\n\n\n\n0\nWelcome & goals\nWhat agents can and can’t do for research\n\n\n1\nSetup\nGitHub, Copilot, Codespaces, Claude Code\n\n\n2\nGit workflow\nPull, branch, commit, push, pull request — together\n\n\n3\nAgents\nAGENTS.md / CLAUDE.md, slash commands, shortcuts\n\n\n4\nProject\nDid Latino voters pivot to Trump? Recode → analyze → Shiny\n\n\n5\nWrap-up\nVerification, reproducibility, what to trust"
+  },
+  {
+    "objectID": "index.html#goals",
+    "href": "index.html#goals",
+    "title": "AI as a Research Tool",
+    "section": "Goals",
+    "text": "Goals\n\nEveryone can clone, edit, and push to a shared repo.\nEveryone has an AI assistant that knows the project via an instructions file.\nWe answer one substantive question together — and check the AI’s work.\n\nSlides · Repository"
+  },
+  {
+    "objectID": "setup.html",
+    "href": "setup.html",
+    "title": "1. Setup",
+    "section": "",
+    "text": "Create an account at https://github.com. Students/faculty: apply for GitHub Education — free Copilot Pro.\nSend your username to the instructor to be added as a collaborator (or fork the repo).\nInstall Git: macOS xcode-select --install; Windows https://git-scm.com.\nIdentify yourself once:\n\ngit config --global user.name \"Your Name\"\ngit config --global user.email \"you@unm.edu\"\n\nAuthenticate: install the GitHub CLI and run gh auth login."
+  },
+  {
+    "objectID": "setup.html#github",
+    "href": "setup.html#github",
+    "title": "1. Setup",
+    "section": "",
+    "text": "Create an account at https://github.com. Students/faculty: apply for GitHub Education — free Copilot Pro.\nSend your username to the instructor to be added as a collaborator (or fork the repo).\nInstall Git: macOS xcode-select --install; Windows https://git-scm.com.\nIdentify yourself once:\n\ngit config --global user.name \"Your Name\"\ngit config --global user.email \"you@unm.edu\"\n\nAuthenticate: install the GitHub CLI and run gh auth login."
+  },
+  {
+    "objectID": "setup.html#copilot",
+    "href": "setup.html#copilot",
+    "title": "1. Setup",
+    "section": "Copilot",
+    "text": "Copilot\n\nVS Code → Extensions → GitHub Copilot + Copilot Chat → sign in.\nRStudio → Tools → Global Options → Copilot → Enable.\nCopilot reads .github/copilot-instructions.md (here, it points to AGENTS.md)."
+  },
+  {
+    "objectID": "setup.html#claude-code",
+    "href": "setup.html#claude-code",
+    "title": "1. Setup",
+    "section": "Claude Code",
+    "text": "Claude Code\nnpm install -g @anthropic-ai/claude-code   # or: brew install claude-code\ncd UNM_Workshop && claude\nRequires a Claude Pro/Max account or API key. VS Code extension: search “Claude Code”."
+  },
+  {
+    "objectID": "setup.html#no-local-setup-use-a-codespace",
+    "href": "setup.html#no-local-setup-use-a-codespace",
+    "title": "1. Setup",
+    "section": "No local setup? Use a Codespace",
+    "text": "No local setup? Use a Codespace\nOn the repo page: Code → Codespaces → Create codespace on main. The container (.devcontainer/devcontainer.json) installs R + tidyverse, RStudio Server (port 8787), Quarto, Copilot, and Claude Code. Free tier: 60 core-hours/month. Stop your codespace when done.\n\n\n\nOpen in Codespaces"
+  }
+]
