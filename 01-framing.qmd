@@ -1,0 +1,68 @@
+---
+title: "Framing: what is \"AI\" here?"
+---
+
+## What the tool actually is
+
+A large language model predicts text. A *coding agent* wraps that model in a loop: it
+reads files, proposes edits, runs commands, reads the output, and tries again. Three
+consequences follow, and they explain everything else on this site.
+
+1. **It has no memory of your project** beyond what it reads this session. That is why
+   an instruction file ([Agents](04-agents.qmd)) matters more than clever prompting.
+2. **It optimizes for a plausible answer**, not a correct one. It will invent a
+   variable name, a function argument, or a citation with complete fluency.
+3. **It acts on your files.** Which is fine — if every change is visible and
+   reversible ([Git workflow](03-git.qmd)).
+
+## Software engineering vs. research code
+
+Agents arrived from software engineering, where they are genuinely strong. Research code
+is a different problem.
+
+| | Software | Research code |
+|---|---|---|
+| Where the spec lives | Written down; tests encode it | A codebook, a literature, your judgment |
+| How failure appears | Loud — it crashes or a test goes red | **Silent** — it runs and prints a number |
+| Cost of a subtle error | A bug report | A published claim |
+| Agent performance | Strong | Confidently wrong |
+
+::: {.warn}
+[The core asymmetry]{.warn-head}
+A wrong recode does not throw an error. `pid7 == 8` is "not sure" in this survey, not
+"strong Republican" — code it as the latter and your partisanship measure is quietly
+wrong, every model after it is wrong, and nothing in your console will say so.
+:::
+
+## What to delegate, and what never to trust unchecked
+
+::: {.note}
+[Delegate freely]{.note-head}
+Scaffolding and boilerplate · refactoring you can read · documentation · tests ·
+debugging an error message · "explain what this script does" · translating Stata to R ·
+the fiddly `ggplot2` call you do not want to look up.
+:::
+
+::: {.warn}
+[Never accept unchecked]{.warn-head}
+Variable coding and reverse-coding · which cases were dropped · weights and survey
+design · anything that cites a number · anything that cites a source.
+:::
+
+## Where the tools differ
+
+- **Copilot** is strongest at the *next line*: inline completion while you type, and
+  quick questions about an open file.
+- **Claude Code** (and Codex, Cursor's agent mode, Copilot agent mode) is strongest at
+  the *next task*: "add income terciles to the recode, rerun it, and show me what
+  changed." It edits several files and runs commands.
+- **A chat window** with no repository access is the weakest option for this work: it
+  cannot see your data, so it guesses your variable names.
+
+Use the first two together. That is what we set up next.
+
+::: {.turn}
+[Discussion]{.turn-head}
+Name one task in your own current project you would hand to an agent today, and one you
+would not. What distinguishes them?
+:::

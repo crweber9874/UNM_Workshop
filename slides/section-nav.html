@@ -1,0 +1,34 @@
+<script>
+window.addEventListener("load", function () {
+  var R = window.Reveal; if (!R) return;
+  var slides = R.getSlides();
+  var secs = [{ name: "Introduction", start: 1 }];
+  slides.forEach(function (s, i) {
+    if (s.classList.contains("divider")) {
+      var h = s.querySelector("h1");
+      secs.push({ name: h ? h.textContent.trim() : "Section", start: i });
+    } else if (s.classList.contains("conclusion")) {
+      secs.push({ name: "Conclusion", start: i });
+    }
+  });
+  var bar = document.createElement("nav");
+  bar.className = "section-nav";
+  secs.forEach(function (sec) {
+    var a = document.createElement("a");
+    a.textContent = sec.name;
+    a.addEventListener("click", function () {
+      var ix = R.getIndices(slides[sec.start]); R.slide(ix.h, ix.v);
+    });
+    sec.el = a; bar.appendChild(a);
+  });
+  document.querySelector(".reveal").appendChild(bar);
+  function update() {
+    var cur = slides.indexOf(R.getCurrentSlide());
+    bar.classList.toggle("hidden", cur <= 0);
+    var active = null;
+    secs.forEach(function (sec) { if (cur >= sec.start) active = sec; });
+    secs.forEach(function (sec) { sec.el.classList.toggle("active", sec === active); });
+  }
+  R.on("slidechanged", update); update();
+});
+</script>

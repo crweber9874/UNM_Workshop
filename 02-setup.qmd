@@ -1,0 +1,118 @@
+---
+title: "Setup"
+---
+
+## Why a repository at all
+
+GitHub hosts code, data, and documents on the web. Four reasons it matters for research:
+
+- **Transparency** — the work is open to inspection.
+- **Reproducibility** — others can recreate and extend your analysis.
+- **Collaboration** — several people contribute to one project without emailing files.
+- **Version control** — every change is tracked, and reverting is trivial.
+
+::: {.note}
+[And for working with agents]{.note-head}
+An agent edits files in place. The repository is what makes that safe: you can see
+exactly what changed (`git diff`) and undo it (`git restore`). Without version control,
+you are letting a confident stranger type into your manuscript.
+:::
+
+## What a repository looks like
+
+A repository is a folder with your code, data, documentation, and the complete history
+of changes. This one:
+
+```
+UNM_Workshop/
+├── AGENTS.md              the brief every AI agent reads
+├── CLAUDE.md              one line: @AGENTS.md
+├── data/
+│   ├── wss_2020_2024.csv  analysis file (read-only)
+│   └── wss_clean.rds      built by R/01_recode.R
+├── codebooks/             2020 & 2024 survey codebooks (PDF)
+├── R/
+│   ├── functions.R        pure helpers, shared and unit-tested
+│   ├── 00_build_data.R    raw Stata → csv (instructor only)
+│   ├── 01_recode.R        all recoding lives here
+│   └── 02_analysis.R      models and figures → output/
+├── app/app.R              Shiny explorer
+├── tests/testthat/        test-unit-* and test-integration-*
+├── slides/                workshop slides (Quarto revealjs)
+└── .devcontainer/         one-click Codespace
+```
+
+Numbered scripts, one job each, strict order. **Recodes never live in analysis
+scripts** — that single rule is what keeps four people and an agent from quietly
+disagreeing about what `latino` means.
+
+## GitHub
+
+1. Create an account at <https://github.com>. Students and faculty: apply for
+   [GitHub Education](https://education.github.com) — it includes free Copilot Pro.
+2. The repository is public — you do not need to be added to anything. Clone it to read
+   and run it — that is all today needs (see [Git workflow](03-git.qmd)).
+3. Install Git: macOS `xcode-select --install`; Windows <https://git-scm.com>.
+4. Identify yourself once:
+
+```bash
+git config --global user.name "Your Name"
+git config --global user.email "you@unm.edu"
+```
+
+5. Authenticate: install the [GitHub CLI](https://cli.github.com), then:
+
+```bash
+gh auth login
+gh auth status      # confirm
+```
+
+## R and RStudio
+
+- Work from the **terminal** for Git commands. In RStudio:
+  **Tools → Terminal → New Terminal**.
+- The **Git** tab gives you the same operations by point-and-click. The commands are
+  identical underneath, and the terminal is what you can explain to a collaborator —
+  or to an agent.
+- Open `UNM_Workshop.Rproj` so that relative paths (`data/wss_clean.rds`) resolve.
+
+## Copilot
+
+- **VS Code** → Extensions → **GitHub Copilot** + **GitHub Copilot Chat** → sign in.
+- **RStudio** → *Tools → Global Options → Copilot → Enable*.
+- Copilot reads `.github/copilot-instructions.md`, which here points at `AGENTS.md`.
+
+## Claude Code
+
+```bash
+npm install -g @anthropic-ai/claude-code    # or: brew install claude-code
+cd UNM_Workshop
+claude
+```
+
+Requires a Claude Pro/Max account or an API key. There is also a VS Code extension —
+search "Claude Code". On first run, try `/init` and read what it writes about this
+project.
+
+## No local setup? Use a Codespace
+
+On the repository page: **Code → Codespaces → Create codespace on main**.
+
+The container (`.devcontainer/devcontainer.json`) installs R and tidyverse, RStudio
+Server on port 8787, Quarto, Copilot, and Claude Code — in a browser tab, identical for
+everyone in the room.
+
+[![Open in Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/crweber9874/UNM_Workshop)
+
+::: {.warn}
+[Housekeeping]{.warn-head}
+The free tier is 60 core-hours a month. **Stop your codespace when you are done** — it
+bills while it idles.
+:::
+
+::: {.turn}
+[Follow along, if you like]{.turn-head}
+1. Start a codespace, or clone the repo locally.
+2. Run `gh auth status` — are you signed in?
+3. Start `claude`, run `/init`, and read the result against `AGENTS.md`.
+:::

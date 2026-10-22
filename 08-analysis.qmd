@@ -1,0 +1,163 @@
+---
+title: "The analysis"
+---
+
+```{r}
+#| label: setup
+#| include: false
+library(tidyverse)
+if (!file.exists("data/wss_clean.rds")) source("R/01_recode.R")
+wss <- read_rds("data/wss_clean.rds")
+```
+
+```{r}
+#| label: n-obs
+voters <- wss |> filter(!is.na(trump_vote))
+c(n_obs = nrow(voters), n_miss = nrow(wss) - nrow(voters), n_total = nrow(wss))
+```
+
+Every number below rests on those 6,495 respondents. Report that pair with every model
+you show anyone, including yourself.
+
+## Weighted two-party Trump share
+
+```{r}
+#| label: tbl-shares
+#| tbl-cap: "Weighted two-party Trump share, by year and ethnicity."
+shares <- voters |>
+  summarise(trump = weighted.mean(trump_vote, weight),
+            n     = n(),
+            n_eff = sum(weight)^2 / sum(weight^2),
+            .by   = c(year, latino)) |>
+  mutate(se        = sqrt(trump * (1 - trump) / n_eff),
+         trump_low = trump - 1.96 * se,
+         trump_upp = trump + 1.96 * se)
+
+shares |>
+  select(year, latino, trump, n, n_eff, trump_low, trump_upp) |>
+  arrange(latino, year) |>
+  knitr::kable(digits = 3)
+```
+
+```{r}
+#| label: fig-shares
+#| fig-cap: "Two-party Trump share with 95% intervals from a Kish effective *n*."
+#| fig-width: 6
+#| fig-height: 4
+ggplot(shares, aes(year, trump, colour = latino, group = latino)) +
+  geom_pointrange(aes(ymin = trump_low, ymax = trump_upp)) +
+  geom_line() +
+  labs(x = NULL, y = "Two-party Trump share (weighted)", colour = NULL) +
+  theme_minimal()
+```
+
+::: {.warn}
+[The interval is approximate, and the approximation matters]{.warn-head}
+`n_eff` is Kish's effective sample size, which discounts for unequal weights but ignores
+clustering and stratification. For anything you would publish, use a design-based
+variance:
+
+```r
+library(survey)
+des <- svydesign(ids = ~1, weights = ~weight, data = voters)
+svyby(~trump_vote, ~interaction(year, latino), des, svymean)
+```
+
+An agent asked for "confidence intervals on a weighted mean" will usually hand you the
+Kish version without mentioning the assumption. That is not a bug in the agent; it is
+the thing you are responsible for noticing.
+:::
+
+The Latino shift is about two points, on 786 Latino respondents in 2024 — nothing like
+the double-digit national exit-poll story. Whether that is a real difference, a
+weighting artifact, a mode difference, or the reported-versus-intended mix is the
+interesting question, and this table cannot settle it alone.
+
+## Does authoritarianism condition the shift?
+
+```{r}
+#| label: fit-glm
+fit <- glm(trump_vote ~ latino * year * authoritarianism + age + female + college,
+           family = quasibinomial, weights = weight, data = voters)
+
+c(n_obs = nobs(fit), n_miss = nrow(voters) - nobs(fit))
+```
+
+The model drops cases the descriptive table kept — listwise deletion on the covariates.
+That gap is the single most common way a sample quietly shrinks.
+
+```{r}
+#| label: tbl-coefs
+#| tbl-cap: "Quasibinomial logit coefficients."
+broom::tidy(fit) |>
+  mutate(term = str_replace_all(term, c("latino" = "", "year" = "year "))) |>
+  knitr::kable(digits = 3)
+```
+
+Interactions on the logit scale are close to unreadable, so look at predictions instead:
+
+```{r}
+#| label: fig-pred
+#| fig-cap: "Predicted probability of a Trump vote across the authoritarianism scale."
+#| fig-width: 7
+#| fig-height: 4
+grid <- expand_grid(
+  latino           = levels(voters$latino),
+  year             = levels(voters$year),
+  authoritarianism = seq(0, 1, 0.05),
+  age              = mean(voters$age, na.rm = TRUE),
+  female           = 0,
+  college          = 0
+) |>
+  mutate(latino = factor(latino, levels(voters$latino)),
+         year   = factor(year, levels(voters$year)))
+
+pred <- bind_cols(grid, as_tibble(predict(fit, grid, type = "link", se.fit = TRUE))) |>
+  mutate(p   = plogis(fit),
+         low = plogis(fit - 1.96 * se.fit),
+         upp = plogis(fit + 1.96 * se.fit))
+
+ggplot(pred, aes(authoritarianism, p, colour = year, fill = year)) +
+  geom_ribbon(aes(ymin = low, ymax = upp), alpha = 0.15, colour = NA) +
+  geom_line() +
+  facet_wrap(~ latino) +
+  labs(x = "Authoritarianism (0–1)", y = "Pr(Trump vote)",
+       colour = NULL, fill = NULL) +
+  theme_minimal()
+```
+
+Read it carefully: the question is not whether the lines slope — they do, in both groups
+— but whether the *gap between years* changes across the scale. On this sample those
+intervals are wide enough that honest answers include "we cannot tell."
+
+## The Bayesian version
+
+`brms` is the better tool here: priors on an interaction-heavy model, and posterior
+summaries you can actually interpret. It is not run in the book because compiling takes
+longer than the whole render.
+
+```r
+library(brms)
+fit_b <- brm(
+  trump_vote | weights(weight) ~ latino * year * authoritarianism +
+    age + female + college,
+  family  = bernoulli(),
+  prior   = c(prior(normal(0, 1), class = "b"),
+              prior(normal(0, 2), class = "Intercept")),
+  data = voters, chains = 4, cores = 4, backend = "cmdstanr", seed = 1
+)
+fit_b                                            # n_obs is in the output header
+pp_check(fit_b)
+conditional_effects(fit_b, "authoritarianism:latino")
+```
+
+::: {.note}
+[`weights()` in `brms` is not survey weighting]{.note-head}
+It treats each weight as a case replication, which gives you the point estimates but
+understates uncertainty for a complex design. If the weights carry a design, say so in
+the paper, or move to a design-based estimator. This is worth stating out loud because
+it is precisely the distinction an agent will flatten.
+:::
+
+The figures this chapter draws are also written to `output/` by `R/02_analysis.R`, which
+is git-ignored — the repository keeps the script, not the picture.

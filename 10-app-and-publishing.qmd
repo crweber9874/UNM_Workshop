@@ -1,0 +1,168 @@
+---
+title: "The app, and publishing"
+---
+
+```{r}
+#| label: setup
+#| include: false
+library(tidyverse)
+if (!file.exists("data/wss_clean.rds")) source("R/01_recode.R")
+wss <- read_rds("data/wss_clean.rds")
+```
+
+Two stages are left: an explorer so that people can interrogate the estimates
+themselves, and the command that puts this book on the web.
+
+## Anatomy of a Shiny app
+
+Every Shiny app is three objects and one idea.
+
+| Piece | What it is | In this app |
+|---|---|---|
+| `ui` | a nested list of HTML widgets | `fluidPage(sidebarLayout(...))` |
+| `server` | a function of `input`, `output`, `session` | computes the estimates, draws the plot |
+| `shinyApp(ui, server)` | wires them together and serves them | the last line of the file |
+
+The idea is **reactivity**. You never write "when the user clicks, recompute." You
+declare what each output *is*, in terms of inputs, and Shiny works out what to re-run
+when something changes.
+
+::: {.pipeline}
+::: {.stage}
+[input$by]{.name}
+
+[the control]{.sub}
+:::
+::: {.stage}
+[est()]{.name}
+
+[reactive]{.sub}
+:::
+::: {.stage}
+[output$plot]{.name}
+
+[render]{.sub}
+:::
+:::
+
+Three kinds of object in that chain, and the distinction is the whole framework:
+
+- **`input$x`** — read-only, set by the browser. Touching `input$state` anywhere makes
+  that code depend on it.
+- **`reactive({ ... })`** — a computation that **caches** and re-runs only when
+  something it read has changed. `est()` is called by both the plot and the table, and
+  runs once.
+- **`render*({ ... })`** — an output. It re-runs when a dependency changes and writes
+  into `output$plot`.
+
+::: {.warn}
+[The two mistakes agents make here]{.warn-head}
+Asking for a reactive's value outside a reactive context (`est()` at the top level —
+"operation not allowed without an active reactive context"), and recomputing the same
+summary separately in each `render*` block instead of sharing one `reactive()`. The
+second one is not an error; it is just the app doing the work twice.
+:::
+
+### This app, line by line
+
+```{r}
+#| echo: false
+#| class-output: sourceCode
+cat(readLines("app/app.R"), sep = "\n")
+```
+
+```bash
+Rscript -e 'shiny::runApp("app")'
+```
+
+Read it top to bottom:
+
+1. **Load once, outside `server`.** Code above `ui` runs a single time when the app
+   starts, not per user and not per click. The data read belongs there.
+2. **`source("R/functions.R")`.** The app calls `trump_share()` — the same function
+   the analysis script calls. The app holds *no* analysis logic of its own, so it
+   cannot drift away from the paper.
+3. **The UI names the inputs.** `inputId = "by"` in the UI is `input$by` in the server.
+   That string is the entire contract between the two halves.
+4. **`.data[[input$by]]`** — the tidy-evaluation form for a column chosen at runtime.
+   An agent will often write `get(input$by)` or paste strings together; both work until
+   they don't.
+5. **A weights toggle.** Making "weighted or not" visible in the interface is honest,
+   and it shows the audience how much the weighting is doing.
+6. **`n_obs` and `n_miss` in the table.** Every point in the plot has a sample size
+   behind it, and some of them are small.
+
+### Why it is testable
+
+`server` is an ordinary R function, so it can be run without a browser —
+`shiny::testServer()` sets inputs and reads the reactives back. That is what
+[the app's integration tests](09-tests.qmd) do. Two habits make an app testable at all:
+keep the computation in a named function outside the app, and keep the `server` body
+thin enough to read.
+
+::: {.warn}
+[What this app would need before anyone else used it]{.warn-head}
+Cell-size suppression, for one — a filtered panel can easily land on fewer than 30
+respondents, and a point estimate drawn from them invites exactly the over-reading this
+project is about. Intervals, too; the plot shows points with no uncertainty at all.
+:::
+
+## Publishing
+
+The site, the book, and the slides are one Quarto project:
+
+```bash
+quarto render                 # build everything into _site/
+quarto preview                # live reload while writing
+quarto publish gh-pages       # render, then push to the gh-pages branch
+```
+
+`quarto publish gh-pages` commits the rendered output to a `gh-pages` branch and leaves
+your source branch alone. GitHub Pages serves it at
+[crweber9874.github.io/UNM_Workshop](https://crweber9874.github.io/UNM_Workshop/).
+
+### Freeze, and why it is committed
+
+```yaml
+execute:
+  freeze: auto
+```
+
+Chapters that run R store their results in `_freeze/`. A rebuild re-runs only what
+changed, which keeps the render fast and means the book can be rebuilt on a machine
+without the data. Delete `_freeze/` and render again when you want to prove the whole
+thing still reproduces.
+
+### What is deliberately not committed
+
+```{r}
+#| echo: false
+tribble(
+  ~path,                     ~why,
+  "data/wss_clean.rds",      "regenerate it: Rscript R/01_recode.R",
+  "output/",                 "figures and tables are rebuilt by R/02_analysis.R",
+  "_site/",                  "rendered output; gh-pages holds the published copy",
+  ".Renviron, .env",         "secrets never belong in a repository",
+  "raw .dta files",          "not ours to distribute"
+) |>
+  knitr::kable(col.names = c("Not committed", "Why"))
+```
+
+The principle: commit the **instructions** for producing a thing, not the thing — unless
+the thing is expensive to produce and cheap to store, which is the argument for
+`_freeze/`.
+
+## The whole pipeline, one command at a time
+
+```bash
+Rscript R/01_recode.R                              # csv  -> data/wss_clean.rds
+Rscript R/02_analysis.R                            # models, figures -> output/
+Rscript -e 'testthat::test_dir("tests/testthat")'  # checks pass?
+Rscript -e 'shiny::runApp("app")'                  # explore
+quarto render                                      # book + slides -> _site/
+quarto publish gh-pages                            # publish
+```
+
+Six commands, one direction, no step that depends on something a person remembered to do
+by hand. That is the standard an agent has to be held to as well — [and how you hold it
+there](11-verification.qmd) is the last chapter.

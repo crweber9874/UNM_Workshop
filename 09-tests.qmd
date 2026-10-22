@@ -1,0 +1,160 @@
+---
+title: "The tests"
+---
+
+```{r}
+#| label: setup
+#| include: false
+library(tidyverse)
+if (!file.exists("data/wss_clean.rds")) source("R/01_recode.R")
+```
+
+A test is how you make a verification **permanent**. You will check a recode once by
+hand; you will not check it again in six weeks when somebody — you, a collaborator, an
+agent — "improves" it. `testthat` turns the check into something that fails on its own.
+
+## What `testthat` is
+
+R's unit-testing package. A test file is ordinary R code that **asserts** rather than
+prints: it states what must be true and fails loudly when it is not. Files live in
+`tests/testthat/` and are named `test-*.R`.
+
+```r
+test_that("what must be true", {
+  expect_true(...)
+})
+```
+
+The string is the failure message, so write it as a claim.
+
+| Expectation | Asserts |
+|---|---|
+| `expect_equal(x, y)` | equal within numerical tolerance |
+| `expect_identical(x, y)` | exactly identical |
+| `expect_true(x)` | all of `x` is `TRUE` |
+| `expect_setequal(x, y)` | same values, any order |
+| `expect_length(x, n)` | length is `n` |
+| `expect_error(f())` | it *does* fail |
+| `expect_no_warning(f())` | it runs clean |
+| `skip("reason")` | not applicable in this environment |
+
+## Two kinds of test
+
+The suite is split by what each test needs in order to run, because that is what
+determines how fast it is and how precisely it points at a failure.
+
+| | Unit | Integration |
+|---|---|---|
+| Files | `test-unit-*.R` | `test-integration-*.R` |
+| What it tests | one function | the pieces working together |
+| Input | synthetic, written in the test | the real CSV, the built `.rds`, the app |
+| Fails when | the function's logic is wrong | the wiring is wrong |
+| Runs in | milliseconds | seconds |
+
+A unit test for `bin_age()` tells you the breaks moved. An integration test on
+`data/wss_clean.rds` tells you *something* upstream changed. You want both: the first
+is precise, the second is what actually catches the agent that edited the recode and
+broke the app.
+
+::: {.note}
+[Unit tests need units]{.note-head}
+A 200-line script has nothing to unit-test. The reason `R/functions.R` exists — pure
+helpers taking data in and returning data out, no reading, no writing — is that it
+makes the recode's logic testable without the survey file at all. Extracting the
+functions came first; the tests came second.
+:::
+
+### Unit: the recode helpers
+
+```{r}
+#| echo: false
+#| class-output: sourceCode
+cat(readLines("tests/testthat/test-unit-recode.R"), sep = "\n")
+```
+
+Every input here is written out in the test. Nothing on disk can make these pass or
+fail, so when one goes red the fault is in the function and nowhere else.
+
+### Unit: the estimator
+
+```{r}
+#| echo: false
+#| class-output: sourceCode
+cat(readLines("tests/testthat/test-unit-estimates.R"), sep = "\n")
+```
+
+A five-row frame whose weighted mean you can do in your head is worth more than a
+thousand real rows whose answer you would have to trust.
+
+### Integration: the pipeline
+
+```{r}
+#| echo: false
+#| class-output: sourceCode
+cat(readLines("tests/testthat/test-integration-pipeline.R"), sep = "\n")
+```
+
+Four properties worth asserting about any recode, all of them here: the **row count**
+is unchanged, derived scales are **in range**, categorical variables take only
+**documented** values, and the **analysis N** is what you think it is.
+
+### Integration: the app
+
+```{r}
+#| echo: false
+#| class-output: sourceCode
+cat(readLines("tests/testthat/test-integration-app.R"), sep = "\n")
+```
+
+`shiny::testServer()` runs the server function without a browser: set inputs, read the
+reactives. It caught a real bug while this chapter was being written — the server was
+declared `function(input, output)`, and `testServer()` requires `session` as well.
+
+## Running them
+
+```{r}
+#| label: run-tests
+testthat::test_dir("tests/testthat", reporter = "progress")
+```
+
+From the shell, which is what you would put in CI:
+
+```bash
+Rscript -e 'testthat::test_dir("tests/testthat")'
+```
+
+## What a failure looks like
+
+Change a recode and the claim goes red. Here the assertion is deliberately wrong:
+
+```{r}
+#| label: demo-failure
+#| error: true
+library(testthat)
+wss <- readRDS("data/wss_clean.rds")
+
+test_that("trump_vote is coded for every respondent", {
+  expect_equal(sum(!is.na(wss$trump_vote)), nrow(wss))
+})
+```
+
+That is the useful output: the claim, the expected value, the actual value. A silent
+recode error produces a number; a test produces this.
+
+## Tests worth adding
+
+- One per derived variable, asserting range and allowed values.
+- One asserting `nrow()` after the recode — the cheapest guard against a join that
+  multiplied rows.
+- One asserting the **analysis N**, so a change in missingness cannot pass unnoticed.
+- `expect_error()` on the input guard: if someone hands the recode a file without
+  `auth1:auth4`, it should fail rather than produce `NaN`.
+
+::: {.note}
+[A good use of an agent]{.note-head}
+*"Read `R/01_recode.R` and write a `testthat` test for every derived variable: range,
+allowed values, and row count. Do not change the recode."*
+
+Then read the tests. They are far easier to check than the recode they protect, and
+reading them is how you find out whether the agent understood the codebook or guessed.
+:::

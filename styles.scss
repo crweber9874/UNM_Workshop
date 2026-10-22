@@ -1,0 +1,142 @@
+/*-- scss:defaults --*/
+$navy:   #0C234B;
+$accent: #AB0520;
+$blue:   #2a78d6;
+
+$font-family-sans-serif: "Source Sans 3", "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !default;
+$body-color:   #2b2b2b !default;
+$link-color:   #35558a !default;
+$headings-font-weight: 600 !default;
+$navbar-bg:    $navy !default;
+$navbar-fg:    #ffffff !default;
+$code-color:   #16407a !default;
+
+/*-- scss:rules --*/
+
+.navbar-brand { font-weight: 700; letter-spacing: -0.01em; }
+
+h1, h2, h3 { letter-spacing: -0.01em; }
+h2 {
+  margin-top: 2rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid #e8eaee;
+  font-size: 1.4rem;
+}
+main { font-size: 0.98rem; line-height: 1.6; }
+
+table { font-size: 0.9rem; }
+thead th { border-bottom: 2px solid $navy !important; }
+
+pre code { font-size: 0.82rem; line-height: 1.5; }
+
+kbd {
+  font-size: 0.82em; background: #f1f3f6; border: 1px solid #d8dde4;
+  border-bottom-width: 2px; border-radius: 3px; padding: 0.05em 0.35em;
+  color: #27354c; box-shadow: none;
+}
+
+/* ---- landing page: masthead ------------------------------------------------ */
+.masthead {
+  border-left: 12px solid $accent;
+  padding: 0.1rem 0 0.1rem 1.1rem;
+  margin: 0.5rem 0 0.4rem;
+}
+.masthead .mast-title {
+  font-size: 2.5rem; font-weight: 800; line-height: 1.1; color: $navy;
+}
+.masthead .mast-sub {
+  font-size: 1rem; font-weight: 600; color: $blue; margin-top: 0.4rem;
+}
+.masthead .mast-venue { font-size: 0.9rem; font-weight: 400; color: #6b6b6b; }
+
+.lede {
+  font-size: 1.02rem; line-height: 1.6; color: #3d3d3d;
+  max-width: 44rem; margin: 1.2rem 0 1.6rem;
+}
+.lede strong { color: $navy; }
+
+/* ---- landing page: module index -------------------------------------------- */
+.modules { border-top: 1px solid #e3e6ea; margin: 1.2rem 0 1.6rem; }
+.modules p { margin: 0; }
+.strip p { margin: 0; display: flex; flex-wrap: wrap; gap: 0.6rem; }
+
+a.module {
+  display: flex; align-items: baseline; gap: 1rem;
+  padding: 0.85rem 0.6rem; border-bottom: 1px solid #e3e6ea;
+  border-left: 3px solid transparent;
+  text-decoration: none !important; color: inherit;
+  transition: background 0.12s ease, border-left-color 0.12s ease;
+}
+a.module:hover { background: #f4f7fb; border-left-color: $accent; }
+a.module .mod-body { display: block; flex: 1 1 auto; }
+a.module .mod-name {
+  display: block;
+  font-size: 1.08rem; font-weight: 700; color: $navy; line-height: 1.3;
+}
+a.module .mod-desc {
+  display: block;
+  font-size: 0.9rem; color: #5a5a5a; line-height: 1.45; margin-top: 0.15rem;
+}
+a.module .mod-meta {
+  display: block;
+  flex: 0 0 auto; font-size: 0.75rem; color: #9aa1ab;
+  text-transform: uppercase; letter-spacing: 0.08em; padding-top: 0.3rem;
+}
+
+/* ---- landing page: resource strip ------------------------------------------ */
+.strip { display: flex; flex-wrap: wrap; gap: 0.6rem; margin: 1.4rem 0; }
+.strip a {
+  font-size: 0.85rem; font-weight: 600; text-decoration: none !important;
+  padding: 0.45rem 0.9rem; border: 1px solid #d8dde4; border-radius: 3px;
+  color: $navy; background: #fff;
+}
+.strip a:hover { background: $navy; color: #fff; border-color: $navy; }
+.strip a.primary { background: $navy; color: #fff; border-color: $navy; }
+.strip a.primary:hover { background: $accent; border-color: $accent; }
+
+/* ---- shared callouts ------------------------------------------------------- */
+.note {
+  background: #f7f9fc; border-left: 3px solid $blue;
+  padding: 0.7rem 1rem; margin: 1.1rem 0; font-size: 0.92rem; line-height: 1.55;
+}
+.note .note-head {
+  display: block; font-size: 0.78rem; letter-spacing: 0.1em;
+  text-transform: uppercase; font-weight: 700; color: $blue; margin-bottom: 0.2rem;
+}
+.warn {
+  background: #fbf3ee; border-left: 4px solid $accent;
+  padding: 0.7rem 1rem; margin: 1.1rem 0; font-size: 0.92rem; line-height: 1.55;
+  color: #5a4435;
+}
+.warn .warn-head {
+  display: block; font-variant: small-caps; letter-spacing: 0.07em;
+  font-weight: 700; color: $accent; margin-bottom: 0.15rem;
+}
+.turn {
+  background: #f4f7fb; border-left: 4px solid $navy;
+  padding: 0.7rem 1rem; margin: 1.2rem 0; font-size: 0.92rem; line-height: 1.55;
+}
+.turn .turn-head {
+  display: block; font-variant: small-caps; letter-spacing: 0.08em;
+  font-weight: 700; color: $navy; margin-bottom: 0.2rem;
+}
+.turn ol, .turn ul { margin-bottom: 0; }
+
+/* ---- pipeline chevrons (site version) -------------------------------------- */
+.pipeline { display: flex; align-items: stretch; margin: 1.2rem 0; flex-wrap: wrap; }
+.pipeline .stage {
+  flex: 1 1 9rem; text-align: center; padding: 0.7rem 0.7rem 0.7rem 1.4rem;
+  background: $blue; color: #fff; margin: 0 4px 4px 0;
+  clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 50%, calc(100% - 20px) 100%, 0 100%, 20px 50%);
+}
+.pipeline .stage:first-child {
+  clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 50%, calc(100% - 20px) 100%, 0 100%);
+}
+.pipeline .stage:last-child { background: $navy; }
+.pipeline .stage p { margin: 0; }
+.pipeline .name {
+  font-weight: 800; font-size: 0.78rem; text-transform: uppercase;
+  letter-spacing: 0.05em; line-height: 1.2;
+}
+.pipeline .sub { font-size: 0.72rem; color: #dbe7f7; margin-top: 0.2rem; }
+.pipeline .stage:last-child .sub { color: #d9dee8; }

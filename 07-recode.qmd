@@ -1,0 +1,102 @@
+---
+title: "The recode"
+---
+
+```{r}
+#| label: setup
+#| include: false
+library(tidyverse)
+```
+
+One rule governs this chapter: **every derived variable is created in `R/01_recode.R`,
+and nowhere else.** Analysis scripts read the result; they never recode. The rule exists
+because an agent asked to "add a measure" will otherwise add it wherever it is currently
+looking, and two months later two scripts disagree about what `party3` means.
+
+## The script
+
+```{r}
+#| echo: false
+#| class-output: sourceCode
+cat(readLines("R/01_recode.R"), sep = "\n")
+```
+
+## Running it
+
+```{r}
+source("R/01_recode.R")
+wss <- read_rds("data/wss_clean.rds")
+dim(wss)
+```
+
+It writes `data/wss_clean.rds`, which is git-ignored: the artifact is cheap to rebuild
+and the script is the thing worth versioning.
+
+## What each line produced
+
+```{r}
+wss |> count(auth_group)
+```
+
+```{r}
+wss |> count(age_group)
+```
+
+```{r}
+wss |> count(party3)
+```
+
+```{r}
+wss |> count(latino, year)
+```
+
+`authoritarianism` is the row mean of the four items, so it is bounded 0–1 by
+construction — and worth checking rather than assuming:
+
+```{r}
+summary(wss$authoritarianism)
+```
+
+::: {.warn}
+[`rowMeans(..., na.rm = TRUE)` is a decision, not a default]{.warn-head}
+A respondent who answered one of four items gets a score built from that one item. That
+may be what you want, or it may not; either way it is an imputation rule, and it should
+be a deliberate choice rather than an argument an agent supplied because it suppresses
+`NA`s. A stricter version requires a minimum number of items:
+
+```r
+auth_n = rowSums(!is.na(pick(auth1:auth4))),
+authoritarianism = if_else(auth_n >= 3,
+                           rowMeans(pick(auth1:auth4), na.rm = TRUE),
+                           NA_real_)
+```
+:::
+
+## How much did the recode cost us?
+
+Derived variables inherit missingness from their inputs. Always know how much:
+
+```{r}
+wss |>
+  summarise(across(c(authoritarianism, auth_group, age_group, party3, latino),
+                   ~ sum(is.na(.x)))) |>
+  pivot_longer(everything(), names_to = "variable", values_to = "n_miss") |>
+  mutate(pct = round(100 * n_miss / nrow(wss), 1)) |>
+  knitr::kable()
+```
+
+## Asking an agent to extend it
+
+A usable prompt is narrow, names its file, and asks for evidence:
+
+```text
+Read AGENTS.md and R/01_recode.R. Add an income-tercile variable built from
+faminc, weighted by `weight`. Add it to R/01_recode.R only. Then show me
+the diff and a count() of the new variable.
+```
+
+Then check three things before you keep it: that the cutpoints are what you'd have
+chosen, that `faminc` really runs 1–16 with no missing-data codes hiding inside that
+range (the codebook, not `range()`, settles this), and that the row count of
+`wss_clean.rds` has not changed. [The next chapter](08-analysis.qmd) uses these
+variables; [the one after](09-tests.qmd) makes the checks permanent.

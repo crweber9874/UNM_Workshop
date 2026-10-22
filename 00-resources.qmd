@@ -1,0 +1,138 @@
+---
+title: "Downloads"
+---
+
+Everything on this page is free. If you would rather install nothing, skip to
+[Zero-install options](#zero-install-options) — a browser and a GitHub account are
+enough to follow the whole workshop.
+
+::: {.strip}
+[Codespace (nothing to install)](https://codespaces.new/crweber9874/UNM_Workshop){.primary}
+[Download the repo as a ZIP](https://github.com/crweber9874/UNM_Workshop/archive/refs/heads/main.zip)
+[Slides](slides/workshop.qmd)
+[Repository](https://github.com/crweber9874/UNM_Workshop)
+:::
+
+## The short list
+
+| Tool | What it is | Get it |
+|---|---|---|
+| GitHub account | Hosts the repository; required for Codespaces and Copilot | <https://github.com/signup> |
+| Git | Version control on your machine | <https://git-scm.com/downloads> |
+| R | The language the pipeline runs in | <https://cloud.r-project.org> |
+| RStudio Desktop | IDE for R; has a Git tab and Copilot support | <https://posit.co/download/rstudio-desktop/> |
+| VS Code | IDE used for Copilot and the Claude Code extension | <https://code.visualstudio.com/download> |
+| Quarto | Renders this book and the slides | <https://quarto.org/docs/get-started/> |
+| Node.js (LTS) | Only needed to install Claude Code via `npm` | <https://nodejs.org/en/download> |
+
+::: {.note}
+[Install R before RStudio]{.note-head}
+RStudio is an interface to R, not a copy of it. Install R first, then RStudio, then
+reopen RStudio so it finds the installation.
+:::
+
+## Platform notes
+
+**macOS.** Git ships with the Command Line Tools: run `xcode-select --install` in
+Terminal. For R, download the `.pkg` for your chip (Apple silicon vs. Intel) from
+CRAN. [Homebrew](https://brew.sh) is a convenient alternative for everything here
+(`brew install git node quarto`, `brew install --cask r rstudio visual-studio-code`).
+
+**Windows.** Install [Git for Windows](https://git-scm.com/download/win) and accept
+the defaults; it provides Git Bash, which is where the commands in these chapters
+work as written. R and RStudio are both ordinary installers. If `git` is not found
+afterwards, close and reopen the terminal.
+
+**Linux.** `sudo apt install git` (or your package manager's equivalent);
+[CRAN has per-distribution instructions](https://cloud.r-project.org/bin/linux/) for R.
+
+## Verify the install
+
+Open a terminal — in RStudio, **Tools → Terminal → New Terminal** — and run:
+
+```bash
+git --version
+R --version
+quarto --version
+node --version      # only if you plan to install Claude Code with npm
+```
+
+Each should print a version number. Anything that prints "command not found" is not
+installed, or is not on your `PATH`; reopening the terminal fixes the second case
+most of the time.
+
+Then identify yourself to Git, once per machine:
+
+```bash
+git config --global user.name "Your Name"
+git config --global user.email "you@unm.edu"
+```
+
+## The AI tools
+
+**GitHub Copilot.** Free tier for everyone; students and faculty get Copilot Pro
+through [GitHub Education](https://education.github.com). In VS Code, install the
+**GitHub Copilot** and **GitHub Copilot Chat** extensions and sign in. In RStudio,
+**Tools → Global Options → Copilot → Enable**.
+
+**Claude Code.** Requires a Claude Pro/Max subscription or an API key.
+
+```bash
+npm install -g @anthropic-ai/claude-code    # or: brew install claude-code
+cd UNM_Workshop
+claude
+```
+
+There is also a **Claude Code** extension in the VS Code marketplace, which is the
+same tool with a panel instead of a terminal.
+
+**GitHub CLI** (optional, but it makes authentication painless):
+[cli.github.com](https://cli.github.com), then `gh auth login` and `gh auth status`.
+
+## Zero-install options {#zero-install-options}
+
+| Option | What you need | Good for |
+|---|---|---|
+| [GitHub Codespaces](https://codespaces.new/crweber9874/UNM_Workshop) | GitHub account | The full environment — R, tidyverse, RStudio Server on port 8787, Quarto, Copilot, Claude Code — in a browser tab |
+| [Posit Cloud](https://posit.cloud) | Free account | RStudio in the browser; clone the repo from its terminal. No Claude Code |
+| [Download the ZIP](https://github.com/crweber9874/UNM_Workshop/archive/refs/heads/main.zip) | Nothing | Reading the code and data without Git |
+| This site | Nothing | Every chapter shows its code and output; the slides are [here](slides/workshop.qmd) |
+
+::: {.warn}
+[If you use a Codespace]{.warn-head}
+The free tier is 60 core-hours a month and it bills while it idles. **Stop the
+codespace when you are done** — Code → Codespaces → ⋯ → Stop codespace.
+:::
+
+::: {.note}
+[The ZIP is not a clone]{.note-head}
+A ZIP download has no `.git` directory, so there is no history, no `git diff`, and no
+way to undo an agent's edits. Fine for reading; not the setup to let an agent work in.
+:::
+
+## Then what
+
+Clone the repository and check that it runs:
+
+```bash
+git clone https://github.com/crweber9874/UNM_Workshop.git
+cd UNM_Workshop
+Rscript R/01_recode.R
+```
+
+Missing packages are the usual first error. Install what the pipeline needs:
+
+```r
+install.packages(c("tidyverse", "haven", "survey", "broom",
+                   "here", "scales", "testthat", "shiny"))
+```
+
+The Bayesian section of [the analysis chapter](08-analysis.qmd) uses `brms`, which
+compiles Stan models and takes considerably longer to install. Add it only if you
+intend to run that part:
+
+```r
+install.packages("brms")
+```
+
+From there, continue to [Setup](02-setup.qmd).

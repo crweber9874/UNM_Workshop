@@ -1,0 +1,168 @@
+---
+title: "The pipeline"
+---
+
+## The question
+
+**Did Latino voters in the Western states shift toward Trump between 2020 and 2024, and
+does authoritarianism condition that shift?**
+
+Western States Survey (YouGov), 2020 (n = 3,600) and 2024 (n = 4,000): Arizona,
+Colorado, Nevada, New Mexico, Utah. Codebooks:
+[2020](codebooks/wss2020_codebook.pdf), [2024](codebooks/wss2024_codebook.pdf).
+
+- `latino` — the YouGov `race` item (Hispanic).
+- `authoritarianism` — mean of four child-rearing pairs, 0–1, 1 = authoritarian
+  response (`auth1`–`auth4`).
+- `trump_vote` — 1 Trump, 0 Biden/Harris, `NA` otherwise.
+- Weights — `weight` in 2020, `weight_all` in 2024, combined as `weight`.
+
+::: {.note}
+[Cite the codebook, not the agent]{.note-head}
+Every claim about a variable on this page traces to `codebooks/` and the variable list
+in `AGENTS.md`. When an agent tells you what a variable means, that is a hypothesis.
+:::
+
+## One stage, one script
+
+::: {.pipeline}
+::: {.stage}
+[00 build]{.name}
+
+[raw Stata → csv]{.sub}
+:::
+::: {.stage}
+[01 recode]{.name}
+
+[csv → wss_clean.rds]{.sub}
+:::
+::: {.stage}
+[02 analysis]{.name}
+
+[models → output/]{.sub}
+:::
+::: {.stage}
+[app]{.name}
+
+[Shiny explorer]{.sub}
+:::
+::: {.stage}
+[publish]{.name}
+
+[quarto → gh-pages]{.sub}
+:::
+:::
+
+| Stage | File | Produces | Chapter |
+|---|---|---|---|
+| Build | `R/00_build_data.R` | `data/wss_2020_2024.csv` (raw files not distributed) | [The data](06-data.qmd) |
+| Recode | `R/01_recode.R` | `data/wss_clean.rds` | [The recode](07-recode.qmd) |
+| Analyze | `R/02_analysis.R` | `output/*.png`, model summaries | [The analysis](08-analysis.qmd) |
+| Check | `tests/testthat/` | pass / fail | [The tests](09-tests.qmd) |
+| Explore | `app/app.R` | interactive app | [The app](10-app-and-publishing.qmd) |
+| Publish | `quarto publish gh-pages` | this book | [Publishing](10-app-and-publishing.qmd) |
+
+The chapters that follow run these scripts, so their tables and figures are whatever the
+code currently produces — not transcriptions of a run from some earlier afternoon.
+
+## Run it end to end
+
+```bash
+Rscript R/01_recode.R                       # csv  -> data/wss_clean.rds
+Rscript R/02_analysis.R                     # models, figures -> output/
+Rscript -e 'testthat::test_dir("tests/testthat")'
+Rscript -e 'shiny::runApp("app")'
+```
+
+`R/00_build_data.R` needs the raw Stata files, which are not distributed; the CSV it
+produces is in the repository.
+
+::: {.note}
+[Why the order is enforced]{.note-head}
+Every number traces back through exactly one path. If the recode changes, the analysis
+and the app change with it, because neither keeps its own private copy of the recoding
+logic. Ask an agent to add a recode to `02_analysis.R` and it will happily do it — this
+is the rule you are enforcing against your own convenience.
+:::
+
+## Where we start
+
+Weighted two-party Trump share:
+
+| | 2020 | 2024 | Change |
+|---|---|---|---|
+| Non-Latino | .503 (n = 1,944) | .511 (n = 2,828) | +.008 |
+| Latino | .398 (n = 937) | .419 (n = 786) | +.021 |
+
+```{r}
+#| label: headline
+#| echo: false
+library(tidyverse)
+if (!file.exists("data/wss_clean.rds")) source("R/01_recode.R")
+wss <- read_rds("data/wss_clean.rds")
+voters <- filter(wss, !is.na(trump_vote))
+voters |>
+  summarise(trump = weighted.mean(trump_vote, weight), n = n(),
+            .by = c(year, latino)) |>
+  arrange(latino, year) |>
+  pivot_wider(names_from = year, values_from = c(trump, n)) |>
+  knitr::kable(digits = 3,
+               caption = "Recomputed on every render, from data/wss_clean.rds.")
+```
+
+```{r}
+#| label: ns
+#| echo: false
+c(n_obs = nrow(voters), n_miss = nrow(wss) - nrow(voters), n_total = nrow(wss))
+```
+
+n_miss here is non-voters, other candidates, and the ineligible — everyone for whom a
+two-party vote is undefined.
+
+::: {.warn}
+[The puzzle]{.warn-head}
+A two-point Latino shift, estimated on 786 Latino respondents in 2024, is far from the
+double-digit national exit-poll story. Sample? Weights? Mode? Reported versus intended
+vote? That is the interesting part — not reproducing a headline, but establishing what
+this sample can and cannot support.
+:::
+
+Source: `R/02_analysis.R` run on `data/wss_clean.rds`. The intervals in that script use
+a Kish effective *n*, not a design-based variance — fixing that would be a reasonable
+first change to make.
+
+## Four directions this could go
+
+Any one of these is a complete demonstration of the loop — prompt, diff, `n_obs`, test.
+We walk through one; the rest are here to run later, on this repo or your own data.
+
+1. **Recode** — add generation, income terciles, and a strength-of-partisanship measure
+   to `R/01_recode.R`. Check each against the codebook, and add a test per variable.
+2. **Analysis** — Bayesian logit with `brms`; predicted probabilities for
+   authoritarianism × Latino × year. Does the reported/intended distinction
+   (`vote_type`) matter?
+3. **Shiny** — add a state-by-year panel and a download button to `app/app.R`.
+4. **Skepticism** — is this sample representative of Latino voters? Interrogate the
+   weights, the mode, and the comparison with external estimates.
+
+::: {.turn}
+[The loop, whichever you pick]{.turn-head}
+Branch → prompt the agent → **read the diff** → report `n_obs` and `n_miss` → write the
+test → commit. All of it in your own clone.
+:::
+
+## Starting prompts worth stealing
+
+```text
+Read AGENTS.md and R/01_recode.R. Add an income-tercile variable built from
+faminc, using survey weights. Do not touch anything else. Show me the diff.
+
+Read codebooks/wss2024_codebook.pdf for pid7 and tell me whether
+R/01_recode.R codes party3 correctly. Quote the codebook.
+
+Refit the model in R/02_analysis.R with brms, bernoulli family, weakly
+informative priors. Report n_obs and n_miss. Do not drop the weights.
+```
+
+Each of these is narrow, names its files, and asks for evidence. That is the whole
+technique.

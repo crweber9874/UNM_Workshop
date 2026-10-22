@@ -1,0 +1,84 @@
+---
+title: "Verification"
+---
+
+Agents produce plausible code. Verification is the part of the workflow that is yours,
+and it is short enough to do every single time.
+
+## The four-step minimum
+
+1. **Read the diff.** `git diff` before you commit, or the diff in the pull request.
+   If you cannot explain a change, do not merge it.
+2. **Check the coding against the codebook.** Open the PDF. Confirm the response
+   options, the missing-data codes, and the direction of the scale.
+3. **Report `n_obs` and `n_miss`.** Every model, every time. If the N moved and nobody
+   said why, cases were silently dropped.
+4. **Write the test.** A check you run once is a check you will stop running.
+
+## Reporting N
+
+```r
+voters <- wss |> filter(!is.na(trump_vote))
+cat("n_obs =", nrow(voters),
+    "| n_miss =", nrow(wss) - nrow(voters), "\n")
+
+fit <- glm(trump_vote ~ latino * year, family = quasibinomial,
+           weights = weight, data = voters)
+cat("n_obs =", nobs(fit), "| n_miss =", nrow(voters) - nobs(fit), "\n")
+```
+
+The second pair matters most: listwise deletion inside a model formula is the most
+common way a sample shrinks without anyone noticing.
+
+## Turning a check into a test
+
+Tests live in `tests/testthat/` and run with:
+
+```bash
+Rscript -e 'testthat::test_dir("tests/testthat")'
+```
+
+```r
+test_that("authoritarianism is a 0-1 mean of four items", {
+  wss <- readRDS("data/wss_clean.rds")
+  expect_true(all(wss$authoritarianism >= 0 &
+                  wss$authoritarianism <= 1, na.rm = TRUE))
+})
+
+test_that("trump_vote is coded only for two-party voters", {
+  wss <- readRDS("data/wss_clean.rds")
+  expect_setequal(unique(na.omit(wss$trump_vote)), c(0, 1))
+})
+```
+
+::: {.note}
+[A good use of an agent]{.note-head}
+*"Read `R/01_recode.R` and write a `testthat` test for every derived variable: range,
+allowed values, and row count. Do not change the recode."* Then read the tests — they
+are far easier to check than the recode itself, and they will outlive this workshop.
+:::
+
+## Checking an agent's factual claims
+
+| Claim it makes | How you check it |
+|---|---|
+| "`pid7` runs 1–7 with 4 as independent" | The codebook, not the data's range |
+| "I dropped non-voters" | `n_miss`, and `count()` on the raw variable |
+| "This uses survey weights" | Read the call. Look for `weights =` |
+| "The 2024 weight is `weight`" | It is `weight_all`. See `AGENTS.md` |
+| "Smith (2019) shows…" | Search for the citation. Assume it is invented |
+
+::: {.warn}
+[Reproducibility is the real test]{.warn-head}
+Delete `data/wss_clean.rds` and `output/`, then run the pipeline from the top. If the
+numbers come back identical, the work is reproducible. If they do not, something lives
+in a console somewhere instead of in a script.
+:::
+
+## What to trust
+
+- **Trust** code you have read and can explain.
+- **Trust** numbers that a script regenerates from raw data.
+- **Do not trust** a result that exists only in a chat transcript.
+- **Do not trust** your own memory of what you accepted ten minutes ago. That is what
+  the commit history is for.

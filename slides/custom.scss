@@ -1,0 +1,326 @@
+/*-- scss:rules --*/
+
+.reveal .columns {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
+.reveal .columns > .column { display: flex; flex-direction: column; }
+
+.contest-card {
+  border-radius: 3px;
+  padding: 0.7em 0.9em;
+  height: 100%;
+  flex: 1 1 auto;
+}
+.contest-card ul { margin-top: 0.3em; }
+.contest-card p, .contest-card li {
+  font-size: 0.62em;
+  line-height: 1.5;
+  color: #3d3d3d;
+}
+.contest-card .card-label {
+  font-size: 0.6em;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  display: block;
+}
+
+.card-trad { background: #eef4fc; border-top: 4px solid #2a78d6; }
+.card-trad .card-label { color: #2a78d6; }
+
+.card-subv { background: #fdf1ec; border-top: 4px solid #eb6834; }
+.card-subv .card-label { color: #c4521f; }
+
+.slide-note   { font-size: 0.62em; line-height: 1.5; margin-top: 1em; }
+.slide-source { font-size: 0.55em; color: #8a8a8a; line-height: 1.45; margin-top: 0.9em; }
+
+.stem {
+  font-size: 0.62em;
+  line-height: 1.45;
+  color: #5a5a5a;
+  font-style: italic;
+  border-left: 3px solid #c9d8ee;
+  padding-left: 0.9em;
+  margin-bottom: 1em;
+}
+
+.item-list {
+  font-size: 0.66em;
+  line-height: 1.5;
+  list-style: none;
+  padding-left: 0;
+}
+.item-list li {
+  padding: 0.3em 0 0.3em 0.9em;
+  border-bottom: 1px solid #ededed;
+}
+.item-list li:last-child { border-bottom: none; }
+.item-list .tag {
+  display: inline-block;
+  min-width: 7.6em;
+  font-weight: 700;
+  font-size: 0.82em;
+  letter-spacing: 0.06em;
+  color: #2a78d6;
+  text-transform: uppercase;
+}
+
+.reveal table { font-size: 0.58em; }
+.reveal caption, .reveal table caption { display: none; }
+
+.exp-block {
+  background: #f7f9fc;
+  border-left: 3px solid #2a78d6;
+  padding: 0.6em 0.9em;
+  margin-bottom: 0.7em;
+}
+.exp-block .exp-head {
+  font-size: 0.58em;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #2a78d6;
+  display: block;
+  margin-bottom: 0.25em;
+}
+.exp-block p, .exp-block li { font-size: 0.6em; line-height: 1.45; color: #3d3d3d; }
+.exp-block ul { margin: 0.2em 0 0 0; }
+
+/*-- scss:defaults --*/
+$presentation-heading-color: #222222 !default;
+$body-color: #2b2b2b !default;
+$link-color: #35558a !default;
+$presentation-heading-font-weight: 500 !default;
+
+/*-- scss:rules --*/
+
+.reveal h2 {
+  font-size: 1.15em;
+  font-weight: 500;
+  color: #222;
+  text-align: left;
+  margin-bottom: 0.8em;
+  letter-spacing: -0.01em;
+}
+
+.reveal .slide-number {
+  font-size: 0.45em;
+  color: #b4b4b4;
+  background: transparent;
+}
+
+.reveal .title-slide h1 {
+  font-size: 0.82em;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #1a1a1a;
+  margin-bottom: 1.4em;
+}
+.reveal .quarto-title-authors {
+  font-size: 0.58em;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.3em 1.8em;
+}
+.reveal .quarto-title-author-name { font-weight: 700; color: #1a1a1a; }
+.reveal .quarto-title-affiliation { color: #7a7a7a; font-size: 0.82em; }
+.reveal .quarto-title-author-email { display: none; }
+.reveal .date, .reveal .quarto-title-block .date {
+  font-size: 0.6em;
+  color: #6b6b6b;
+  margin-top: 1.2em;
+}
+
+.section-divider h2 { color: #8a8a8a; font-weight: 400; }
+
+/* plot slides: give the figure the whole canvas */
+.reveal section.plot-slide h2 {
+  font-size: 0.95em;
+  margin-bottom: 0.15em;
+}
+.reveal section.plot-slide .slide-source {
+  font-size: 0.42em;
+  margin-top: 0.1em;
+}
+.reveal section.plot-slide .html-widget,
+.reveal section.plot-slide .plotly { margin: 0 !important; }
+
+/* ---- Concluding Remarks: numbered findings, limitations set apart ---------- */
+.findings {
+  counter-reset: finding;
+  margin: 0.2em 0 0 0;
+}
+.findings > div {
+  position: relative;
+  padding: 0.32em 0 0.32em 2.5em;
+  border-bottom: 1px solid #ececec;
+  font-size: 0.72em;
+  line-height: 1.45;
+  color: #2b2b2b;
+}
+.findings > div:last-of-type { border-bottom: none; }
+.findings > div::before {
+  counter-increment: finding;
+  content: counter(finding);
+  position: absolute;
+  left: 0;
+  top: 0.34em;
+  width: 1.65em;
+  height: 1.65em;
+  line-height: 1.65em;
+  text-align: center;
+  border-radius: 50%;
+  background: #2a78d6;
+  color: #fff;
+  font-size: 0.78em;
+  font-weight: 700;
+}
+.findings strong { color: #16407a; }
+
+.limits {
+  margin-top: 0.9em;
+  padding: 0.55em 0.85em;
+  background: #fbf3ee;
+  border-left: 4px solid #eb6834;
+  font-size: 0.62em;
+  line-height: 1.45;
+  color: #5a4435;
+}
+.limits .limits-head {
+  display: block;
+  font-variant: small-caps;
+  letter-spacing: 0.07em;
+  font-weight: 700;
+  color: #c4521f;
+  margin-bottom: 0.15em;
+}
+
+/* ---- title slide: conference line sits BELOW the author list ------------- */
+/* reveal sets style="display:block" inline on the slide section, so the
+   stylesheet needs !important to win and let `order` take effect */
+.reveal .quarto-title-block {
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+}
+.reveal .quarto-title-block .title            { order: 1; }
+.reveal .quarto-title-block .quarto-title-authors { order: 2; }
+.reveal .quarto-title-block .subtitle         { order: 3; }
+
+.reveal .subtitle, .reveal .quarto-title-block .subtitle {
+  font-size: 0.7em;
+  font-weight: 600;
+  color: #2a78d6;
+  letter-spacing: 0.01em;
+  margin-top: 1.6em;
+  text-align: center;
+}
+.reveal .subtitle .venue {
+  display: block;
+  margin-top: 0.3em;
+  font-size: 0.82em;
+  font-weight: 400;
+  color: #6b6b6b;
+}
+
+/* ---- section dividers, conclusion, thank-you (white) ---------------------- */
+$navy: #0C234B;
+$accent: #AB0520;
+
+.reveal section.divider h1 {
+  text-align: left; font-size: 2.2em; font-weight: 800; color: $navy;
+  border-left: 12px solid $accent; padding-left: 0.5em;
+}
+
+.reveal .conclusion .kicker {
+  font-size: 0.5em; font-weight: 700; letter-spacing: 0.3em;
+  text-transform: uppercase; color: $accent; margin-bottom: 0.4em;
+}
+.reveal .conclusion .headline {
+  font-size: 1.5em; font-weight: 800; line-height: 1.12; color: $navy; margin-bottom: 0.6em;
+}
+.reveal .conclusion .takeaways ol { margin: 0 0 0.5em 1.2em; }
+.reveal .conclusion .takeaways li { font-size: 0.78em; line-height: 1.4; margin-bottom: 0.55em; }
+.reveal .conclusion .takeaways li::marker { color: $accent; font-weight: 700; }
+.reveal .conclusion .takeaways strong { color: $navy; }
+.reveal .conclusion .close {
+  font-size: 0.55em; color: #4a4a4a;
+  border-top: 1px solid #e3e3e3; padding-top: 0.6em; margin-top: 0.4em;
+}
+
+.reveal .thankyou { text-align: center; }
+.reveal .thankyou .ty-headline { font-size: 3em; font-weight: 700; margin-top: 1.4em; color: $navy; }
+.reveal .thankyou .ty-contact { margin-top: 0.8em; font-size: 0.8em; color: #4a4a4a; }
+
+/* ---- beamer-style section bar ---------------------------------------------- */
+.section-nav {
+  position: absolute; top: 0; left: 0; right: 0; z-index: 30;
+  display: flex; justify-content: center; gap: 0.2em;
+  padding: 6px 12px; background: #f6f7f9; border-bottom: 1px solid #e3e6ea;
+  font-size: 13px; letter-spacing: 0.02em;
+}
+.section-nav a {
+  color: #8a8f98; text-decoration: none; padding: 2px 10px; border-radius: 3px; cursor: pointer;
+}
+.section-nav a:hover { color: $navy; background: #e9edf2; }
+.section-nav a.active { color: #FFFFFF; background: $navy; font-weight: 600; }
+.section-nav.hidden { display: none; }
+.reveal .slides > section > h2 { margin-top: 0.3em; }
+
+/* ---- workshop additions ---------------------------------------------------- */
+
+/* chevron pipeline */
+.reveal .pipeline { display: flex; align-items: stretch; margin: 0.6em 0 0.7em; }
+.reveal .pipeline .stage {
+  flex: 1; text-align: center; padding: 0.7em 0.7em 0.7em 1.3em;
+  background: #2a78d6; color: #fff; margin-right: 6px;
+  clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 50%, calc(100% - 22px) 100%, 0 100%, 22px 50%);
+}
+.reveal .pipeline .stage:first-child {
+  clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 50%, calc(100% - 22px) 100%, 0 100%);
+}
+.reveal .pipeline .stage:last-child { background: $navy; }
+.reveal .pipeline .stage p { margin: 0; color: #fff !important; }
+.reveal .pipeline .name {
+  font-weight: 800; font-size: 0.52em; text-transform: uppercase;
+  letter-spacing: 0.05em; line-height: 1.2; color: #fff;
+}
+.reveal .pipeline .stage .sub {
+  font-size: 0.44em; line-height: 1.3; color: #dbe7f7 !important; margin-top: 0.3em;
+}
+.reveal .pipeline .stage:last-child .sub { color: #d9dee8 !important; }
+
+/* keyboard / command keys */
+.reveal kbd, .reveal code.kb {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.82em; background: #f1f3f6; border: 1px solid #d8dde4;
+  border-bottom-width: 2px; border-radius: 3px; padding: 0.05em 0.35em; color: #27354c;
+}
+
+/* two-column reference tables of commands */
+.reveal table.cmd { font-size: 0.5em; }
+.reveal .cmd-table table { font-size: 0.5em; }
+.reveal .cmd-table code { font-size: 0.95em; background: transparent; color: #16407a; }
+
+/* file-tree and shell blocks shrink to fit */
+.reveal pre.tree code, .reveal .tight-code pre code { font-size: 0.42em; line-height: 1.35; }
+.reveal pre code { font-size: 0.5em; line-height: 1.4; }
+
+/* do / don't pair */
+.card-do   { background: #eef7f0; border-top: 4px solid #2e7d4f; }
+.card-do .card-label { color: #2e7d4f; }
+.card-dont { background: #fdf1ec; border-top: 4px solid $accent; }
+.card-dont .card-label { color: $accent; }
+
+/* your-turn callout */
+.turn {
+  margin-top: 0.8em; padding: 0.6em 0.9em; background: #f4f7fb;
+  border-left: 4px solid $navy; font-size: 0.64em; line-height: 1.5; color: #2b2b2b;
+}
+.turn .turn-head {
+  display: block; font-variant: small-caps; letter-spacing: 0.08em;
+  font-weight: 700; color: $navy; margin-bottom: 0.2em;
+}
+.turn ol, .turn ul { margin: 0.2em 0 0 1.1em; }

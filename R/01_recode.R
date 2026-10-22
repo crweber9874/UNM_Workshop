@@ -1,13 +1,16 @@
 # Recode: data/wss_2020_2024.csv -> data/wss_clean.rds
 library(tidyverse)
+source("R/functions.R")
 
-wss <- read_csv("data/wss_2020_2024.csv", show_col_types = FALSE) |>
+wss <- read_csv("data/wss_2020_2024.csv", show_col_types = FALSE)
+stopifnot(all(c("auth1", "auth2", "auth3", "auth4", "pid7", "age") %in% names(wss)))
+
+wss <- wss |>
   mutate(
-    authoritarianism = rowMeans(pick(auth1:auth4), na.rm = TRUE),
-    auth_group = cut(authoritarianism, c(-Inf, .25, .75, Inf),
-                     labels = c("Low", "Middle", "High")),
-    age_group  = cut(age, c(17, 29, 44, 64, Inf), labels = c("18-29", "30-44", "45-64", "65+")),
-    party3     = case_when(pid7 <= 3 ~ "Democrat", pid7 == 4 ~ "Independent", pid7 >= 5 ~ "Republican"),
+    authoritarianism = auth_scale(pick(auth1:auth4)),
+    auth_group = bin_auth(authoritarianism),
+    age_group  = bin_age(age),
+    party3     = pid_to_party3(pid7),
     race4      = fct_lump_n(race, 3, other_level = "Other") |> fct_infreq(),
     latino     = factor(latino, 0:1, c("Non-Latino", "Latino")),
     year       = factor(year)

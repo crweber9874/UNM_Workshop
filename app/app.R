@@ -1,7 +1,8 @@
 library(shiny)
 library(tidyverse)
+source(here::here("R/functions.R"))
 
-wss <- read_rds(here::here("data/wss_clean.rds")) |> filter(!is.na(trump_vote))
+wss <- read_rds(here::here("data/wss_clean.rds"))
 
 ui <- fluidPage(
   titlePanel("Western States Survey: Trump vote, 2020 vs 2024"),
@@ -15,12 +16,11 @@ ui <- fluidPage(
   )
 )
 
-server <- function(input, output) {
+server <- function(input, output, session) {
   est <- reactive({
     wss |>
-      filter(state %in% input$state, !is.na(.data[[input$by]])) |>
-      mutate(w = if (input$wt) weight else 1) |>
-      summarise(trump = weighted.mean(trump_vote, w), n = n(), .by = c(year, all_of(input$by)))
+      filter(state %in% input$state) |>
+      trump_share(input$by, weighted = input$wt)
   })
   output$plot <- renderPlot(
     ggplot(est(), aes(year, trump, colour = .data[[input$by]], group = .data[[input$by]])) +

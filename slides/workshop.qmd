@@ -1,147 +1,935 @@
 ---
 title: "AI as a Research Tool"
-subtitle: "GitHub · Copilot · Claude Code · a shared R project"
-author: "Christopher Weber"
+author:
+  - name: Christopher R. Weber
+    affiliations: University of Arizona
+subtitle: "A hands-on workshop<br><span class='venue'>University of New Mexico &middot; Albuquerque</span>"
 format:
   revealjs:
-    theme: simple
-    slide-number: true
-    incremental: false
+    theme: [default, custom.scss]
+    slide-number: c/t
+    show-slide-number: all
+    transition: none
+    fig-align: center
+    width: 1360
+    height: 790
+    margin: 0.07
+    center-title-slide: true
+    include-after-body: section-nav.html
+    embed-resources: true
+execute:
+  echo: false
+  warning: false
+  message: false
 ---
 
-# Welcome
+## The Premise
 
-## Today
-1. Setup: GitHub, Copilot, Codespaces, Claude Code
-2. Git workflow — we all share one repo
-3. Agents: `AGENTS.md`, `CLAUDE.md`, shortcuts
-4. Group project: did Latino voters pivot to Trump?
+::: {style="font-size: 0.62em; line-height: 1.5;"}
+* A coding agent is a **collaborator with no memory**
+* The way I use it: Not to write the code, but to help me find it. It is **what work can I delegate, and how do I check it?**
+* Three things make delegation safe: a **repository** (so every change is visible and reversible), an **instruction file** (so the agent knows the project), and a **habit of verification** (so you catch what it got wrong).
+* Today is a **walkthrough** on one public repo and one real research question — follow along if you like, or just watch and take the repo home.
+:::
 
-## The repository
-<https://github.com/crweber9874/UNM_Workshop>
+::: {style="font-size: 0.68em; margin-top: 1.1em; border-left: 3px solid #2a78d6; padding-left: 0.9em; color: #3d3d3d; line-height: 1.55;"}
+**Three goals**
 
+1. See the whole loop once — **clone, branch, diff, undo** — on a real project.
+2. See how an agent comes to **know a project** through an instructions file.
+3. Watch one substantive question get answered, and watch us **check the machine's work**.
+:::
+
+## The Day
+
+::: {.item-list}
+- [Framing]{.tag} What agents do, and where they fail silently
+- [Setup]{.tag} GitHub, Copilot, Claude Code, Codespaces
+- [Git]{.tag} Pull, branch, commit, push, pull request
+- [Agents]{.tag} `AGENTS.md`, slash commands, cost discipline
+- [Pipeline]{.tag} Recode → model → app → published site
+- [Verify]{.tag} Reading the diff, citing the codebook, writing the test
+- [In the wild]{.tag} The same workflow on a production project: the Arizona Voter Project
+:::
+
+::: {.slide-source}
+Slides, instructions, and data: <https://crweber9874.github.io/UNM_Workshop/> · Repository: <https://github.com/crweber9874/UNM_Workshop>
+:::
+
+<!-- AI-drafted (Claude Code); reviewed by CRW -->
+
+# Framing {.divider}
+
+## What a Language Model Is
+
+::: {style="font-size: 0.62em; line-height: 1.5;"}
+Start with a model you already estimate. The outcome is the **next token**; the
+categories are a fixed vocabulary of perhaps 100,000 of them. That is a
+**multinomial logit**:
+
+$$\Pr(w_t = k \mid \text{context}) = \frac{\exp(\mathbf{x}_t'\boldsymbol{\beta}_k)}{\sum_j \exp(\mathbf{x}_t'\boldsymbol{\beta}_j)}$$
+
+Everything else is a solution to one problem: **what is $\mathbf{x}_t$?** The context is a
+sequence of arbitrary length, not a fixed design matrix.
+:::
+
+::: {.exp-block}
+[The neural network is learned measurement]{.exp-head}
+
+A layer is a set of **latent variables** — linear combinations passed through a
+nonlinearity — and the next layer takes those as its indicators. Stack ~100 of them and
+you have learned a representation instead of specifying one. **Attention** makes the
+coefficients context-dependent: each token's features are a weighted average of the
+other tokens', with weights estimated from the sequence itself. A varying-coefficient
+model, fit rather than imposed. "Bank" near *river* is not "bank" near *loan*.
+:::
+
+## Two Estimation Stages
+
+::: {.item-list}
+- [Pretraining]{.tag} MLE by stochastic gradient descent on trillions of tokens. Billions of parameters, no closed form, no standard errors, no identification claim — the parameters are not interpretable and were never meant to be
+- [Alignment]{.tag} A reward model is fit to human pairwise comparisons — a **Bradley–Terry** model of "which answer is better" — then the policy is shifted toward preferred completions
+:::
+
+::: {.exp-block}
+[Why this matters for how you use it]{.exp-head}
+
+Fluency and instruction-following come from the *second* stage. Factual accuracy is in
+neither loss function. The object is a **conditional distribution over text, sampled at
+temperature** — so it is a predictive model, run far out of sample, with no uncertainty
+estimate attached. It will produce a plausible variable name, a plausible citation, and
+a plausible coefficient with equal confidence. That is the whole case for verification.
+:::
+
+# Setup {.divider}
+
+## Why a Repository at All
+
+::: {style="font-size: 0.62em; line-height: 1.5;"}
+GitHub hosts code, data, and documents on the web. Four reasons it matters for research:
+
+* **Transparency** — the work is open to inspection.
+* **Reproducibility** — others can recreate and extend your analysis.
+* **Collaboration** — several people contribute to one project without emailing files.
+* **Version control** — every change is tracked, and reverting is trivial.
+:::
+
+::: {.exp-block}
+[And for working with agents]{.exp-head}
+
+An agent edits files in place. The repository is what makes that safe: you can see
+exactly what it changed (`git diff`), and undo it (`git restore`). Without version
+control, you are letting a confident stranger type into your dissertation.
+:::
+
+## The Repository
+
+::: {.tight-code}
 ```
-data/        wss_2020_2024.csv   joined 2020 + 2024 survey
-codebooks/   original codebooks (PDF)
-R/           01_recode.R  →  02_analysis.R
-app/         Shiny explorer
-AGENTS.md    the brief every AI agent reads
-.devcontainer/  one-click Codespace
+UNM_Workshop/
+├── AGENTS.md              the brief every AI agent reads
+├── CLAUDE.md              one line: @AGENTS.md
+├── data/
+│   ├── wss_2020_2024.csv  analysis file (read-only)
+│   └── wss_clean.rds      built by R/01_recode.R
+├── codebooks/             2020 & 2024 survey codebooks (PDF)
+├── R/
+│   ├── functions.R        pure helpers, shared and unit-tested
+│   ├── 00_build_data.R    raw Stata → csv (instructor only)
+│   ├── 01_recode.R        all recoding lives here
+│   └── 02_analysis.R      models and figures → output/
+├── app/app.R              Shiny explorer
+├── tests/testthat/        test-unit-* and test-integration-*
+├── slides/                these slides
+└── .devcontainer/         one-click Codespace
 ```
-Organized by **recoding** then **analysis**: recodes never live in analysis scripts.
+:::
 
-# 1. Setup
+::: {.slide-note}
+Numbered scripts, one job each, strict order. **Recodes never live in analysis scripts** —
+that single rule is what keeps four people and an agent from quietly disagreeing about
+what `latino` means.
+:::
 
-## Accounts & tools
-- GitHub account → [education.github.com](https://education.github.com) for free Copilot
-- Git + `gh auth login`
-- Copilot in VS Code or RStudio
-- Claude Code: `npm i -g @anthropic-ai/claude-code`, then `claude`
+## Accounts and Tools
 
-## Can't install? Codespace
-**Code → Codespaces → Create codespace on main**
+::: {.item-list}
+- [GitHub]{.tag} Account at [github.com](https://github.com). Students and faculty: [education.github.com](https://education.github.com) for free Copilot Pro
+- [Git]{.tag} macOS `xcode-select --install` · Windows [git-scm.com](https://git-scm.com)
+- [Identity]{.tag} `git config --global user.name` and `user.email`, once
+- [Auth]{.tag} [GitHub CLI](https://cli.github.com), then `gh auth login`
+- [Copilot]{.tag} VS Code extensions, or RStudio → Tools → Global Options → Copilot
+- [Claude]{.tag} `npm install -g @anthropic-ai/claude-code`, then `claude` in the repo
+:::
 
-R, tidyverse, RStudio (port 8787), Quarto, Copilot, Claude Code — in the browser.
+::: {.slide-source}
+Copilot reads `.github/copilot-instructions.md`; Claude Code reads `CLAUDE.md`. In this repo both point at `AGENTS.md`, so every tool gets the same brief.
+:::
 
-Stop it when done (60 free core-hours/month).
+## No Local Install? Use a Codespace
 
-# 2. Git
+::: {style="font-size: 0.64em; line-height: 1.55;"}
+On the repository page: **Code → Codespaces → Create codespace on main**.
 
-## The model
-```
-Working dir → Staging → Local repo → GitHub
-   (edit)      (add)     (commit)     (push)
-                              ←  (pull)
-```
+The container in `.devcontainer/devcontainer.json` gives you R and tidyverse, RStudio
+Server on port 8787, Quarto, Copilot, and Claude Code — in a browser tab, identical for
+everyone in the room.
+:::
 
-## Get the repo
+::: {.limits}
+[Housekeeping]{.limits-head}
+The free tier is 60 core-hours a month. **Stop your codespace when you are done** —
+it bills while it idles.
+:::
+
+::: {.turn}
+[Follow along, if you like]{.turn-head}
+1. Open the repository and start a codespace (or clone locally).
+2. In the terminal: `gh auth status` — are you signed in?
+3. Start `claude`, then type `/init` and read what it writes about this project.
+:::
+
+# Git {.divider}
+
+## The Model
+
+::: {.pipeline}
+::: {.stage}
+[Working directory]{.name}
+
+[edit]{.sub}
+:::
+::: {.stage}
+[Staging area]{.name}
+
+[git add]{.sub}
+:::
+::: {.stage}
+[Local repository]{.name}
+
+[git commit]{.sub}
+:::
+::: {.stage}
+[GitHub]{.name}
+
+[git push]{.sub}
+:::
+:::
+
+::: {style="font-size: 0.62em; line-height: 1.5;"}
+Changes move left to right, one deliberate step at a time, and come back with
+`git pull`. The staging area exists so that you commit *some* of your changes — the
+finished recode, not the half-written one beside it.
+:::
+
+## Clone, and Fork for Later
+
+:::: {.columns}
+
+::: {.column width="48%"}
+::: {.contest-card .card-trad}
+[CLONE — today]{.card-label}
+
+A copy of a repository **on your computer**, made with `git clone <url>`.
+
+- Needs only read access; this repo is public
+- Commit, branch, break things — it stays local
+:::
+:::
+
+::: {.column width="4%"}
+:::
+
+::: {.column width="48%"}
+::: {.contest-card .card-subv}
+[FORK — for later]{.card-label}
+
+A copy **under your account**, made on the GitHub website.
+
+- For contributing where you lack write access
+- Fork + clone + pull request = open-source collaboration
+:::
+:::
+
+::::
+
+::: {.slide-note}
+Today: **clone**. The repository is public, so you only need read access — nobody has to
+be added to anything, and nothing you do locally can affect the original. Forking is for
+the day you want to send work back somewhere.
+:::
+
+## Get the Repository
+
 ```bash
 git clone https://github.com/crweber9874/UNM_Workshop.git
 cd UNM_Workshop
 ```
 
-## Everyday loop
+::: {style="font-size: 0.62em; line-height: 1.5; margin-top: 0.6em;"}
+From RStudio you can do all of this in **Tools → Terminal → New Terminal**, or
+point-and-click in the **Git** tab. The commands are the same underneath, and the
+terminal is what you will be able to explain to a collaborator — or to an agent.
+:::
+
+## The Everyday Loop
+
 ```bash
-git pull                       # first, always
-git status
-git add R/01_recode.R
+git pull                        # pick up changes to the original
+git status                      # what did I change?
+git add R/01_recode.R           # stage specific files, not `git add .` blindly
 git commit -m "Add generation recode"
-git push
+git diff HEAD~1                 # read what you just committed
 ```
 
-## Sharing one repo safely
+::: {.exp-block}
+[What a commit is]{.exp-head}
+
+A snapshot of your changes with a unique ID and a message. The message is for the
+version of you who, in four months, needs to know why `age_group` has four categories.
+Write it for that person.
+:::
+
+::: {.slide-source}
+`pull`, `add`, `commit` and `diff` all work in your own clone, with no write access to anything. `push` is the only one that needs somewhere you can write.
+:::
+
+## Branching in Your Own Clone
+
 ```bash
-git pull
-git switch -c yourname-topic
-# edit → add → commit
-git push -u origin yourname-topic
-gh pr create --fill
+git switch -c trying-something     # a branch costs nothing
+# ...edit, add, commit...
+git switch main                    # back to where you started
+git branch -D trying-something     # throw the experiment away
 ```
-Merge on GitHub → everyone `git switch main && git pull`
 
-## Conflicts
+::: {style="font-size: 0.62em; line-height: 1.5; margin-top: 0.5em;"}
+This is the whole safety net, and it is entirely local — no account, no permissions, no
+collaborators. Let the agent loose on a branch; if the result is wrong, delete the
+branch.
+:::
+
+::: {.limits}
+[Rules of the road]{.limits-head}
+Branch per task, never commit on `main` · small commits with clear messages · never
+commit data you were not given, passwords, or `.Renviron`.
+:::
+
+::: {.slide-source}
+Pushing, forks and pull requests matter when you share a repo with someone. Not needed today — you only need to read this one.
+:::
+
+## When to Use What
+
+::: {.cmd-table}
+| Action | When | Command | Needs access? |
+|---|---|---|---|
+| **Clone** | Reading and running someone's code | `git clone <url>` | no |
+| **Pull** | Picking up later changes | `git pull` | no |
+| **Branch** | Any change you are not sure of | `git switch -c name-topic` | no |
+| **Add** | Choosing what goes in the commit | `git add R/01_recode.R` | no |
+| **Commit** | Saving a coherent step locally | `git commit -m "message"` | no |
+| **Diff** | Checking what the agent did | `git diff` | no |
+| **Fork** | You want to send work back | `gh repo fork <repo> --clone` | your account |
+| **Push** | Publishing a branch | `git push -u origin name-topic` | write |
+| **Pull request** | Asking for review and a merge | `gh pr create --fill` | write on a fork |
+:::
+
+::: {.slide-source}
+Everything above the line is all you need today — and all you need to use an agent safely on any repository, including your own.
+:::
+
+## Conflicts and Undo
+
+:::: {.columns}
+
+::: {.column width="48%"}
+::: {style="font-size: 0.6em;"}
+**A conflict looks like this**
+
 ```
 <<<<<<< HEAD
-yours
+your version
 =======
-theirs
+their version
 >>>>>>> main
 ```
-Edit, remove markers, `add`, `commit`. Agents can help — **read the diff**.
 
-# 3. Agents
+Keep what is right, delete the markers, then `git add` and `git commit`. You may ask the
+agent — *"resolve the conflict in `R/01_recode.R`, keeping both recodes"* — and then
+**read the diff**.
+:::
+:::
 
-## How an agent sees a repo
-- Loads **instruction files** at start: `CLAUDE.md`, `AGENTS.md`, `.github/copilot-instructions.md`
-- Reads what you `@mention` or what it searches
-- Runs commands — with permission
+::: {.column width="4%"}
+:::
 
-## Our AGENTS.md
-```markdown
-## Rules
-- R + tidyverse, native pipe |>
-- New recodes go in R/01_recode.R
-- Always report n_obs and n_miss
-- Use survey weights; say when you don't
-- Don't push to main without approval
-```
-`CLAUDE.md` = `@AGENTS.md` → one source of truth. Start one with `/init`.
-
-## Claude Code shortcuts
-| | |
+::: {.column width="48%"}
+::: {.cmd-table}
+| Situation | Command |
 |---|---|
-| `/init` `/memory` | create / edit instructions |
-| `/agents` | build subagents |
-| `/clear` `/compact` | manage context (and cost) |
-| `/model` `/cost` | choose model, track spend |
-| `/review` `/resume` | PR review, past sessions |
-| `@file` `!cmd` | add file, run shell |
-| `Shift+Tab` `Esc Esc` | plan mode, rewind |
+| Discard edits to a file | `git restore file.R` |
+| Unstage | `git restore --staged file.R` |
+| Fix the last message | `git commit --amend` |
+| Undo a pushed commit | `git revert <hash>` |
+| See what changed | `git diff` |
+:::
+:::
 
-## Copilot shortcuts
-`Tab` accept · `Ctrl/Cmd+I` inline chat · `/explain /fix /tests` · `@workspace` · agent mode
+::::
 
-# 4. Project
+# Agents {.divider}
 
-## Did Latino voters pivot to Trump?
-Western States Survey 2020 & 2024 (AZ, CO, NV, NM, UT)
+## How an Agent Sees This Repository
 
-| Weighted Trump share | Non-Latino | Latino |
-|---|---|---|
-| 2020 | .50 | .40 |
-| 2024 | .51 | .42 |
+::: {style="font-size: 0.62em; line-height: 1.5;"}
+1. **On start it loads instruction files**: `CLAUDE.md` (Claude Code), `AGENTS.md`
+   (Copilot, Codex, Cursor, and others), `.github/copilot-instructions.md` (Copilot).
+2. **It reads what you point at** — `@R/01_recode.R` — or what it finds by searching.
+3. **It runs commands** — R, git, shell — with your permission.
+:::
 
-n_obs = 6,495; n_miss = 1,105. Small shift. Why the gap with exit polls?
+::: {.exp-block}
+[So the instruction file is the project brief]{.exp-head}
 
-## Teams
-- **Recode**: generations, income, partisan strength
-- **Analysis**: `brms` logit, authoritarianism × Latino × year
-- **Shiny**: state panels, downloads
-- **Skeptics**: sample, weights, intended vs. reported vote
+Layout, variable meanings, conventions, guardrails. Here `CLAUDE.md` contains one line,
+`@AGENTS.md`, so every tool in the room shares a single source of truth. Change the
+brief once and all of them follow it.
+:::
 
-Branch → commit → PR.
+## Anatomy of a Good `AGENTS.md`
 
-## Verify the machine
-- Check coding against the codebook
-- Check N and missingness
-- Rerun it yourself
+::: {.tight-code}
+```markdown
+## Project
+Did Latino voters in the Western states shift toward Trump from 2020
+to 2024, and does authoritarianism condition that shift?
+
+## Layout
+- data/wss_2020_2024.csv  analysis file (read-only; never edit by hand)
+- R/01_recode.R           all recoding lives here
+- codebooks/              cite these when describing a variable
+
+## Rules
+- R + tidyverse, native pipe |>. Minimal comments.
+- New recodes go in R/01_recode.R, not in analysis scripts.
+- Always report n_obs and n_miss with any model.
+- Use survey weights for population estimates; say when you don't.
+- Don't push to main without the user's say-so; prefer a branch + PR.
+```
+:::
+
+::: {.slide-note}
+What the project is · where things live · which files are read-only · variable
+definitions and where to **cite** them · conventions · guardrails. Keep it short:
+agents follow concise rules far better than essays.
+:::
+
+## Claude Code: What You Actually Type
+
+::: {.cmd-table}
+| Command | Does | Command | Does |
+|---|---|---|---|
+| `/init` | Draft a `CLAUDE.md` | `/review` | Review a pull request |
+| `/memory` | Edit instruction files | `/permissions` | What it may run unasked |
+| `/agents` | Build subagents | `/resume` | Return to a session |
+| `/clear` | Fresh context (cheap) | `/mcp` | Connect external tools |
+| `/compact` | Summarize a long session | `@file` | Put a file in context |
+| `/model` | Switch model | `!cmd` | Run a shell command |
+| `/cost` `/usage` | Track spending | <kbd>Shift</kbd>+<kbd>Tab</kbd> | Cycle plan / auto-accept |
+:::
+
+::: {.slide-source}
+<kbd>Esc</kbd> interrupts; <kbd>Esc</kbd> <kbd>Esc</kbd> rewinds the conversation. A subagent worth building today: a *codebook checker* that reads a recode and the PDF and reports disagreements.
+:::
+
+## Copilot: What You Actually Type
+
+::: {.cmd-table}
+| Key / command | Does |
+|---|---|
+| <kbd>Tab</kbd> / <kbd>Esc</kbd> | Accept / dismiss an inline suggestion |
+| <kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>I</kbd> | Inline chat on the selection |
+| `/explain` `/fix` `/tests` `/doc` | Chat commands on what you have open |
+| `@workspace` `#file` | Add the repo, or one file, to context |
+| Agent mode | Multi-file edits that run commands |
+:::
+
+::: {.exp-block}
+[Division of labor]{.exp-head}
+
+Copilot is strongest at the **next line** — completions while you type. Claude Code is
+strongest at the **next task** — "add income terciles to the recode, rerun it, and show
+me what changed." Use both.
+:::
+
+## Spending Less
+
+::: {.item-list}
+- [Clear]{.tag} `/clear` between unrelated tasks — long context is re-billed every turn
+- [Point]{.tag} Name files (`@R/02_analysis.R`) instead of asking it to look around
+- [Plan]{.tag} Plan mode for anything large: approve the plan, then let it execute
+- [Downshift]{.tag} A smaller model for routine edits and renames
+- [Batch]{.tag} One well-specified request beats six vague corrections
+:::
+
+## Verify, Always
+
+:::: {.columns}
+
+::: {.column width="48%"}
+::: {.contest-card .card-do}
+[DELEGATE]{.card-label}
+
+- Scaffolding and boilerplate
+- Refactoring you can read
+- Documentation and tests
+- Debugging an error message
+- "Explain what this script does"
+:::
+:::
+
+::: {.column width="4%"}
+:::
+
+::: {.column width="48%"}
+::: {.contest-card .card-dont}
+[NEVER TRUST UNCHECKED]{.card-label}
+
+- Variable coding and reverse-coding
+- Which cases got dropped
+- Weights and survey design
+- Anything citing a number
+- Anything citing a source
+:::
+:::
+
+::::
+
+::: {.slide-note}
+The minimum check, every time: **read the diff**, confirm the coding against the
+codebook, and look at `n_obs` and `n_miss`. If the N moved and nobody said why,
+something was silently dropped.
+:::
+
+# The Pipeline {.divider}
+
+## The Question
+
+::: {style="font-size: 0.64em; line-height: 1.55;"}
+**Did Latino voters in the Western states shift toward Trump between 2020 and 2024, and
+does authoritarianism condition that shift?**
+
+Western States Survey (YouGov), 2020 and 2024: Arizona, Colorado, Nevada, New Mexico,
+Utah. Latino is the YouGov `race` item; authoritarianism is the mean of four
+child-rearing pairs, scored 0–1 with 1 the authoritarian response.
+:::
+
+::: {.slide-source}
+Variable definitions and coding: `codebooks/wss2020_codebook.pdf`, `codebooks/wss2024_codebook.pdf`, and the variable list in `AGENTS.md`. Cite the codebook, not the agent.
+:::
+
+## One Stage, One Script
+
+::: {.pipeline}
+::: {.stage}
+[00 build]{.name}
+
+[raw Stata → csv]{.sub}
+:::
+::: {.stage}
+[01 recode]{.name}
+
+[csv → wss_clean.rds]{.sub}
+:::
+::: {.stage}
+[02 analysis]{.name}
+
+[models → output/]{.sub}
+:::
+::: {.stage}
+[app]{.name}
+
+[Shiny explorer]{.sub}
+:::
+::: {.stage}
+[publish]{.name}
+
+[quarto → gh-pages]{.sub}
+:::
+:::
+
+::: {.cmd-table}
+| Stage | File | Owner today | Produces |
+|---|---|---|---|
+| Build | `R/00_build_data.R` | instructor | `data/wss_2020_2024.csv` |
+| Recode | `R/01_recode.R` | recode team | `data/wss_clean.rds` |
+| Analyze | `R/02_analysis.R` | analysis team | `output/*.png`, model summaries |
+| Explore | `app/app.R` | Shiny team | interactive app |
+| Check | `tests/testthat/` | everyone | pass / fail |
+| Publish | `quarto publish gh-pages` | instructor | the website you are reading |
+:::
+
+## Run It End to End
+
+```bash
+Rscript R/01_recode.R                       # csv  -> data/wss_clean.rds
+Rscript R/02_analysis.R                     # models, figures -> output/
+Rscript -e 'testthat::test_dir("tests/testthat")'
+Rscript -e 'shiny::runApp("app")'
+```
+
+::: {.exp-block}
+[Why this order is enforced]{.exp-head}
+
+Every number in the paper traces back through exactly one path. If the recode changes,
+the analysis and the app change with it, because neither one keeps its own private copy
+of the recoding logic. Ask the agent to add a recode to `02_analysis.R` and it will
+happily do it — this is the rule you are enforcing against your own convenience.
+:::
+
+## Where We Start
+
+::: {.cmd-table}
+| Weighted two-party Trump share | 2020 | 2024 | Change |
+|---|---|---|---|
+| Non-Latino | .503 (n = 1,944) | .511 (n = 2,828) | +.008 |
+| Latino | .398 (n = 937) | .419 (n = 786) | +.021 |
+:::
+
+::: {style="font-size: 0.6em; line-height: 1.5; margin-top: 0.5em;"}
+n_obs = 6,495 two-party voters · n_miss = 1,105 (non-voters, other candidates, ineligible) of 7,600 respondents.
+:::
+
+::: {.limits}
+[The puzzle]{.limits-head}
+A two-point Latino shift, on 786 Latino respondents in 2024, is far from the
+double-digit national exit-poll story. Sample? Weights? Mode? Reported versus intended
+vote? **That is the interesting part** — not reproducing a headline, but working out what
+this sample can and cannot support.
+:::
+
+::: {.slide-source}
+Produced by `R/02_analysis.R` from `data/wss_clean.rds`; weights are `weight` (2020) and `weight_all` (2024). Confidence intervals in the script use a Kish effective *n*, not a design-based variance.
+:::
+
+## Four Things We Can Demonstrate
+
+::: {.item-list}
+- [Recode]{.tag} Generations, income terciles, strength of partisanship — each checked against the codebook
+- [Analysis]{.tag} `brms` logit; predicted probabilities for authoritarianism × Latino × year. Does `vote_type` (reported vs. intended) matter?
+- [Shiny]{.tag} A state-by-year panel and a download button
+- [Skeptics]{.tag} Is this sample representative of Latino voters? Weighting, mode, and comparison with external estimates
+:::
+
+::: {.slide-note}
+We will walk one of these through the whole loop — prompt, diff, `n_obs`, test — and the
+rest are here as worked examples you can run later on the repo, or on your own data.
+:::
+
+## What `testthat` Is
+
+::: {style="font-size: 0.6em; line-height: 1.5;"}
+R's unit-testing package. A test file is just R code that **asserts** rather than
+prints: it says what must be true, and fails loudly when it is not. One file per
+concern, in `tests/testthat/`, named `test-*.R`.
+:::
+
+:::: {.columns}
+
+::: {.column width="46%"}
+::: {.tight-code}
+```r
+# tests/testthat/test-unit-recode.R
+library(testthat)
+wss <- readRDS("data/wss_clean.rds")
+
+test_that("auth scale is bounded", {
+  expect_true(all(
+    wss$authoritarianism >= 0 &
+    wss$authoritarianism <= 1,
+    na.rm = TRUE))
+})
+```
+:::
+
+::: {style="font-size: 0.5em; color: #6b6b6b; line-height: 1.4;"}
+`test_that("what must be true", { expectations })` — the string is the failure message,
+so write it as a claim.
+:::
+:::
+
+::: {.column width="4%"}
+:::
+
+::: {.column width="50%"}
+::: {.cmd-table}
+| Expectation | Asserts |
+|---|---|
+| `expect_equal(x, y)` | equal within tolerance |
+| `expect_identical(x, y)` | exactly identical |
+| `expect_true(x)` | all of `x` is `TRUE` |
+| `expect_setequal(x, y)` | same values, any order |
+| `expect_length(x, n)` | length is `n` |
+| `expect_error(f())` | it *does* fail |
+| `expect_no_warning(f())` | it runs clean |
+| `skip("reason")` | not applicable here |
+:::
+:::
+
+::::
+
+::: {.slide-source}
+Run them: `Rscript -e 'testthat::test_dir("tests/testthat")'` → `[ FAIL 0 | WARN 0 | SKIP 0 | PASS 10 ]`. Inside a package it is `devtools::test()`, and `usethis::use_test("recode")` creates the file.
+:::
+
+## Unit vs. Integration
+
+:::: {.columns}
+
+::: {.column width="48%"}
+::: {.contest-card .card-trad}
+[UNIT — `test-unit-*.R`]{.card-label}
+
+One function, **synthetic input written in the test**. Nothing on disk can make it pass or fail.
+
+```r
+expect_equal(pid_to_party3(1:7),
+  c("Democrat","Democrat","Democrat",
+    "Independent","Republican",
+    "Republican","Republican"))
+```
+
+Milliseconds. Tells you **where** it broke.
+:::
+:::
+
+::: {.column width="4%"}
+:::
+
+::: {.column width="48%"}
+::: {.contest-card .card-subv}
+[INTEGRATION — `test-integration-*.R`]{.card-label}
+
+The pieces together: real CSV, built `.rds`, the live Shiny server.
+
+```r
+testServer("app", {
+  session$setInputs(by = "latino",
+                    wt = TRUE)
+  expect_true(all(est()$trump <= 1))
+})
+```
+
+Seconds. Tells you **that** it broke.
+:::
+:::
+
+::::
+
+::: {.slide-note}
+Unit tests need **units**. A 200-line script has nothing to unit-test — which is why
+the pure helpers live in `R/functions.R`. Extracting the function comes first; the
+test comes second.
+:::
+
+## Make the Agent Prove It
+
+::: {.tight-code}
+```r
+test_that("authoritarianism is a 0-1 mean of four items", {
+  wss <- readRDS("data/wss_clean.rds")
+  expect_true(all(wss$authoritarianism >= 0 & wss$authoritarianism <= 1, na.rm = TRUE))
+  expect_equal(nrow(wss), 7600)
+})
+
+test_that("trump_vote is coded only for two-party voters", {
+  wss <- readRDS("data/wss_clean.rds")
+  expect_setequal(unique(na.omit(wss$trump_vote)), c(0, 1))
+  expect_equal(sum(!is.na(wss$trump_vote)), 6495)
+})
+```
+:::
+
+::: {.slide-note}
+A test is how you make a verification **permanent**. Write one for every recode you
+accept from an agent: it costs a minute now and catches the silent change six weeks
+from now, when somebody "improves" the recode.
+:::
+
+## Anatomy of a Shiny App
+
+::: {style="font-size: 0.6em; line-height: 1.5;"}
+Three objects — `ui` (nested HTML widgets), `server` (a function of `input`, `output`,
+`session`), and `shinyApp(ui, server)` — and one idea: **reactivity**. You never write
+"when the user clicks, recompute." You declare what each output *is*, and Shiny
+re-runs what depends on what changed.
+:::
+
+::: {.pipeline}
+::: {.stage}
+[input$by]{.name}
+
+[the control]{.sub}
+:::
+::: {.stage}
+[est()]{.name}
+
+[reactive — caches]{.sub}
+:::
+::: {.stage}
+[output$plot]{.name}
+
+[render]{.sub}
+:::
+:::
+
+::: {.item-list}
+- [input$x]{.tag} Read-only, set by the browser. Reading it creates the dependency
+- [reactive()]{.tag} Caches, and re-runs only when something it read changed. `est()` is used by both plot and table — computed once
+- [render*()]{.tag} An output; re-runs on change and writes into `output$plot`
+:::
+
+::: {.limits}
+[The two mistakes agents make]{.limits-head}
+Calling a reactive outside a reactive context — *"operation not allowed without an
+active reactive context"* — and recomputing the same summary in every `render*` block
+instead of sharing one `reactive()`.
+:::
+
+## The App Holds No Analysis Logic
+
+::: {.tight-code}
+```r
+source(here::here("R/functions.R"))          # same helpers as the analysis
+wss <- read_rds(here::here("data/wss_clean.rds"))   # loads once, outside server
+
+server <- function(input, output, session) {        # session: needed by testServer()
+  est <- reactive({
+    wss |> filter(state %in% input$state) |> trump_share(input$by, weighted = input$wt)
+  })
+  output$plot <- renderPlot(ggplot(est(), aes(year, trump, colour = .data[[input$by]], ...)))
+  output$tab  <- renderTable(est())
+}
+```
+:::
+
+::: {.item-list}
+- [One source of truth]{.tag} The app calls `trump_share()`, the same function the paper calls — it cannot drift
+- [`.data[[input$by]]`]{.tag} Tidy evaluation for a column chosen at runtime, not `get()` and not pasted strings
+- [n_obs, n_miss on screen]{.tag} Every point has a sample size behind it, and some are small
+- [Testable]{.tag} `server` is an ordinary function: `testServer()` sets inputs and reads reactives, no browser
+:::
+
+::: {.slide-source}
+Running it: `Rscript -e 'shiny::runApp("app")'`. The app reads the recode's **output**, never the raw CSV.
+:::
+
+# In the Wild {.divider}
+
+## A Bigger Case: The Arizona Voter Project
+
+::: {style="font-size: 0.6em; line-height: 1.5;"}
+Everything so far has been one CSV and three scripts. The same workflow scales: the
+[Arizona Voter Project](https://voterproject.arizona.edu) is a public-facing data
+project at the University of Arizona — statewide voter file, geocoded addresses,
+harmonized surveys, election returns — built and maintained with agent assistance
+throughout.
+:::
+
+:::: {.columns}
+
+::: {.column width="48%"}
+::: {.contest-card .card-trad}
+[THE PIECES]{.card-label}
+
+- Voter-file and address tables in a **warehouse** (BigQuery), queried from R
+- **Geocoding** addresses to tract and block group
+- A **harmonized survey panel** for over-time estimates
+- **Aggregation** to county / tract / district, with small-cell suppression
+- An **Angular widget bundle** ported into the public site
+:::
+:::
+
+::: {.column width="4%"}
+:::
+
+::: {.column width="48%"}
+::: {.contest-card .card-subv}
+[WHAT THE AGENT DOES]{.card-label}
+
+- Writes the **query**, the recode, the aggregation — the boilerplate
+- Runs **repeatable procedures** captured as skills: "geocode the backlog," "rebuild the widgets"
+- Does **not** decide what a measure means, which weight applies, or whether a number is publishable
+:::
+:::
+
+::::
+
+::: {.slide-note}
+The scale changes; the discipline does not. Same three guardrails — a repository, a
+written brief, and verification before anything is published.
+:::
+
+## Why It Works at That Scale
+
+::: {.item-list}
+- [Procedures, not prompts]{.tag} A recurring task — geocode a new build, refresh the aggregates, ship the site bundle — is written down once as a **skill** the agent loads, rather than re-explained each session
+- [Cost guards in code]{.tag} A warehouse query **dry-runs** and refuses to scan past a byte budget. The guardrail is in the function, not in the instructions
+- [Suppression as a rule]{.tag} Small cells are suppressed in the aggregation step, so no downstream chart can leak one
+- [One brief, many repos]{.tag} Each repository carries its own `AGENTS.md`; the agent reads the project before touching it
+:::
+
+::: {.exp-block}
+[The transferable lesson]{.exp-head}
+
+Agents are most useful where a task is **specified and repeated** — and most dangerous
+where a task is **judgment**. The way to get the first without the second is to make
+the specified parts executable: a skill, a test, a cost guard, a suppression threshold.
+Anything left to prose will eventually be ignored.
+:::
+
+::: {.slide-source}
+<https://voterproject.arizona.edu> · Structure described by the instructor; no project data appears in this workshop repository.
+:::
+
+<!-- AI-drafted (Claude Code); reviewed by CRW -->
+
+## {.conclusion}
+
+::: {.kicker}
+Wrap-up
+:::
+
+::: {.headline}
+What to take home
+:::
+
+::: {.takeaways}
+1. The repository is the safety net. **Branch, diff, revert** — then an agent editing
+   your files is a convenience rather than a risk.
+2. The instruction file is the real interface. **One brief, every tool**, short enough
+   to be followed.
+3. Agents are strong where failure is loud and weak where it is **silent**. Research
+   code is mostly the second kind.
+4. Verification is not optional and not vague: **read the diff, cite the codebook,
+   report n_obs and n_miss, write the test.**
+5. One pipeline, one path from raw data to the published number.
+:::
+
+::: {.close}
+**This was a walkthrough, not an assignment.** Everything shown is in the repository:
+clone it, run it, and take the workflow — brief, pipeline, diff, test — to your own
+project.
+:::
+
+## {.thankyou}
+
+::: {.ty-headline}
+Thank You
+:::
+
+::: {.ty-contact}
+[chrisweber@arizona.edu](mailto:chrisweber@arizona.edu) ·
+[crweber9874.github.io/UNM_Workshop](https://crweber9874.github.io/UNM_Workshop/)
+:::

@@ -1,0 +1,124 @@
+---
+title: "Git workflow"
+---
+
+## The model
+
+```
+Working directory → Staging area → Local repo → Remote (GitHub)
+     (edit)            (add)        (commit)        (push)
+                                         ←  (pull)  ←
+```
+
+Changes move left to right, one deliberate step at a time, and come back with
+`git pull`. The staging area exists so you can commit *some* of your changes — the
+finished recode, not the half-written one beside it.
+
+## Clone (and fork, for later)
+
+**Clone** makes a copy on *your computer*. This is what you want today:
+
+```bash
+git clone https://github.com/crweber9874/UNM_Workshop.git
+cd UNM_Workshop
+```
+
+Your edits stay local. You can commit, branch, and break things freely; none of it
+touches the original, because pushing is the only operation that would, and you can only
+push to repositories you have access to.
+
+**Fork** makes a copy under *your account*, on the GitHub website. That is what you'd
+use to contribute to a project you cannot write to — fork, clone your fork, push, open a
+pull request. Worth knowing; not needed here.
+
+::: {.note}
+[Today you only clone]{.note-head}
+The repository is public, so read access is all you need — nobody has to be added to
+anything, and nothing you do locally can affect the original. Forking is for the day you
+want to send work back somewhere.
+:::
+
+## The everyday loop
+
+```bash
+git pull                     # pick up changes to the original
+git status                   # what changed?
+git add R/01_recode.R        # stage specific files (avoid `git add .` blindly)
+git commit -m "Recode age into generations"
+git diff HEAD~1              # read what you just committed
+```
+
+A **commit** is a snapshot of your changes with a unique ID and a message. The message
+is for the version of you who, in four months, needs to know why `age_group` has four
+categories. Write it for that person.
+
+Every command here works in your own clone with no write access to anything. `push` is
+the only one that needs somewhere you can write.
+
+## Branching in your own clone
+
+```bash
+git switch -c trying-something     # a branch costs nothing
+# ...edit, add, commit...
+git switch main                    # back to where you started
+git branch -D trying-something     # throw the experiment away
+```
+
+This is the whole safety net, and it is entirely local. Let the agent loose on a branch;
+if the result is wrong, delete the branch.
+
+## When to use what
+
+| Action | When | Command | Needs access? |
+|---|---|---|---|
+| **Clone** | Reading and running someone's code | `git clone <url>` | no |
+| **Pull** | Picking up later changes | `git pull` | no |
+| **Branch** | Any change you are not sure of | `git switch -c name-topic` | no |
+| **Add** | Choosing what goes in the commit | `git add R/01_recode.R` | no |
+| **Commit** | Saving a coherent step locally | `git commit -m "message"` | no |
+| **Diff** | Checking what the agent did | `git diff` | no |
+| **Fork** | You want to send work back | `gh repo fork <repo> --clone` | your account |
+| **Push** | Publishing a branch | `git push -u origin name-topic` | write |
+| **Pull request** | Asking for review and a merge | `gh pr create --fill` | write on a fork |
+
+Everything in the "no" rows is all you need today — and all you need to use an agent
+safely on any repository, including your own.
+
+::: {.warn}
+[Rules of the road]{.warn-head}
+Branch per task, never commit on `main` · small commits with clear messages · read the
+diff before you commit · never commit data you were not given, passwords, or
+`.Renviron`.
+:::
+
+## Merge conflicts
+
+```
+<<<<<<< HEAD
+your version
+=======
+their version
+>>>>>>> main
+```
+
+Keep what is right, delete the markers, then `git add` and `git commit`. You can ask the
+agent — *"resolve the merge conflict in `R/01_recode.R`, keeping both recodes"* — and
+then **read its diff**.
+
+## Undo
+
+| Situation | Command |
+|---|---|
+| See what you changed | `git diff` |
+| Discard edits to a file | `git restore file.R` |
+| Unstage | `git restore --staged file.R` |
+| Fix the last commit message | `git commit --amend` |
+| Undo a commit, keeping the history | `git revert <hash>` |
+| Throw away a branch | `git branch -D name-topic` |
+| Look at the history | `git log --oneline -10` |
+
+::: {.turn}
+[Follow along, if you like]{.turn-head}
+Clone the repo, make a branch, let an agent change one line of `R/01_recode.R`, run
+`git diff`, then `git restore` it. That is the loop everything else today sits inside.
+:::

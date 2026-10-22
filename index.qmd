@@ -1,22 +1,72 @@
 ---
-title: "AI as a Research Tool"
-subtitle: "UNM Workshop · Christopher Weber"
+title: "Preface"
 ---
 
-## Agenda
+A coding agent is a collaborator with no memory and no stake in being right. It writes
+plausible code quickly, and plausible is not the same as correct. So the useful question
+is not *can it fit the model* — it is **what can I delegate, and how do I check it?**
 
-| | Section | What we do |
-|---|---|---|
-| 0 | Welcome & goals | What agents can and can't do for research |
-| 1 | [Setup](setup.qmd) | GitHub, Copilot, Codespaces, Claude Code |
-| 2 | [Git workflow](git.qmd) | Pull, branch, commit, push, pull request — together |
-| 3 | [Agents](agents.qmd) | `AGENTS.md` / `CLAUDE.md`, slash commands, shortcuts |
-| 4 | [Project](project.qmd) | Did Latino voters pivot to Trump? Recode → analyze → Shiny |
-| 5 | Wrap-up | Verification, reproducibility, what to trust |
+This is the written version of a workshop given at the University of New Mexico. It is a
+walkthrough, not an assignment: everything in it runs on one public repository and one
+real research question — did Latino voters in the Western states shift toward Trump
+between 2020 and 2024, and does authoritarianism condition that shift?
+
+::: {.strip}
+[Slides](slides/workshop.qmd){.primary}
+[Downloads](00-resources.qmd)
+[Repository](https://github.com/crweber9874/UNM_Workshop)
+[Open a Codespace](https://codespaces.new/crweber9874/UNM_Workshop)
+[2020 codebook](codebooks/wss2020_codebook.pdf)
+[2024 codebook](codebooks/wss2024_codebook.pdf)
+:::
 
 ## Goals
-1. Everyone can clone, edit, and push to a shared repo.
-2. Everyone has an AI assistant that *knows the project* via an instructions file.
-3. We answer one substantive question together — and check the AI's work.
 
-[Slides](slides/workshop.qmd) · [Repository](https://github.com/crweber9874/UNM_Workshop)
+1. See the whole loop once — **clone, branch, diff, undo** — on a real project.
+2. See how an agent comes to **know a project** through an instruction file.
+3. Watch one substantive question get answered, and watch us **check the machine's work**.
+
+## How this is organized
+
+**Before you start** — [Downloads](00-resources.qmd): what to install, how to check
+it worked, and the zero-install paths if you would rather not install anything.
+
+**The workflow** — [Framing](01-framing.qmd) on what an agent is and where it fails
+silently; [Setup](02-setup.qmd); the [git workflow](03-git.qmd) that makes delegation
+safe; and [Agents](04-agents.qmd), on instruction files and the commands worth knowing.
+
+**The pipeline** — the [overview](05-pipeline.qmd), then one chapter per stage:
+[the data](06-data.qmd), [the recode](07-recode.qmd), [the analysis](08-analysis.qmd),
+[the tests](09-tests.qmd), and [the app and publishing](10-app-and-publishing.qmd).
+These chapters run the repository's own scripts, so the numbers and figures in them are
+the ones the code actually produces.
+
+**Checking the work** — [Verification](11-verification.qmd): reading the diff, citing
+the codebook, reporting *n*, and turning a check into a test.
+
+## Running the code
+
+The repository is public, so read access is all you need:
+
+```bash
+git clone https://github.com/crweber9874/UNM_Workshop.git
+cd UNM_Workshop
+Rscript R/01_recode.R
+Rscript R/02_analysis.R
+Rscript -e 'testthat::test_dir("tests/testthat")'
+quarto render                 # rebuild this book
+```
+
+::: {.note}
+[About the code chunks]{.note-head}
+Chapters with output execute against `data/wss_2020_2024.csv`, which is in the
+repository. Results are cached with Quarto's `freeze`, so rebuilding the book does not
+re-run everything — but deleting `_freeze/` and rendering again is the real test of
+reproducibility.
+:::
+
+::: {.warn}
+[About the data]{.warn-head}
+The Western States Survey file here is pared down for teaching. Variable meanings come
+from the codebooks in `codebooks/` — cite those, not this book, and not the agent.
+:::

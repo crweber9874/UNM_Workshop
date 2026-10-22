@@ -1,0 +1,103 @@
+---
+title: "The data"
+---
+
+```{r}
+#| label: setup
+#| include: false
+library(tidyverse)
+```
+
+Western States Survey (YouGov), fielded in 2020 and 2024 in Arizona, Colorado, Nevada,
+New Mexico, and Utah. `R/00_build_data.R` reads the two raw Stata files, harmonizes
+them, and writes the one analysis file distributed here. The raw files are not
+distributed; the CSV is.
+
+```{r}
+wss_raw <- read_csv("data/wss_2020_2024.csv", show_col_types = FALSE)
+dim(wss_raw)
+```
+
+```{r}
+count(wss_raw, year)
+```
+
+## What is in it
+
+```{r}
+#| label: tbl-vars
+#| tbl-cap: "Columns of `data/wss_2020_2024.csv`."
+tibble(
+  variable = names(wss_raw),
+  type     = map_chr(wss_raw, ~ class(.x)[1]),
+  n_miss   = map_int(wss_raw, ~ sum(is.na(.x))),
+  distinct = map_int(wss_raw, n_distinct)
+) |>
+  knitr::kable()
+```
+
+The substantive columns, per the codebooks in `codebooks/`:
+
+| Variable | Meaning |
+|---|---|
+| `year`, `state` | survey year; AZ, CO, NV, NM, UT |
+| `weight` | survey weight (see below) |
+| `vote_choice` | Trump / Democrat / Other / Did not vote |
+| `vote_type` | whether the vote was `reported` or `intended` |
+| `trump_vote` | 1 Trump, 0 Biden/Harris, `NA` otherwise |
+| `age`, `female`, `race`, `latino` | demographics |
+| `educ` (1–6), `college`, `faminc` (1–16) | education and income |
+| `pid7`, `ideo5` | party identification and ideology |
+| `auth1`–`auth4` | child-rearing items; 1 = authoritarian response |
+
+::: {.warn}
+[The weight is already harmonized]{.warn-head}
+The 2020 file calls it `weight` and the 2024 file calls it `weight_all`;
+[`R/00_build_data.R`](https://github.com/crweber9874/UNM_Workshop/blob/main/R/00_build_data.R)
+renames the latter, so this file has a single `weight` column. An agent told "use the
+2024 weight" will go looking for `weight_all` and not find it. This is exactly the kind
+of thing that belongs in `AGENTS.md`.
+:::
+
+## The outcome
+
+`trump_vote` is defined only for two-party voters, which is where most of the missingness
+lives:
+
+```{r}
+count(wss_raw, year, vote_choice) |>
+  pivot_wider(names_from = year, values_from = n)
+```
+
+```{r}
+wss_raw |>
+  summarise(n_obs  = sum(!is.na(trump_vote)),
+            n_miss = sum(is.na(trump_vote)),
+            .by = year)
+```
+
+Reported and intended vote are not the same measurement, and the mix differs by year —
+something the analysis chapter has to take seriously:
+
+```{r}
+count(wss_raw, year, vote_type) |>
+  pivot_wider(names_from = year, values_from = n)
+```
+
+## The authoritarianism items
+
+Four forced-choice child-rearing pairs, each scored 1 for the authoritarian response:
+
+```{r}
+wss_raw |>
+  select(year, auth1:auth4) |>
+  pivot_longer(auth1:auth4, names_to = "item") |>
+  summarise(mean = mean(value, na.rm = TRUE),
+            n_miss = sum(is.na(value)),
+            .by = c(year, item)) |>
+  pivot_wider(names_from = year, values_from = c(mean, n_miss)) |>
+  knitr::kable(digits = 3)
+```
+
+Nothing has been recoded yet. That is the next chapter, and it is deliberately the only
+place where recoding happens.

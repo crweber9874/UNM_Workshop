@@ -1,29 +1,71 @@
 project:
-  type: website
-  render: ["*.qmd", "slides/*.qmd"]
+  type: book
+  output-dir: _site
+  render:
+    - "*.qmd"
   resources: ["codebooks/*.pdf"]
-website:
-  title: "AI as a Research Tool — UNM"
-  navbar:
-    left:
-      - href: index.qmd
-        text: Agenda
-      - href: setup.qmd
-        text: 1. Setup
-      - href: git.qmd
-        text: 2. Git workflow
-      - href: agents.qmd
-        text: 3. Agents
-      - href: project.qmd
-        text: 4. Project
-      - href: slides/workshop.qmd
-        text: Slides
-    right:
-      - icon: github
-        href: https://github.com/crweber9874/UNM_Workshop
+  execute-dir: project
+  post-render:
+    - quarto render slides      # nested project -> _site/slides/
+
+book:
+  title: "AI as a Research Tool"
+  subtitle: "A walkthrough: GitHub, Copilot, and Claude Code on a shared R project"
+  author: "Christopher Weber"
+  site-url: https://crweber9874.github.io/UNM_Workshop/
+  repo-url: https://github.com/crweber9874/UNM_Workshop
+  repo-actions: [source, issue]
+  search: true
+  chapters:
+    - index.qmd
+    - 00-resources.qmd
+    - part: "The workflow"
+      chapters:
+        - 01-framing.qmd
+        - 02-setup.qmd
+        - 03-git.qmd
+        - 04-agents.qmd
+    - part: "The pipeline"
+      chapters:
+        - 05-pipeline.qmd
+        - 06-data.qmd
+        - 07-recode.qmd
+        - 08-analysis.qmd
+        - 09-tests.qmd
+        - 10-app-and-publishing.qmd
+    - part: "Checking the work"
+      chapters:
+        - 11-verification.qmd
+  sidebar:
+    style: docked
+    background: light
+  page-footer:
+    left: "Christopher Weber · University of Arizona"
+    right: "[Slides](slides/workshop.qmd) · [Repository](https://github.com/crweber9874/UNM_Workshop)"
+
 format:
   html:
-    theme: cosmo
+    theme: [cosmo, styles.scss]
     toc: true
+    toc-depth: 3
+    code-link: true
+    code-copy: true
+    link-external-newwindow: true
+    include-in-header:
+      text: |
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700;800&display=swap" rel="stylesheet">
+  # pdf: requires a LaTeX install (`quarto install tinytex`)
+  #   documentclass: scrbook
+
 execute:
-  eval: false
+  freeze: auto
+  warning: false
+  message: false
+
+knitr:
+  opts_chunk:
+    comment: "#>"
+    collapse: true
+    fig-align: center
+    dpi: 150

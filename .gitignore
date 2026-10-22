@@ -22,3 +22,7 @@ rsconnect/
 **/*.quarto_ipynb
 data/wss_clean.rds
 Rplots.pdf
+
+# stray output from rendering a single chapter instead of the project
+/*.html
+/site_libs/

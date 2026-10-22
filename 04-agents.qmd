@@ -1,5 +1,5 @@
 ---
-title: "3. Agents: instructions & shortcuts"
+title: "Agents: instructions & shortcuts"
 ---
 
 ## How an agent "sees" this repo
@@ -7,7 +7,32 @@ title: "3. Agents: instructions & shortcuts"
 2. It reads files you mention (`@R/01_recode.R`) or that it searches for.
 3. It runs commands (R, git) — with your permission.
 
-So the instructions file is the **project brief**: layout, variable meanings, rules. Here `CLAUDE.md` is one line — `@AGENTS.md` — so every tool shares a single source of truth.
+::: {.note}
+[The instruction file is the project brief]{.note-head}
+Layout, variable meanings, conventions, guardrails. Here `CLAUDE.md` contains one line —
+`@AGENTS.md` — so every tool in the room shares a single source of truth. Change the
+brief once and all of them follow it.
+:::
+
+## What ours says
+
+```markdown
+## Project
+Did Latino voters in the Western states shift toward Trump from 2020
+to 2024, and does authoritarianism condition that shift?
+
+## Layout
+- data/wss_2020_2024.csv  analysis file (read-only; never edit by hand)
+- R/01_recode.R           all recoding lives here
+- codebooks/              cite these when describing a variable
+
+## Rules
+- R + tidyverse, native pipe |>. Minimal comments.
+- New recodes go in R/01_recode.R, not in analysis scripts.
+- Always report n_obs and n_miss with any model.
+- Use survey weights for population estimates; say when you don't.
+- Don't push to main without the user's say-so; prefer a branch + PR.
+```
 
 ## Writing a good AGENTS.md / CLAUDE.md
 - What the project is (one sentence) and the research question.
@@ -17,7 +42,6 @@ So the instructions file is the **project brief**: layout, variable meanings, ru
 - Guardrails: report N and missingness, use weights, don't push to main.
 - Keep it short; agents follow concise rules better than essays.
 
-Bootstrap one: run `/init` in Claude Code, then edit it yourself.
 Personal, all-project preferences go in `~/.claude/CLAUDE.md`.
 
 ## Claude Code shortcuts
@@ -48,11 +72,19 @@ Personal, all-project preferences go in `~/.claude/CLAUDE.md`.
 | `@workspace`, `#file` | Add repo or file context |
 | Agent mode | Multi-file edits that run commands |
 
-## Saving credits
-- `/clear` between unrelated tasks; long context costs every turn.
-- Point at files (`@R/02_analysis.R`) rather than “look around.”
-- Use plan mode for big changes; approve the plan, then execute.
-- Smaller model for routine edits.
+## Division of labor
+Copilot is strongest at the **next line** — completions while you type. Claude Code is strongest at the **next task** — *"add income terciles to the recode, rerun it, and show me what changed."* Use both.
 
-## Verify, always
-Agents produce plausible code. Check variable coding against the codebook, check Ns, and rerun the script yourself.
+## Spending less
+- `/clear` between unrelated tasks; long context is re-billed every turn.
+- Point at files (`@R/02_analysis.R`) rather than asking it to "look around."
+- Plan mode for anything large: approve the plan, then let it execute.
+- A smaller model for routine edits and renames.
+- One well-specified request beats six vague corrections.
+
+::: {.warn}
+[Then verify]{.warn-head}
+Agents produce plausible code, and in research code failure is silent. Read the diff,
+check the coding against the codebook, report `n_obs` and `n_miss`, and write a test.
+That is [Verification](11-verification.qmd).
+:::
