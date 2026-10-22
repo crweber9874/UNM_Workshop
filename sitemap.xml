@@ -1,35 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://crweber9874.github.io/UNM_Workshop/verify.html</loc>
-    <lastmod>2026-10-22T16:44:02.027Z</lastmod>
-  </url>
-  <url>
-    <loc>https://crweber9874.github.io/UNM_Workshop/setup.html</loc>
-    <lastmod>2026-10-22T16:44:23.336Z</lastmod>
-  </url>
-  <url>
     <loc>https://crweber9874.github.io/UNM_Workshop/index.html</loc>
-    <lastmod>2026-10-22T16:43:21.724Z</lastmod>
+    <lastmod>2026-10-22T18:21:00.693Z</lastmod>
   </url>
   <url>
-    <loc>https://crweber9874.github.io/UNM_Workshop/framing.html</loc>
-    <lastmod>2026-10-22T16:43:42.598Z</lastmod>
+    <loc>https://crweber9874.github.io/UNM_Workshop/00-resources.html</loc>
+    <lastmod>2026-10-22T18:24:49.557Z</lastmod>
   </url>
   <url>
-    <loc>https://crweber9874.github.io/UNM_Workshop/agents.html</loc>
-    <lastmod>2026-10-22T16:44:58.721Z</lastmod>
+    <loc>https://crweber9874.github.io/UNM_Workshop/01-framing.html</loc>
+    <lastmod>2026-10-22T18:19:08.364Z</lastmod>
   </url>
   <url>
-    <loc>https://crweber9874.github.io/UNM_Workshop/git.html</loc>
-    <lastmod>2026-10-22T16:44:40.792Z</lastmod>
+    <loc>https://crweber9874.github.io/UNM_Workshop/02-setup.html</loc>
+    <lastmod>2026-10-22T18:34:14.004Z</lastmod>
   </url>
   <url>
-    <loc>https://crweber9874.github.io/UNM_Workshop/project.html</loc>
-    <lastmod>2026-10-22T16:45:22.862Z</lastmod>
+    <loc>https://crweber9874.github.io/UNM_Workshop/03-git.html</loc>
+    <lastmod>2026-10-22T18:19:08.370Z</lastmod>
   </url>
   <url>
-    <loc>https://crweber9874.github.io/UNM_Workshop/slides/workshop.html</loc>
-    <lastmod>2026-10-22T16:47:26.447Z</lastmod>
+    <loc>https://crweber9874.github.io/UNM_Workshop/04-agents.html</loc>
+    <lastmod>2026-10-22T18:19:08.371Z</lastmod>
+  </url>
+  <url>
+    <loc>https://crweber9874.github.io/UNM_Workshop/05-pipeline.html</loc>
+    <lastmod>2026-10-22T18:19:32.497Z</lastmod>
+  </url>
+  <url>
+    <loc>https://crweber9874.github.io/UNM_Workshop/06-data.html</loc>
+    <lastmod>2026-10-22T18:19:08.378Z</lastmod>
+  </url>
+  <url>
+    <loc>https://crweber9874.github.io/UNM_Workshop/07-recode.html</loc>
+    <lastmod>2026-10-22T18:19:08.380Z</lastmod>
+  </url>
+  <url>
+    <loc>https://crweber9874.github.io/UNM_Workshop/08-analysis.html</loc>
+    <lastmod>2026-10-22T18:19:08.382Z</lastmod>
+  </url>
+  <url>
+    <loc>https://crweber9874.github.io/UNM_Workshop/09-tests.html</loc>
+    <lastmod>2026-10-22T18:33:04.028Z</lastmod>
+  </url>
+  <url>
+    <loc>https://crweber9874.github.io/UNM_Workshop/10-app-and-publishing.html</loc>
+    <lastmod>2026-10-22T18:33:27.840Z</lastmod>
+  </url>
+  <url>
+    <loc>https://crweber9874.github.io/UNM_Workshop/11-verification.html</loc>
+    <lastmod>2026-10-22T18:19:08.387Z</lastmod>
   </url>
 </urlset>

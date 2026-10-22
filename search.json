@@ -1,506 +1,827 @@
 [
   {
-    "objectID": "verify.html",
-    "href": "verify.html",
-    "title": "5. Verification",
-    "section": "",
-    "text": "Agents produce plausible code. Verification is the part of the workflow that is yours, and it is short enough to do every single time."
-  },
-  {
-    "objectID": "verify.html#the-four-step-minimum",
-    "href": "verify.html#the-four-step-minimum",
-    "title": "5. Verification",
-    "section": "The four-step minimum",
-    "text": "The four-step minimum\n\nRead the diff. git diff before you commit, or the diff in the pull request. If you cannot explain a change, do not merge it.\nCheck the coding against the codebook. Open the PDF. Confirm the response options, the missing-data codes, and the direction of the scale.\nReport n_obs and n_miss. Every model, every time. If the N moved and nobody said why, cases were silently dropped.\nWrite the test. A check you run once is a check you will stop running."
-  },
-  {
-    "objectID": "verify.html#reporting-n",
-    "href": "verify.html#reporting-n",
-    "title": "5. Verification",
-    "section": "Reporting N",
-    "text": "Reporting N\nvoters &lt;- wss |&gt; filter(!is.na(trump_vote))\ncat(\"n_obs =\", nrow(voters),\n    \"| n_miss =\", nrow(wss) - nrow(voters), \"\\n\")\n\nfit &lt;- glm(trump_vote ~ latino * year, family = quasibinomial,\n           weights = weight, data = voters)\ncat(\"n_obs =\", nobs(fit), \"| n_miss =\", nrow(voters) - nobs(fit), \"\\n\")\nThe second pair matters most: listwise deletion inside a model formula is the most common way a sample shrinks without anyone noticing."
-  },
-  {
-    "objectID": "verify.html#turning-a-check-into-a-test",
-    "href": "verify.html#turning-a-check-into-a-test",
-    "title": "5. Verification",
-    "section": "Turning a check into a test",
-    "text": "Turning a check into a test\nTests live in tests/testthat/ and run with:\nRscript -e 'testthat::test_dir(\"tests/testthat\")'\ntest_that(\"authoritarianism is a 0-1 mean of four items\", {\n  wss &lt;- readRDS(\"data/wss_clean.rds\")\n  expect_true(all(wss$authoritarianism &gt;= 0 &\n                  wss$authoritarianism &lt;= 1, na.rm = TRUE))\n})\n\ntest_that(\"trump_vote is coded only for two-party voters\", {\n  wss &lt;- readRDS(\"data/wss_clean.rds\")\n  expect_setequal(unique(na.omit(wss$trump_vote)), c(0, 1))\n})\n\nA good use of an agent “Read R/01_recode.R and write a testthat test for every derived variable: range, allowed values, and row count. Do not change the recode.” Then read the tests — they are far easier to check than the recode itself, and they will outlive this workshop."
-  },
-  {
-    "objectID": "verify.html#checking-an-agents-factual-claims",
-    "href": "verify.html#checking-an-agents-factual-claims",
-    "title": "5. Verification",
-    "section": "Checking an agent’s factual claims",
-    "text": "Checking an agent’s factual claims\n\n\n\n\n\n\n\nClaim it makes\nHow you check it\n\n\n\n\n“pid7 runs 1–7 with 4 as independent”\nThe codebook, not the data’s range\n\n\n“I dropped non-voters”\nn_miss, and count() on the raw variable\n\n\n“This uses survey weights”\nRead the call. Look for weights =\n\n\n“The 2024 weight is weight”\nIt is weight_all. See AGENTS.md\n\n\n“Smith (2019) shows…”\nSearch for the citation. Assume it is invented\n\n\n\n\nReproducibility is the real test Delete data/wss_clean.rds and output/, then run the pipeline from the top. If the numbers come back identical, the work is reproducible. If they do not, something lives in a console somewhere instead of in a script."
-  },
-  {
-    "objectID": "verify.html#what-to-trust",
-    "href": "verify.html#what-to-trust",
-    "title": "5. Verification",
-    "section": "What to trust",
-    "text": "What to trust\n\nTrust code you have read and can explain.\nTrust numbers that a script regenerates from raw data.\nDo not trust a result that exists only in a chat transcript.\nDo not trust your own memory of what you accepted ten minutes ago. That is what the commit history is for.\n\n← The pipeline · Agenda"
-  },
-  {
-    "objectID": "setup.html",
-    "href": "setup.html",
-    "title": "1. Setup",
-    "section": "",
-    "text": "GitHub hosts code, data, and documents on the web. Four reasons it matters for research:\n\nTransparency — the work is open to inspection.\nReproducibility — others can recreate and extend your analysis.\nCollaboration — several people contribute to one project without emailing files.\nVersion control — every change is tracked, and reverting is trivial.\n\n\nAnd for working with agents An agent edits files in place. The repository is what makes that safe: you can see exactly what changed (git diff) and undo it (git restore). Without version control, you are letting a confident stranger type into your manuscript."
-  },
-  {
-    "objectID": "setup.html#why-a-repository-at-all",
-    "href": "setup.html#why-a-repository-at-all",
-    "title": "1. Setup",
-    "section": "",
-    "text": "GitHub hosts code, data, and documents on the web. Four reasons it matters for research:\n\nTransparency — the work is open to inspection.\nReproducibility — others can recreate and extend your analysis.\nCollaboration — several people contribute to one project without emailing files.\nVersion control — every change is tracked, and reverting is trivial.\n\n\nAnd for working with agents An agent edits files in place. The repository is what makes that safe: you can see exactly what changed (git diff) and undo it (git restore). Without version control, you are letting a confident stranger type into your manuscript."
-  },
-  {
-    "objectID": "setup.html#what-a-repository-looks-like",
-    "href": "setup.html#what-a-repository-looks-like",
-    "title": "1. Setup",
-    "section": "What a repository looks like",
-    "text": "What a repository looks like\nA repository is a folder with your code, data, documentation, and the complete history of changes. This one:\nUNM_Workshop/\n├── AGENTS.md              the brief every AI agent reads\n├── CLAUDE.md              one line: @AGENTS.md\n├── data/\n│   ├── wss_2020_2024.csv  analysis file (read-only)\n│   └── wss_clean.rds      built by R/01_recode.R\n├── codebooks/             2020 & 2024 survey codebooks (PDF)\n├── R/\n│   ├── 00_build_data.R    raw Stata → csv (instructor only)\n│   ├── 01_recode.R        all recoding lives here\n│   └── 02_analysis.R      models and figures → output/\n├── app/app.R              Shiny explorer\n├── tests/testthat/        checks on the recodes\n├── slides/                workshop slides (Quarto revealjs)\n└── .devcontainer/         one-click Codespace\nNumbered scripts, one job each, strict order. Recodes never live in analysis scripts — that single rule is what keeps four people and an agent from quietly disagreeing about what latino means."
-  },
-  {
-    "objectID": "setup.html#github",
-    "href": "setup.html#github",
-    "title": "1. Setup",
-    "section": "GitHub",
-    "text": "GitHub\n\nCreate an account at https://github.com. Students and faculty: apply for GitHub Education — it includes free Copilot Pro.\nSend me your username to be added as a collaborator (or fork the repo — see Module 2).\nInstall Git: macOS xcode-select --install; Windows https://git-scm.com.\nIdentify yourself once:\n\ngit config --global user.name \"Your Name\"\ngit config --global user.email \"you@unm.edu\"\n\nAuthenticate: install the GitHub CLI, then:\n\ngh auth login\ngh auth status      # confirm"
-  },
-  {
-    "objectID": "setup.html#r-and-rstudio",
-    "href": "setup.html#r-and-rstudio",
-    "title": "1. Setup",
-    "section": "R and RStudio",
-    "text": "R and RStudio\n\nWork from the terminal for Git commands. In RStudio: Tools → Terminal → New Terminal.\nThe Git tab gives you the same operations by point-and-click. The commands are identical underneath, and the terminal is what you can explain to a collaborator — or to an agent.\nOpen UNM_Workshop.Rproj so that relative paths (data/wss_clean.rds) resolve."
-  },
-  {
-    "objectID": "setup.html#copilot",
-    "href": "setup.html#copilot",
-    "title": "1. Setup",
-    "section": "Copilot",
-    "text": "Copilot\n\nVS Code → Extensions → GitHub Copilot + GitHub Copilot Chat → sign in.\nRStudio → Tools → Global Options → Copilot → Enable.\nCopilot reads .github/copilot-instructions.md, which here points at AGENTS.md."
-  },
-  {
-    "objectID": "setup.html#claude-code",
-    "href": "setup.html#claude-code",
-    "title": "1. Setup",
-    "section": "Claude Code",
-    "text": "Claude Code\nnpm install -g @anthropic-ai/claude-code    # or: brew install claude-code\ncd UNM_Workshop\nclaude\nRequires a Claude Pro/Max account or an API key. There is also a VS Code extension — search “Claude Code”. On first run, try /init and read what it writes about this project."
-  },
-  {
-    "objectID": "setup.html#no-local-setup-use-a-codespace",
-    "href": "setup.html#no-local-setup-use-a-codespace",
-    "title": "1. Setup",
-    "section": "No local setup? Use a Codespace",
-    "text": "No local setup? Use a Codespace\nOn the repository page: Code → Codespaces → Create codespace on main.\nThe container (.devcontainer/devcontainer.json) installs R and tidyverse, RStudio Server on port 8787, Quarto, Copilot, and Claude Code — in a browser tab, identical for everyone in the room.\n\n\n\nOpen in Codespaces\n\n\n\nHousekeeping The free tier is 60 core-hours a month. Stop your codespace when you are done — it bills while it idles.\n\n\nYour turn 1. Start a codespace, or clone the repo locally. 2. Run gh auth status — are you signed in? 3. Start claude, run /init, and read the result against AGENTS.md.\n\n← Framing · Next: Git workflow →"
-  },
-  {
     "objectID": "index.html",
     "href": "index.html",
     "title": "AI as a Research Tool",
     "section": "",
-    "text": "AI as a Research Tool\n\n\nA hands-on workshop\n\n\nUniversity of New Mexico · Albuquerque · Christopher Weber, University of Arizona"
+    "text": "0.1 Goals\nA coding agent is a collaborator with no memory and no stake in being right. It writes plausible code quickly, and plausible is not the same as correct. So the useful question is not can it fit the model — it is what can I delegate, and how do I check it?\nThis is the written version of a workshop given at the University of New Mexico. It is a walkthrough, not an assignment: everything in it runs on one public repository and one real research question — did Latino voters in the Western states shift toward Trump between 2020 and 2024, and does authoritarianism condition that shift?",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Preface</span>"
+    ]
   },
   {
     "objectID": "index.html#goals",
     "href": "index.html#goals",
     "title": "AI as a Research Tool",
-    "section": "Goals",
-    "text": "Goals\n\nEveryone can clone, branch, and open a pull request on a shared project.\nEveryone has an agent that knows this project through an instruction file.\nWe answer one substantive question together — and check the machine’s work.\n\n\nBefore you arrive A GitHub account, and your username sent to me so I can add you as a collaborator. Everything else can be done in the browser through Module 1."
-  },
-  {
-    "objectID": "framing.html",
-    "href": "framing.html",
-    "title": "0. Framing: what is “AI” here?",
     "section": "",
-    "text": "A large language model predicts text. A coding agent wraps that model in a loop: it reads files, proposes edits, runs commands, reads the output, and tries again. Three consequences follow, and they explain everything else on this site.\n\nIt has no memory of your project beyond what it reads this session. That is why an instruction file (Module 3) matters more than clever prompting.\nIt optimizes for a plausible answer, not a correct one. It will invent a variable name, a function argument, or a citation with complete fluency.\nIt acts on your files. Which is fine — if every change is visible and reversible (Module 2)."
+    "text": "See the whole loop once — clone, branch, diff, undo — on a real project.\nSee how an agent comes to know a project through an instruction file.\nWatch one substantive question get answered, and watch us check the machine’s work.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Preface</span>"
+    ]
   },
   {
-    "objectID": "framing.html#what-the-tool-actually-is",
-    "href": "framing.html#what-the-tool-actually-is",
-    "title": "0. Framing: what is “AI” here?",
+    "objectID": "index.html#how-this-is-organized",
+    "href": "index.html#how-this-is-organized",
+    "title": "AI as a Research Tool",
+    "section": "0.2 How this is organized",
+    "text": "0.2 How this is organized\nBefore you start — Downloads: what to install, how to check it worked, and the zero-install paths if you would rather not install anything.\nThe workflow — Framing on what an agent is and where it fails silently; Setup; the git workflow that makes delegation safe; and Agents, on instruction files and the commands worth knowing.\nThe pipeline — the overview, then one chapter per stage: the data, the recode, the analysis, the tests, and the app and publishing. These chapters run the repository’s own scripts, so the numbers and figures in them are the ones the code actually produces.\nChecking the work — Verification: reading the diff, citing the codebook, reporting n, and turning a check into a test.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Preface</span>"
+    ]
+  },
+  {
+    "objectID": "index.html#running-the-code",
+    "href": "index.html#running-the-code",
+    "title": "AI as a Research Tool",
+    "section": "0.3 Running the code",
+    "text": "0.3 Running the code\nThe repository is public, so read access is all you need:\ngit clone https://github.com/crweber9874/UNM_Workshop.git\ncd UNM_Workshop\nRscript R/01_recode.R\nRscript R/02_analysis.R\nRscript -e 'testthat::test_dir(\"tests/testthat\")'\nquarto render                 # rebuild this book\n\nAbout the code chunks Chapters with output execute against data/wss_2020_2024.csv, which is in the repository. Results are cached with Quarto’s freeze, so rebuilding the book does not re-run everything — but deleting _freeze/ and rendering again is the real test of reproducibility.\n\n\nAbout the data The Western States Survey file here is pared down for teaching. Variable meanings come from the codebooks in codebooks/ — cite those, not this book, and not the agent.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Preface</span>"
+    ]
+  },
+  {
+    "objectID": "00-resources.html",
+    "href": "00-resources.html",
+    "title": "2  Downloads",
     "section": "",
-    "text": "A large language model predicts text. A coding agent wraps that model in a loop: it reads files, proposes edits, runs commands, reads the output, and tries again. Three consequences follow, and they explain everything else on this site.\n\nIt has no memory of your project beyond what it reads this session. That is why an instruction file (Module 3) matters more than clever prompting.\nIt optimizes for a plausible answer, not a correct one. It will invent a variable name, a function argument, or a citation with complete fluency.\nIt acts on your files. Which is fine — if every change is visible and reversible (Module 2)."
+    "text": "2.1 The short list\nEverything on this page is free. If you would rather install nothing, skip to Zero-install options — a browser and a GitHub account are enough to follow the whole workshop.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Downloads</span>"
+    ]
   },
   {
-    "objectID": "framing.html#software-engineering-vs.-research-code",
-    "href": "framing.html#software-engineering-vs.-research-code",
-    "title": "0. Framing: what is “AI” here?",
-    "section": "Software engineering vs. research code",
-    "text": "Software engineering vs. research code\nAgents arrived from software engineering, where they are genuinely strong. Research code is a different problem.\n\n\n\n\n\n\n\n\n\nSoftware\nResearch code\n\n\n\n\nWhere the spec lives\nWritten down; tests encode it\nA codebook, a literature, your judgment\n\n\nHow failure appears\nLoud — it crashes or a test goes red\nSilent — it runs and prints a number\n\n\nCost of a subtle error\nA bug report\nA published claim\n\n\nAgent performance\nStrong\nConfidently wrong\n\n\n\n\nThe core asymmetry A wrong recode does not throw an error. pid7 == 8 is “not sure” in this survey, not “strong Republican” — code it as the latter and your partisanship measure is quietly wrong, every model after it is wrong, and nothing in your console will say so."
-  },
-  {
-    "objectID": "framing.html#what-to-delegate-and-what-never-to-trust-unchecked",
-    "href": "framing.html#what-to-delegate-and-what-never-to-trust-unchecked",
-    "title": "0. Framing: what is “AI” here?",
-    "section": "What to delegate, and what never to trust unchecked",
-    "text": "What to delegate, and what never to trust unchecked\n\nDelegate freely Scaffolding and boilerplate · refactoring you can read · documentation · tests · debugging an error message · “explain what this script does” · translating Stata to R · the fiddly ggplot2 call you do not want to look up.\n\n\nNever accept unchecked Variable coding and reverse-coding · which cases were dropped · weights and survey design · anything that cites a number · anything that cites a source."
-  },
-  {
-    "objectID": "framing.html#where-the-tools-differ",
-    "href": "framing.html#where-the-tools-differ",
-    "title": "0. Framing: what is “AI” here?",
-    "section": "Where the tools differ",
-    "text": "Where the tools differ\n\nCopilot is strongest at the next line: inline completion while you type, and quick questions about an open file.\nClaude Code (and Codex, Cursor’s agent mode, Copilot agent mode) is strongest at the next task: “add income terciles to the recode, rerun it, and show me what changed.” It edits several files and runs commands.\nA chat window with no repository access is the weakest option for this work: it cannot see your data, so it guesses your variable names.\n\nUse the first two together. That is what we set up next.\n\nDiscussion Name one task in your own current project you would hand to an agent today, and one you would not. What distinguishes them?\n\n← Agenda · Next: Setup →"
-  },
-  {
-    "objectID": "agents.html",
-    "href": "agents.html",
-    "title": "3. Agents: instructions & shortcuts",
+    "objectID": "00-resources.html#the-short-list",
+    "href": "00-resources.html#the-short-list",
+    "title": "2  Downloads",
     "section": "",
-    "text": "On start, it loads instruction files: CLAUDE.md (Claude Code), AGENTS.md (Copilot, Codex, Cursor…), .github/copilot-instructions.md (Copilot).\nIt reads files you mention (@R/01_recode.R) or that it searches for.\nIt runs commands (R, git) — with your permission.\n\n\nThe instruction file is the project brief Layout, variable meanings, conventions, guardrails. Here CLAUDE.md contains one line — @AGENTS.md — so every tool in the room shares a single source of truth. Change the brief once and all of them follow it."
+    "text": "Tool\nWhat it is\nGet it\n\n\n\n\nGitHub account\nHosts the repository; required for Codespaces and Copilot\nhttps://github.com/signup\n\n\nGit\nVersion control on your machine\nhttps://git-scm.com/downloads\n\n\nR\nThe language the pipeline runs in\nhttps://cloud.r-project.org\n\n\nRStudio Desktop\nIDE for R; has a Git tab and Copilot support\nhttps://posit.co/download/rstudio-desktop/\n\n\nVS Code\nIDE used for Copilot and the Claude Code extension\nhttps://code.visualstudio.com/download\n\n\nQuarto\nRenders this book and the slides\nhttps://quarto.org/docs/get-started/\n\n\nNode.js (LTS)\nOnly needed to install Claude Code via npm\nhttps://nodejs.org/en/download\n\n\n\n\nInstall R before RStudio RStudio is an interface to R, not a copy of it. Install R first, then RStudio, then reopen RStudio so it finds the installation.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Downloads</span>"
+    ]
   },
   {
-    "objectID": "agents.html#how-an-agent-sees-this-repo",
-    "href": "agents.html#how-an-agent-sees-this-repo",
-    "title": "3. Agents: instructions & shortcuts",
+    "objectID": "00-resources.html#platform-notes",
+    "href": "00-resources.html#platform-notes",
+    "title": "2  Downloads",
+    "section": "2.2 Platform notes",
+    "text": "2.2 Platform notes\nmacOS. Git ships with the Command Line Tools: run xcode-select --install in Terminal. For R, download the .pkg for your chip (Apple silicon vs. Intel) from CRAN. Homebrew is a convenient alternative for everything here (brew install git node quarto, brew install --cask r rstudio visual-studio-code).\nWindows. Install Git for Windows and accept the defaults; it provides Git Bash, which is where the commands in these chapters work as written. R and RStudio are both ordinary installers. If git is not found afterwards, close and reopen the terminal.\nLinux. sudo apt install git (or your package manager’s equivalent); CRAN has per-distribution instructions for R.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Downloads</span>"
+    ]
+  },
+  {
+    "objectID": "00-resources.html#verify-the-install",
+    "href": "00-resources.html#verify-the-install",
+    "title": "2  Downloads",
+    "section": "2.3 Verify the install",
+    "text": "2.3 Verify the install\nOpen a terminal — in RStudio, Tools → Terminal → New Terminal — and run:\ngit --version\nR --version\nquarto --version\nnode --version      # only if you plan to install Claude Code with npm\nEach should print a version number. Anything that prints “command not found” is not installed, or is not on your PATH; reopening the terminal fixes the second case most of the time.\nThen identify yourself to Git, once per machine:\ngit config --global user.name \"Your Name\"\ngit config --global user.email \"you@unm.edu\"",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Downloads</span>"
+    ]
+  },
+  {
+    "objectID": "00-resources.html#the-ai-tools",
+    "href": "00-resources.html#the-ai-tools",
+    "title": "2  Downloads",
+    "section": "2.4 The AI tools",
+    "text": "2.4 The AI tools\nGitHub Copilot. Free tier for everyone; students and faculty get Copilot Pro through GitHub Education. In VS Code, install the GitHub Copilot and GitHub Copilot Chat extensions and sign in. In RStudio, Tools → Global Options → Copilot → Enable.\nClaude Code. Requires a Claude Pro/Max subscription or an API key.\nnpm install -g @anthropic-ai/claude-code    # or: brew install claude-code\ncd UNM_Workshop\nclaude\nThere is also a Claude Code extension in the VS Code marketplace, which is the same tool with a panel instead of a terminal.\nGitHub CLI (optional, but it makes authentication painless): cli.github.com, then gh auth login and gh auth status.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Downloads</span>"
+    ]
+  },
+  {
+    "objectID": "00-resources.html#zero-install-options",
+    "href": "00-resources.html#zero-install-options",
+    "title": "2  Downloads",
+    "section": "2.5 Zero-install options",
+    "text": "2.5 Zero-install options\n\n\n\nOption\nWhat you need\nGood for\n\n\n\n\nGitHub Codespaces\nGitHub account\nThe full environment — R, tidyverse, RStudio Server on port 8787, Quarto, Copilot, Claude Code — in a browser tab\n\n\nPosit Cloud\nFree account\nRStudio in the browser; clone the repo from its terminal. No Claude Code\n\n\nDownload the ZIP\nNothing\nReading the code and data without Git\n\n\nThis site\nNothing\nEvery chapter shows its code and output; the slides are here\n\n\n\n\nIf you use a Codespace The free tier is 60 core-hours a month and it bills while it idles. Stop the codespace when you are done — Code → Codespaces → ⋯ → Stop codespace.\n\n\nThe ZIP is not a clone A ZIP download has no .git directory, so there is no history, no git diff, and no way to undo an agent’s edits. Fine for reading; not the setup to let an agent work in.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Downloads</span>"
+    ]
+  },
+  {
+    "objectID": "00-resources.html#then-what",
+    "href": "00-resources.html#then-what",
+    "title": "2  Downloads",
+    "section": "2.6 Then what",
+    "text": "2.6 Then what\nClone the repository and check that it runs:\ngit clone https://github.com/crweber9874/UNM_Workshop.git\ncd UNM_Workshop\nRscript R/01_recode.R\nMissing packages are the usual first error. Install what the pipeline needs:\ninstall.packages(c(\"tidyverse\", \"haven\", \"survey\", \"broom\",\n                   \"here\", \"scales\", \"testthat\", \"shiny\"))\nThe Bayesian section of the analysis chapter uses brms, which compiles Stan models and takes considerably longer to install. Add it only if you intend to run that part:\ninstall.packages(\"brms\")\nFrom there, continue to Setup.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Downloads</span>"
+    ]
+  },
+  {
+    "objectID": "01-framing.html",
+    "href": "01-framing.html",
+    "title": "3  Framing: what is “AI” here?",
     "section": "",
-    "text": "On start, it loads instruction files: CLAUDE.md (Claude Code), AGENTS.md (Copilot, Codex, Cursor…), .github/copilot-instructions.md (Copilot).\nIt reads files you mention (@R/01_recode.R) or that it searches for.\nIt runs commands (R, git) — with your permission.\n\n\nThe instruction file is the project brief Layout, variable meanings, conventions, guardrails. Here CLAUDE.md contains one line — @AGENTS.md — so every tool in the room shares a single source of truth. Change the brief once and all of them follow it."
+    "text": "3.1 What the tool actually is\nA large language model predicts text. A coding agent wraps that model in a loop: it reads files, proposes edits, runs commands, reads the output, and tries again. Three consequences follow, and they explain everything else on this site.",
+    "crumbs": [
+      "The workflow",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Framing: what is \"AI\" here?</span>"
+    ]
   },
   {
-    "objectID": "agents.html#what-ours-says",
-    "href": "agents.html#what-ours-says",
-    "title": "3. Agents: instructions & shortcuts",
-    "section": "What ours says",
-    "text": "What ours says\n## Project\nDid Latino voters in the Western states shift toward Trump from 2020\nto 2024, and does authoritarianism condition that shift?\n\n## Layout\n- data/wss_2020_2024.csv  analysis file (read-only; never edit by hand)\n- R/01_recode.R           all recoding lives here\n- codebooks/              cite these when describing a variable\n\n## Rules\n- R + tidyverse, native pipe |&gt;. Minimal comments.\n- New recodes go in R/01_recode.R, not in analysis scripts.\n- Always report n_obs and n_miss with any model.\n- Use survey weights for population estimates; say when you don't.\n- Don't push to main without the user's say-so; prefer a branch + PR."
-  },
-  {
-    "objectID": "agents.html#writing-a-good-agents.md-claude.md",
-    "href": "agents.html#writing-a-good-agents.md-claude.md",
-    "title": "3. Agents: instructions & shortcuts",
-    "section": "Writing a good AGENTS.md / CLAUDE.md",
-    "text": "Writing a good AGENTS.md / CLAUDE.md\n\nWhat the project is (one sentence) and the research question.\nWhere things live; which files are read-only.\nVariable definitions and where to cite them (codebook).\nConventions: language, style, where recodes go.\nGuardrails: report N and missingness, use weights, don’t push to main.\nKeep it short; agents follow concise rules better than essays.\n\nBootstrap one: run /init in Claude Code, then edit it yourself. Personal, all-project preferences go in ~/.claude/CLAUDE.md."
-  },
-  {
-    "objectID": "agents.html#claude-code-shortcuts",
-    "href": "agents.html#claude-code-shortcuts",
-    "title": "3. Agents: instructions & shortcuts",
-    "section": "Claude Code shortcuts",
-    "text": "Claude Code shortcuts\n\n\n\nCommand / key\nDoes\n\n\n\n\n/init\nDraft a CLAUDE.md from the codebase\n\n\n/memory\nEdit instruction/memory files\n\n\n/agents\nCreate & manage subagents (e.g., a “codebook checker”)\n\n\n/clear\nFresh context (cheap; use between tasks)\n\n\n/compact\nSummarize long conversation\n\n\n/model\nSwitch model (smaller = cheaper)\n\n\n/cost, /usage\nTrack spending\n\n\n/review\nReview a pull request\n\n\n/permissions\nWhat it may run without asking\n\n\n/resume\nReturn to an earlier session\n\n\n/mcp\nConnect external tools\n\n\n@file\nPut a file in context\n\n\n!cmd\nRun a shell command directly\n\n\nShift+Tab\nCycle modes (plan / auto-accept)\n\n\nEsc / Esc Esc\nInterrupt / rewind"
-  },
-  {
-    "objectID": "agents.html#copilot-shortcuts",
-    "href": "agents.html#copilot-shortcuts",
-    "title": "3. Agents: instructions & shortcuts",
-    "section": "Copilot shortcuts",
-    "text": "Copilot shortcuts\n\n\n\nKey / command\nDoes\n\n\n\n\nTab / Esc\nAccept / dismiss suggestion\n\n\nCtrl/Cmd+I\nInline chat\n\n\n/explain, /fix, /tests, /doc\nChat slash commands\n\n\n@workspace, #file\nAdd repo or file context\n\n\nAgent mode\nMulti-file edits that run commands"
-  },
-  {
-    "objectID": "agents.html#division-of-labor",
-    "href": "agents.html#division-of-labor",
-    "title": "3. Agents: instructions & shortcuts",
-    "section": "Division of labor",
-    "text": "Division of labor\nCopilot is strongest at the next line — completions while you type. Claude Code is strongest at the next task — “add income terciles to the recode, rerun it, and show me what changed.” Use both."
-  },
-  {
-    "objectID": "agents.html#spending-less",
-    "href": "agents.html#spending-less",
-    "title": "3. Agents: instructions & shortcuts",
-    "section": "Spending less",
-    "text": "Spending less\n\n/clear between unrelated tasks; long context is re-billed every turn.\nPoint at files (@R/02_analysis.R) rather than asking it to “look around.”\nPlan mode for anything large: approve the plan, then let it execute.\nA smaller model for routine edits and renames.\nOne well-specified request beats six vague corrections.\n\n\nThen verify Agents produce plausible code, and in research code failure is silent. Read the diff, check the coding against the codebook, report n_obs and n_miss, and write a test. That is Module 5.\n\n← Git workflow · Next: The pipeline →"
-  },
-  {
-    "objectID": "git.html",
-    "href": "git.html",
-    "title": "2. Git workflow",
+    "objectID": "01-framing.html#what-the-tool-actually-is",
+    "href": "01-framing.html#what-the-tool-actually-is",
+    "title": "3  Framing: what is “AI” here?",
     "section": "",
-    "text": "Working directory → Staging area → Local repo → Remote (GitHub)\n     (edit)            (add)        (commit)        (push)\n                                         ←  (pull)  ←\nChanges move left to right, one deliberate step at a time, and come back with git pull. The staging area exists so you can commit some of your changes — the finished recode, not the half-written one beside it."
+    "text": "It has no memory of your project beyond what it reads this session. That is why an instruction file (Agents) matters more than clever prompting.\nIt optimizes for a plausible answer, not a correct one. It will invent a variable name, a function argument, or a citation with complete fluency.\nIt acts on your files. Which is fine — if every change is visible and reversible (Git workflow).",
+    "crumbs": [
+      "The workflow",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Framing: what is \"AI\" here?</span>"
+    ]
   },
   {
-    "objectID": "git.html#the-model",
-    "href": "git.html#the-model",
-    "title": "2. Git workflow",
+    "objectID": "01-framing.html#software-engineering-vs.-research-code",
+    "href": "01-framing.html#software-engineering-vs.-research-code",
+    "title": "3  Framing: what is “AI” here?",
+    "section": "3.2 Software engineering vs. research code",
+    "text": "3.2 Software engineering vs. research code\nAgents arrived from software engineering, where they are genuinely strong. Research code is a different problem.\n\n\n\n\n\n\n\n\n\nSoftware\nResearch code\n\n\n\n\nWhere the spec lives\nWritten down; tests encode it\nA codebook, a literature, your judgment\n\n\nHow failure appears\nLoud — it crashes or a test goes red\nSilent — it runs and prints a number\n\n\nCost of a subtle error\nA bug report\nA published claim\n\n\nAgent performance\nStrong\nConfidently wrong\n\n\n\n\nThe core asymmetry A wrong recode does not throw an error. pid7 == 8 is “not sure” in this survey, not “strong Republican” — code it as the latter and your partisanship measure is quietly wrong, every model after it is wrong, and nothing in your console will say so.",
+    "crumbs": [
+      "The workflow",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Framing: what is \"AI\" here?</span>"
+    ]
+  },
+  {
+    "objectID": "01-framing.html#what-to-delegate-and-what-never-to-trust-unchecked",
+    "href": "01-framing.html#what-to-delegate-and-what-never-to-trust-unchecked",
+    "title": "3  Framing: what is “AI” here?",
+    "section": "3.3 What to delegate, and what never to trust unchecked",
+    "text": "3.3 What to delegate, and what never to trust unchecked\n\nDelegate freely Scaffolding and boilerplate · refactoring you can read · documentation · tests · debugging an error message · “explain what this script does” · translating Stata to R · the fiddly ggplot2 call you do not want to look up.\n\n\nNever accept unchecked Variable coding and reverse-coding · which cases were dropped · weights and survey design · anything that cites a number · anything that cites a source.",
+    "crumbs": [
+      "The workflow",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Framing: what is \"AI\" here?</span>"
+    ]
+  },
+  {
+    "objectID": "01-framing.html#where-the-tools-differ",
+    "href": "01-framing.html#where-the-tools-differ",
+    "title": "3  Framing: what is “AI” here?",
+    "section": "3.4 Where the tools differ",
+    "text": "3.4 Where the tools differ\n\nCopilot is strongest at the next line: inline completion while you type, and quick questions about an open file.\nClaude Code (and Codex, Cursor’s agent mode, Copilot agent mode) is strongest at the next task: “add income terciles to the recode, rerun it, and show me what changed.” It edits several files and runs commands.\nA chat window with no repository access is the weakest option for this work: it cannot see your data, so it guesses your variable names.\n\nUse the first two together. That is what we set up next.\n\nDiscussion Name one task in your own current project you would hand to an agent today, and one you would not. What distinguishes them?",
+    "crumbs": [
+      "The workflow",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Framing: what is \"AI\" here?</span>"
+    ]
+  },
+  {
+    "objectID": "02-setup.html",
+    "href": "02-setup.html",
+    "title": "4  Setup",
     "section": "",
-    "text": "Working directory → Staging area → Local repo → Remote (GitHub)\n     (edit)            (add)        (commit)        (push)\n                                         ←  (pull)  ←\nChanges move left to right, one deliberate step at a time, and come back with git pull. The staging area exists so you can commit some of your changes — the finished recode, not the half-written one beside it."
+    "text": "4.1 Why a repository at all\nGitHub hosts code, data, and documents on the web. Four reasons it matters for research:",
+    "crumbs": [
+      "The workflow",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Setup</span>"
+    ]
   },
   {
-    "objectID": "git.html#fork-vs.-clone",
-    "href": "git.html#fork-vs.-clone",
-    "title": "2. Git workflow",
-    "section": "Fork vs. clone",
-    "text": "Fork vs. clone\nFork makes a copy of someone else’s repository under your account, on the GitHub website. Use it when you want to contribute to a project you cannot write to. Fork + clone + pull request is how open-source collaboration works.\nClone makes a copy on your computer:\ngit clone https://github.com/crweber9874/UNM_Workshop.git\ncd UNM_Workshop\nYour edits stay local until you push, and you can only push to repositories you have access to.\n\nToday Everyone is a collaborator on one repository, so you clone and work on branches. If you would rather keep your work separate, fork first and open pull requests from your fork — the workflow below is otherwise identical."
-  },
-  {
-    "objectID": "git.html#the-everyday-loop",
-    "href": "git.html#the-everyday-loop",
-    "title": "2. Git workflow",
-    "section": "The everyday loop",
-    "text": "The everyday loop\ngit pull                     # ALWAYS first: get everyone else's work\ngit status                   # what changed?\ngit add R/01_recode.R        # stage specific files (avoid `git add .` blindly)\ngit commit -m \"Recode age into generations\"\ngit push\nA commit is a snapshot of your changes with a unique ID and a message. The message is for the version of you who, in four months, needs to know why age_group has four categories. Write it for that person."
-  },
-  {
-    "objectID": "git.html#working-together-in-one-repository",
-    "href": "git.html#working-together-in-one-repository",
-    "title": "2. Git workflow",
-    "section": "Working together in one repository",
-    "text": "Working together in one repository\ngit pull\ngit switch -c weber-recode-generation     # your own branch\n# ...edit, add, commit...\ngit push -u origin weber-recode-generation\ngh pr create --fill                       # open a pull request\nSomeone reviews the pull request on GitHub and merges it. Then everyone returns to a common base:\ngit switch main && git pull"
-  },
-  {
-    "objectID": "git.html#when-to-use-what",
-    "href": "git.html#when-to-use-what",
-    "title": "2. Git workflow",
-    "section": "When to use what",
-    "text": "When to use what\n\n\n\n\n\n\n\n\nAction\nWhen\nCommand\n\n\n\n\nFork\nContributing without write access\non github.com\n\n\nClone\nGetting a repo onto your machine\ngit clone &lt;url&gt;\n\n\nPull\nBefore you start working\ngit pull\n\n\nBranch\nAny change you are not sure of\ngit switch -c name-topic\n\n\nAdd\nChoosing what goes in the commit\ngit add R/01_recode.R\n\n\nCommit\nSaving a coherent step locally\ngit commit -m \"message\"\n\n\nPush\nPublishing your branch\ngit push -u origin name-topic\n\n\nPull request\nAsking for review and a merge\ngh pr create --fill\n\n\n\n\nRules of the road Pull before you start, push when you stop · one person per file where possible (recode / analysis / app) · small commits with clear messages · never commit data you were not given, passwords, or .Renviron."
-  },
-  {
-    "objectID": "git.html#merge-conflicts",
-    "href": "git.html#merge-conflicts",
-    "title": "2. Git workflow",
-    "section": "Merge conflicts",
-    "text": "Merge conflicts\n&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD\nyour version\n=======\ntheir version\n&gt;&gt;&gt;&gt;&gt;&gt;&gt; main\nKeep what is right, delete the markers, then git add and git commit. You can ask the agent — “resolve the merge conflict in R/01_recode.R, keeping both recodes” — and then read its diff."
-  },
-  {
-    "objectID": "git.html#undo",
-    "href": "git.html#undo",
-    "title": "2. Git workflow",
-    "section": "Undo",
-    "text": "Undo\n\n\n\nSituation\nCommand\n\n\n\n\nSee what you changed\ngit diff\n\n\nDiscard edits to a file\ngit restore file.R\n\n\nUnstage\ngit restore --staged file.R\n\n\nFix the last commit message\ngit commit --amend (before pushing)\n\n\nUndo a pushed commit\ngit revert &lt;hash&gt;\n\n\nLook at the history\ngit log --oneline -10\n\n\n\n\nYour turn Create a branch, add tmp/&lt;lastname&gt;.qmd with a sentence about your own data, commit it, push it, and open a pull request. Then review someone else’s.\n\n← Setup · Next: Agents →"
-  },
-  {
-    "objectID": "project.html",
-    "href": "project.html",
-    "title": "4. The pipeline & the group project",
+    "objectID": "02-setup.html#why-a-repository-at-all",
+    "href": "02-setup.html#why-a-repository-at-all",
+    "title": "4  Setup",
     "section": "",
-    "text": "Did Latino voters in the Western states shift toward Trump between 2020 and 2024, and does authoritarianism condition that shift?\nWestern States Survey (YouGov), 2020 (n = 3,600) and 2024 (n = 4,000): Arizona, Colorado, Nevada, New Mexico, Utah. Codebooks: 2020, 2024.\n\nlatino — the YouGov race item (Hispanic).\nauthoritarianism — mean of four child-rearing pairs, 0–1, 1 = authoritarian response (auth1–auth4).\ntrump_vote — 1 Trump, 0 Biden/Harris, NA otherwise.\nWeights — weight in 2020, weight_all in 2024, combined as weight.\n\n\nCite the codebook, not the agent Every claim about a variable on this page traces to codebooks/ and the variable list in AGENTS.md. When an agent tells you what a variable means, that is a hypothesis."
+    "text": "Transparency — the work is open to inspection.\nReproducibility — others can recreate and extend your analysis.\nCollaboration — several people contribute to one project without emailing files.\nVersion control — every change is tracked, and reverting is trivial.\n\n\nAnd for working with agents An agent edits files in place. The repository is what makes that safe: you can see exactly what changed (git diff) and undo it (git restore). Without version control, you are letting a confident stranger type into your manuscript.",
+    "crumbs": [
+      "The workflow",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Setup</span>"
+    ]
   },
   {
-    "objectID": "project.html#the-question",
-    "href": "project.html#the-question",
-    "title": "4. The pipeline & the group project",
+    "objectID": "02-setup.html#what-a-repository-looks-like",
+    "href": "02-setup.html#what-a-repository-looks-like",
+    "title": "4  Setup",
+    "section": "4.2 What a repository looks like",
+    "text": "4.2 What a repository looks like\nA repository is a folder with your code, data, documentation, and the complete history of changes. This one:\nUNM_Workshop/\n├── AGENTS.md              the brief every AI agent reads\n├── CLAUDE.md              one line: @AGENTS.md\n├── data/\n│   ├── wss_2020_2024.csv  analysis file (read-only)\n│   └── wss_clean.rds      built by R/01_recode.R\n├── codebooks/             2020 & 2024 survey codebooks (PDF)\n├── R/\n│   ├── functions.R        pure helpers, shared and unit-tested\n│   ├── 00_build_data.R    raw Stata → csv (instructor only)\n│   ├── 01_recode.R        all recoding lives here\n│   └── 02_analysis.R      models and figures → output/\n├── app/app.R              Shiny explorer\n├── tests/testthat/        test-unit-* and test-integration-*\n├── slides/                workshop slides (Quarto revealjs)\n└── .devcontainer/         one-click Codespace\nNumbered scripts, one job each, strict order. Recodes never live in analysis scripts — that single rule is what keeps four people and an agent from quietly disagreeing about what latino means.",
+    "crumbs": [
+      "The workflow",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Setup</span>"
+    ]
+  },
+  {
+    "objectID": "02-setup.html#github",
+    "href": "02-setup.html#github",
+    "title": "4  Setup",
+    "section": "4.3 GitHub",
+    "text": "4.3 GitHub\n\nCreate an account at https://github.com. Students and faculty: apply for GitHub Education — it includes free Copilot Pro.\nThe repository is public — you do not need to be added to anything. Clone it to read and run it — that is all today needs (see Git workflow).\nInstall Git: macOS xcode-select --install; Windows https://git-scm.com.\nIdentify yourself once:\n\ngit config --global user.name \"Your Name\"\ngit config --global user.email \"you@unm.edu\"\n\nAuthenticate: install the GitHub CLI, then:\n\ngh auth login\ngh auth status      # confirm",
+    "crumbs": [
+      "The workflow",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Setup</span>"
+    ]
+  },
+  {
+    "objectID": "02-setup.html#r-and-rstudio",
+    "href": "02-setup.html#r-and-rstudio",
+    "title": "4  Setup",
+    "section": "4.4 R and RStudio",
+    "text": "4.4 R and RStudio\n\nWork from the terminal for Git commands. In RStudio: Tools → Terminal → New Terminal.\nThe Git tab gives you the same operations by point-and-click. The commands are identical underneath, and the terminal is what you can explain to a collaborator — or to an agent.\nOpen UNM_Workshop.Rproj so that relative paths (data/wss_clean.rds) resolve.",
+    "crumbs": [
+      "The workflow",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Setup</span>"
+    ]
+  },
+  {
+    "objectID": "02-setup.html#copilot",
+    "href": "02-setup.html#copilot",
+    "title": "4  Setup",
+    "section": "4.5 Copilot",
+    "text": "4.5 Copilot\n\nVS Code → Extensions → GitHub Copilot + GitHub Copilot Chat → sign in.\nRStudio → Tools → Global Options → Copilot → Enable.\nCopilot reads .github/copilot-instructions.md, which here points at AGENTS.md.",
+    "crumbs": [
+      "The workflow",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Setup</span>"
+    ]
+  },
+  {
+    "objectID": "02-setup.html#claude-code",
+    "href": "02-setup.html#claude-code",
+    "title": "4  Setup",
+    "section": "4.6 Claude Code",
+    "text": "4.6 Claude Code\nnpm install -g @anthropic-ai/claude-code    # or: brew install claude-code\ncd UNM_Workshop\nclaude\nRequires a Claude Pro/Max account or an API key. There is also a VS Code extension — search “Claude Code”. On first run, try /init and read what it writes about this project.",
+    "crumbs": [
+      "The workflow",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Setup</span>"
+    ]
+  },
+  {
+    "objectID": "02-setup.html#no-local-setup-use-a-codespace",
+    "href": "02-setup.html#no-local-setup-use-a-codespace",
+    "title": "4  Setup",
+    "section": "4.7 No local setup? Use a Codespace",
+    "text": "4.7 No local setup? Use a Codespace\nOn the repository page: Code → Codespaces → Create codespace on main.\nThe container (.devcontainer/devcontainer.json) installs R and tidyverse, RStudio Server on port 8787, Quarto, Copilot, and Claude Code — in a browser tab, identical for everyone in the room.\n\n\n\nOpen in Codespaces\n\n\n\nHousekeeping The free tier is 60 core-hours a month. Stop your codespace when you are done — it bills while it idles.\n\n\nFollow along, if you like 1. Start a codespace, or clone the repo locally. 2. Run gh auth status — are you signed in? 3. Start claude, run /init, and read the result against AGENTS.md.",
+    "crumbs": [
+      "The workflow",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Setup</span>"
+    ]
+  },
+  {
+    "objectID": "03-git.html",
+    "href": "03-git.html",
+    "title": "5  Git workflow",
     "section": "",
-    "text": "Did Latino voters in the Western states shift toward Trump between 2020 and 2024, and does authoritarianism condition that shift?\nWestern States Survey (YouGov), 2020 (n = 3,600) and 2024 (n = 4,000): Arizona, Colorado, Nevada, New Mexico, Utah. Codebooks: 2020, 2024.\n\nlatino — the YouGov race item (Hispanic).\nauthoritarianism — mean of four child-rearing pairs, 0–1, 1 = authoritarian response (auth1–auth4).\ntrump_vote — 1 Trump, 0 Biden/Harris, NA otherwise.\nWeights — weight in 2020, weight_all in 2024, combined as weight.\n\n\nCite the codebook, not the agent Every claim about a variable on this page traces to codebooks/ and the variable list in AGENTS.md. When an agent tells you what a variable means, that is a hypothesis."
+    "text": "5.1 The model\nChanges move left to right, one deliberate step at a time, and come back with git pull. The staging area exists so you can commit some of your changes — the finished recode, not the half-written one beside it.",
+    "crumbs": [
+      "The workflow",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Git workflow</span>"
+    ]
   },
   {
-    "objectID": "project.html#one-stage-one-script",
-    "href": "project.html#one-stage-one-script",
-    "title": "4. The pipeline & the group project",
-    "section": "One stage, one script",
-    "text": "One stage, one script\n\n\n00 build\nraw Stata → csv\n\n\n01 recode\ncsv → wss_clean.rds\n\n\n02 analysis\nmodels → output/\n\n\napp\nShiny explorer\n\n\npublish\nquarto → gh-pages\n\n\n\n\n\n\n\n\n\n\n\nStage\nFile\nOwner today\nProduces\n\n\n\n\nBuild\nR/00_build_data.R\ninstructor\ndata/wss_2020_2024.csv\n\n\nRecode\nR/01_recode.R\nrecode team\ndata/wss_clean.rds\n\n\nAnalyze\nR/02_analysis.R\nanalysis team\noutput/*.png, model summaries\n\n\nExplore\napp/app.R\nShiny team\ninteractive app\n\n\nCheck\ntests/testthat/\neveryone\npass / fail\n\n\nPublish\nquarto publish gh-pages\ninstructor\nthis website"
-  },
-  {
-    "objectID": "project.html#run-it-end-to-end",
-    "href": "project.html#run-it-end-to-end",
-    "title": "4. The pipeline & the group project",
-    "section": "Run it end to end",
-    "text": "Run it end to end\nRscript R/01_recode.R                       # csv  -&gt; data/wss_clean.rds\nRscript R/02_analysis.R                     # models, figures -&gt; output/\nRscript -e 'testthat::test_dir(\"tests/testthat\")'\nRscript -e 'shiny::runApp(\"app\")'\nR/00_build_data.R needs the raw Stata files, which are not distributed; the CSV it produces is in the repository.\n\nWhy the order is enforced Every number traces back through exactly one path. If the recode changes, the analysis and the app change with it, because neither keeps its own private copy of the recoding logic. Ask an agent to add a recode to 02_analysis.R and it will happily do it — this is the rule you are enforcing against your own convenience."
-  },
-  {
-    "objectID": "project.html#where-we-start",
-    "href": "project.html#where-we-start",
-    "title": "4. The pipeline & the group project",
-    "section": "Where we start",
-    "text": "Where we start\nWeighted two-party Trump share:\n\n\n\n\n2020\n2024\nChange\n\n\n\n\nNon-Latino\n.503 (n = 1,944)\n.511 (n = 2,828)\n+.008\n\n\nLatino\n.398 (n = 937)\n.419 (n = 786)\n+.021\n\n\n\nn_obs = 6,495 two-party voters · n_miss = 1,105 (non-voters, other candidates, ineligible) of 7,600 respondents.\n\nThe puzzle A two-point Latino shift, estimated on 786 Latino respondents in 2024, is far from the double-digit national exit-poll story. Sample? Weights? Mode? Reported versus intended vote? That is the group task — not to reproduce a headline, but to establish what this sample can and cannot support.\n\nSource: R/02_analysis.R run on data/wss_clean.rds. The intervals in that script use a Kish effective n, not a design-based variance — fixing that is a legitimate first contribution."
-  },
-  {
-    "objectID": "project.html#four-teams",
-    "href": "project.html#four-teams",
-    "title": "4. The pipeline & the group project",
-    "section": "Four teams",
-    "text": "Four teams\n\nRecode team — add generation, income terciles, and a strength-of-partisanship measure to R/01_recode.R. Check each against the codebook, and add a test per variable.\nAnalysis team — Bayesian logit with brms; predicted probabilities for authoritarianism × Latino × year. Does the reported/intended distinction (vote_type) matter?\nShiny team — add a state-by-year panel and a download button to app/app.R.\nSkeptics — is this sample representative of Latino voters? Interrogate the weights, the mode, and the comparison with external estimates.\n\n\nWorkflow for every team Branch → work with your agent → read the diff → report n_obs and n_miss → commit → pull request. Review someone else’s PR before you ask for yours."
-  },
-  {
-    "objectID": "project.html#starting-prompts-worth-stealing",
-    "href": "project.html#starting-prompts-worth-stealing",
-    "title": "4. The pipeline & the group project",
-    "section": "Starting prompts worth stealing",
-    "text": "Starting prompts worth stealing\nRead AGENTS.md and R/01_recode.R. Add an income-tercile variable built from\nfaminc, using survey weights. Do not touch anything else. Show me the diff.\n\nRead codebooks/wss2024_codebook.pdf for pid7 and tell me whether\nR/01_recode.R codes party3 correctly. Quote the codebook.\n\nRefit the model in R/02_analysis.R with brms, bernoulli family, weakly\ninformative priors. Report n_obs and n_miss. Do not drop the weights.\nEach of these is narrow, names its files, and asks for evidence. That is the whole technique.\n← Agents · Next: Verification →"
-  },
-  {
-    "objectID": "slides/workshop.html#the-premise",
-    "href": "slides/workshop.html#the-premise",
-    "title": "AI as a Research Tool",
-    "section": "The Premise",
-    "text": "The Premise\n\n\nA coding agent is a collaborator with no memory and no stake in being right. It writes plausible code quickly, and plausible is not the same as correct.\nThe useful question is not can it write the model? It is what work can I delegate, and how do I check it?\nThree things make delegation safe: a repository (so every change is visible and reversible), an instruction file (so the agent knows the project), and a habit of verification (so you catch what it got wrong).\nEverything today runs on one shared repo and one real research question.\n\n\n\nThree goals\n\nEveryone can clone, branch, and open a pull request on a shared project.\nEveryone has an agent that knows this project through an instructions file.\nWe answer one substantive question together — and check the machine’s work."
-  },
-  {
-    "objectID": "slides/workshop.html#the-day",
-    "href": "slides/workshop.html#the-day",
-    "title": "AI as a Research Tool",
-    "section": "The Day",
-    "text": "The Day\n\n\n0 · Framing What agents do, and where they fail silently\n1 · Setup GitHub, Copilot, Claude Code, Codespaces\n2 · Git Pull, branch, commit, push, pull request\n3 · Agents AGENTS.md, slash commands, cost discipline\n4 · Pipeline Recode → model → app → published site\n5 · Verify Reading the diff, citing the codebook, writing the test\n\n\n\nSlides, instructions, and data: https://crweber9874.github.io/UNM_Workshop/ · Repository: https://github.com/crweber9874/UNM_Workshop"
-  },
-  {
-    "objectID": "slides/workshop.html#software-engineering-vs.-research-code",
-    "href": "slides/workshop.html#software-engineering-vs.-research-code",
-    "title": "AI as a Research Tool",
-    "section": "Software Engineering vs. Research Code",
-    "text": "Software Engineering vs. Research Code\n\n\n\nSOFTWARE\nTests tell you it works. The spec is written down. Correctness is checkable by the machine.\n\nAgents are strong here\nFailures are loud\n\n\n\n\n\n\nRESEARCH\nThe spec lives in a codebook and your judgment. A wrong recode runs fine and produces a publishable number.\n\nAgents are confidently wrong here\nFailures are silent\n\n\n\n\nThis asymmetry drives every rule we adopt today. The agent can scaffold, refactor, document, and debug. It cannot know that pid7 == 8 is “not sure” rather than “strong Republican” unless the codebook says so and you make it read it."
-  },
-  {
-    "objectID": "slides/workshop.html#why-a-repository-at-all",
-    "href": "slides/workshop.html#why-a-repository-at-all",
-    "title": "AI as a Research Tool",
-    "section": "Why a Repository at All",
-    "text": "Why a Repository at All\n\nGitHub hosts code, data, and documents on the web. Four reasons it matters for research:\n\nTransparency — the work is open to inspection.\nReproducibility — others can recreate and extend your analysis.\nCollaboration — several people contribute to one project without emailing files.\nVersion control — every change is tracked, and reverting is trivial.\n\n\n\nAnd for working with agents\nAn agent edits files in place. The repository is what makes that safe: you can see exactly what it changed (git diff), and undo it (git restore). Without version control, you are letting a confident stranger type into your dissertation."
-  },
-  {
-    "objectID": "slides/workshop.html#the-repository",
-    "href": "slides/workshop.html#the-repository",
-    "title": "AI as a Research Tool",
-    "section": "The Repository",
-    "text": "The Repository\n\nUNM_Workshop/\n├── AGENTS.md              the brief every AI agent reads\n├── CLAUDE.md              one line: @AGENTS.md\n├── data/\n│   ├── wss_2020_2024.csv  analysis file (read-only)\n│   └── wss_clean.rds      built by R/01_recode.R\n├── codebooks/             2020 & 2024 survey codebooks (PDF)\n├── R/\n│   ├── 00_build_data.R    raw Stata → csv (instructor only)\n│   ├── 01_recode.R        all recoding lives here\n│   └── 02_analysis.R      models and figures → output/\n├── app/app.R              Shiny explorer\n├── tests/testthat/        checks on the recodes\n├── slides/                these slides\n└── .devcontainer/         one-click Codespace\n\n\nNumbered scripts, one job each, strict order. Recodes never live in analysis scripts — that single rule is what keeps four people and an agent from quietly disagreeing about what latino means."
-  },
-  {
-    "objectID": "slides/workshop.html#accounts-and-tools",
-    "href": "slides/workshop.html#accounts-and-tools",
-    "title": "AI as a Research Tool",
-    "section": "Accounts and Tools",
-    "text": "Accounts and Tools\n\n\nGitHub Account at github.com. Students and faculty: education.github.com for free Copilot Pro\nGit macOS xcode-select --install · Windows git-scm.com\nIdentity git config --global user.name and user.email, once\nAuth GitHub CLI, then gh auth login\nCopilot VS Code extensions, or RStudio → Tools → Global Options → Copilot\nClaude npm install -g @anthropic-ai/claude-code, then claude in the repo\n\n\n\nCopilot reads .github/copilot-instructions.md; Claude Code reads CLAUDE.md. In this repo both point at AGENTS.md, so every tool gets the same brief."
-  },
-  {
-    "objectID": "slides/workshop.html#no-local-install-use-a-codespace",
-    "href": "slides/workshop.html#no-local-install-use-a-codespace",
-    "title": "AI as a Research Tool",
-    "section": "No Local Install? Use a Codespace",
-    "text": "No Local Install? Use a Codespace\n\nOn the repository page: Code → Codespaces → Create codespace on main.\nThe container in .devcontainer/devcontainer.json gives you R and tidyverse, RStudio Server on port 8787, Quarto, Copilot, and Claude Code — in a browser tab, identical for everyone in the room.\n\n\nHousekeeping The free tier is 60 core-hours a month. Stop your codespace when you are done — it bills while it idles.\n\n\nYour turn 1. Open the repository and start a codespace (or clone locally). 2. In the terminal: gh auth status — are you signed in? 3. Start claude, then type /init and read what it writes about this project."
-  },
-  {
-    "objectID": "slides/workshop.html#the-model",
-    "href": "slides/workshop.html#the-model",
-    "title": "AI as a Research Tool",
-    "section": "The Model",
-    "text": "The Model\n\n\nWorking directory\nedit\n\n\nStaging area\ngit add\n\n\nLocal repository\ngit commit\n\n\nGitHub\ngit push\n\n\n\nChanges move left to right, one deliberate step at a time, and come back with git pull. The staging area exists so that you commit some of your changes — the finished recode, not the half-written one beside it."
-  },
-  {
-    "objectID": "slides/workshop.html#fork-vs.-clone",
-    "href": "slides/workshop.html#fork-vs.-clone",
-    "title": "AI as a Research Tool",
-    "section": "Fork vs. Clone",
-    "text": "Fork vs. Clone\n\n\n\nFORK\nA copy of someone else’s repository under your account, made on the GitHub website.\n\nUse it to contribute where you lack write access\nFork + clone + pull request = open-source collaboration\n\n\n\n\n\n\nCLONE\nA copy of a repository on your computer, made with git clone &lt;url&gt;.\n\nYour edits stay local until you push\nYou can only push to repos you have access to\n\n\n\n\nToday everyone is a collaborator on one repo, so you clone and work on branches. Send me your GitHub username if you are not added yet; fork instead if you would rather keep your work separate."
-  },
-  {
-    "objectID": "slides/workshop.html#get-the-repository",
-    "href": "slides/workshop.html#get-the-repository",
-    "title": "AI as a Research Tool",
-    "section": "Get the Repository",
-    "text": "Get the Repository\ngit clone https://github.com/crweber9874/UNM_Workshop.git\ncd UNM_Workshop\n\nFrom RStudio you can do all of this in Tools → Terminal → New Terminal, or point-and-click in the Git tab. The commands are the same underneath, and the terminal is what you will be able to explain to a collaborator — or to an agent."
-  },
-  {
-    "objectID": "slides/workshop.html#the-everyday-loop",
-    "href": "slides/workshop.html#the-everyday-loop",
-    "title": "AI as a Research Tool",
-    "section": "The Everyday Loop",
-    "text": "The Everyday Loop\ngit pull                        # ALWAYS first: get everyone else's work\ngit status                      # what did I change?\ngit add R/01_recode.R           # stage specific files, not `git add .` blindly\ngit commit -m \"Add generation recode\"\ngit push\n\nWhat a commit is\nA snapshot of your changes with a unique ID and a message. The message is for the version of you who, in four months, needs to know why age_group has four categories. Write it for that person."
-  },
-  {
-    "objectID": "slides/workshop.html#working-together-without-collisions",
-    "href": "slides/workshop.html#working-together-without-collisions",
-    "title": "AI as a Research Tool",
-    "section": "Working Together Without Collisions",
-    "text": "Working Together Without Collisions\ngit pull\ngit switch -c weber-recode-generation    # your own branch\n# ...edit, add, commit...\ngit push -u origin weber-recode-generation\ngh pr create --fill                      # open a pull request\n\nSomeone reviews the pull request on GitHub and merges it. Then everyone returns to a common base: git switch main && git pull.\n\n\nRules of the road Pull before you start, push when you stop · one person per file where possible (recode / analysis / app) · small commits with clear messages · never commit data you were not given, passwords, or .Renviron."
-  },
-  {
-    "objectID": "slides/workshop.html#when-to-use-what",
-    "href": "slides/workshop.html#when-to-use-what",
-    "title": "AI as a Research Tool",
-    "section": "When to Use What",
-    "text": "When to Use What\n\n\n\n\n\n\n\n\n\nAction\nWhen\nCommand\n\n\n\n\nFork\nContributing without write access\non github.com\n\n\nClone\nGetting a repo onto your machine\ngit clone &lt;url&gt;\n\n\nPull\nBefore you start working\ngit pull\n\n\nBranch\nAny change you are not sure of\ngit switch -c name-topic\n\n\nAdd\nChoosing what goes in the commit\ngit add R/01_recode.R\n\n\nCommit\nSaving a coherent step locally\ngit commit -m \"message\"\n\n\nPush\nPublishing your branch\ngit push -u origin name-topic\n\n\nPull request\nAsking for review and a merge\ngh pr create --fill"
-  },
-  {
-    "objectID": "slides/workshop.html#conflicts-and-undo",
-    "href": "slides/workshop.html#conflicts-and-undo",
-    "title": "AI as a Research Tool",
-    "section": "Conflicts and Undo",
-    "text": "Conflicts and Undo\n\n\n\nA conflict looks like this\n&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD\nyour version\n=======\ntheir version\n&gt;&gt;&gt;&gt;&gt;&gt;&gt; main\nKeep what is right, delete the markers, then git add and git commit. You may ask the agent — “resolve the conflict in R/01_recode.R, keeping both recodes” — and then read the diff.\n\n\n\n\n\n\n\n\nSituation\nCommand\n\n\n\n\nDiscard edits to a file\ngit restore file.R\n\n\nUnstage\ngit restore --staged file.R\n\n\nFix the last message\ngit commit --amend\n\n\nUndo a pushed commit\ngit revert &lt;hash&gt;\n\n\nSee what changed\ngit diff\n\n\n\n\n\n\nYour turn Create a branch, add a file tmp/&lt;lastname&gt;.qmd with a sentence about your own data, commit it, push it, and open a pull request."
-  },
-  {
-    "objectID": "slides/workshop.html#how-an-agent-sees-this-repository",
-    "href": "slides/workshop.html#how-an-agent-sees-this-repository",
-    "title": "AI as a Research Tool",
-    "section": "How an Agent Sees This Repository",
-    "text": "How an Agent Sees This Repository\n\n\nOn start it loads instruction files: CLAUDE.md (Claude Code), AGENTS.md (Copilot, Codex, Cursor, and others), .github/copilot-instructions.md (Copilot).\nIt reads what you point at — @R/01_recode.R — or what it finds by searching.\nIt runs commands — R, git, shell — with your permission.\n\n\n\nSo the instruction file is the project brief\nLayout, variable meanings, conventions, guardrails. Here CLAUDE.md contains one line, @AGENTS.md, so every tool in the room shares a single source of truth. Change the brief once and all of them follow it."
-  },
-  {
-    "objectID": "slides/workshop.html#anatomy-of-a-good-agents.md",
-    "href": "slides/workshop.html#anatomy-of-a-good-agents.md",
-    "title": "AI as a Research Tool",
-    "section": "Anatomy of a Good AGENTS.md",
-    "text": "Anatomy of a Good AGENTS.md\n\n## Project\nDid Latino voters in the Western states shift toward Trump from 2020\nto 2024, and does authoritarianism condition that shift?\n\n## Layout\n- data/wss_2020_2024.csv  analysis file (read-only; never edit by hand)\n- R/01_recode.R           all recoding lives here\n- codebooks/              cite these when describing a variable\n\n## Rules\n- R + tidyverse, native pipe |&gt;. Minimal comments.\n- New recodes go in R/01_recode.R, not in analysis scripts.\n- Always report n_obs and n_miss with any model.\n- Use survey weights for population estimates; say when you don't.\n- Don't push to main without the user's say-so; prefer a branch + PR.\n\n\nWhat the project is · where things live · which files are read-only · variable definitions and where to cite them · conventions · guardrails. Keep it short: agents follow concise rules far better than essays. Bootstrap one with /init, then edit it yourself — the draft will be describing your code, not your intentions."
-  },
-  {
-    "objectID": "slides/workshop.html#claude-code-what-you-actually-type",
-    "href": "slides/workshop.html#claude-code-what-you-actually-type",
-    "title": "AI as a Research Tool",
-    "section": "Claude Code: What You Actually Type",
-    "text": "Claude Code: What You Actually Type\n\n\n\n\n\n\n\n\n\n\nCommand\nDoes\nCommand\nDoes\n\n\n\n\n/init\nDraft a CLAUDE.md\n/review\nReview a pull request\n\n\n/memory\nEdit instruction files\n/permissions\nWhat it may run unasked\n\n\n/agents\nBuild subagents\n/resume\nReturn to a session\n\n\n/clear\nFresh context (cheap)\n/mcp\nConnect external tools\n\n\n/compact\nSummarize a long session\n@file\nPut a file in context\n\n\n/model\nSwitch model\n!cmd\nRun a shell command\n\n\n/cost /usage\nTrack spending\nShift+Tab\nCycle plan / auto-accept\n\n\n\n\n\nEsc interrupts; Esc Esc rewinds the conversation. A subagent worth building today: a codebook checker that reads a recode and the PDF and reports disagreements."
-  },
-  {
-    "objectID": "slides/workshop.html#copilot-what-you-actually-type",
-    "href": "slides/workshop.html#copilot-what-you-actually-type",
-    "title": "AI as a Research Tool",
-    "section": "Copilot: What You Actually Type",
-    "text": "Copilot: What You Actually Type\n\n\n\n\n\n\n\n\nKey / command\nDoes\n\n\n\n\nTab / Esc\nAccept / dismiss an inline suggestion\n\n\nCtrl/Cmd+I\nInline chat on the selection\n\n\n/explain /fix /tests /doc\nChat commands on what you have open\n\n\n@workspace #file\nAdd the repo, or one file, to context\n\n\nAgent mode\nMulti-file edits that run commands\n\n\n\n\n\nDivision of labor\nCopilot is strongest at the next line — completions while you type. Claude Code is strongest at the next task — “add income terciles to the recode, rerun it, and show me what changed.” Use both."
-  },
-  {
-    "objectID": "slides/workshop.html#spending-less",
-    "href": "slides/workshop.html#spending-less",
-    "title": "AI as a Research Tool",
-    "section": "Spending Less",
-    "text": "Spending Less\n\n\nClear /clear between unrelated tasks — long context is re-billed every turn\nPoint Name files (@R/02_analysis.R) instead of asking it to look around\nPlan Plan mode for anything large: approve the plan, then let it execute\nDownshift A smaller model for routine edits and renames\nBatch One well-specified request beats six vague corrections"
-  },
-  {
-    "objectID": "slides/workshop.html#verify-always",
-    "href": "slides/workshop.html#verify-always",
-    "title": "AI as a Research Tool",
-    "section": "Verify, Always",
-    "text": "Verify, Always\n\n\n\nDELEGATE\n\nScaffolding and boilerplate\nRefactoring you can read\nDocumentation and tests\nDebugging an error message\n“Explain what this script does”\n\n\n\n\n\n\nNEVER TRUST UNCHECKED\n\nVariable coding and reverse-coding\nWhich cases got dropped\nWeights and survey design\nAnything citing a number\nAnything citing a source\n\n\n\n\nThe minimum check, every time: read the diff, confirm the coding against the codebook, and look at n_obs and n_miss. If the N moved and nobody said why, something was silently dropped."
-  },
-  {
-    "objectID": "slides/workshop.html#the-question",
-    "href": "slides/workshop.html#the-question",
-    "title": "AI as a Research Tool",
-    "section": "The Question",
-    "text": "The Question\n\nDid Latino voters in the Western states shift toward Trump between 2020 and 2024, and does authoritarianism condition that shift?\nWestern States Survey (YouGov), 2020 and 2024: Arizona, Colorado, Nevada, New Mexico, Utah. Latino is the YouGov race item; authoritarianism is the mean of four child-rearing pairs, scored 0–1 with 1 the authoritarian response.\n\n\nVariable definitions and coding: codebooks/wss2020_codebook.pdf, codebooks/wss2024_codebook.pdf, and the variable list in AGENTS.md. Cite the codebook, not the agent."
-  },
-  {
-    "objectID": "slides/workshop.html#one-stage-one-script",
-    "href": "slides/workshop.html#one-stage-one-script",
-    "title": "AI as a Research Tool",
-    "section": "One Stage, One Script",
-    "text": "One Stage, One Script\n\n\n00 build\nraw Stata → csv\n\n\n01 recode\ncsv → wss_clean.rds\n\n\n02 analysis\nmodels → output/\n\n\napp\nShiny explorer\n\n\npublish\nquarto → gh-pages\n\n\n\n\n\n\n\n\n\n\n\n\nStage\nFile\nOwner today\nProduces\n\n\n\n\nBuild\nR/00_build_data.R\ninstructor\ndata/wss_2020_2024.csv\n\n\nRecode\nR/01_recode.R\nrecode team\ndata/wss_clean.rds\n\n\nAnalyze\nR/02_analysis.R\nanalysis team\noutput/*.png, model summaries\n\n\nExplore\napp/app.R\nShiny team\ninteractive app\n\n\nCheck\ntests/testthat/\neveryone\npass / fail\n\n\nPublish\nquarto publish gh-pages\ninstructor\nthe website you are reading"
-  },
-  {
-    "objectID": "slides/workshop.html#run-it-end-to-end",
-    "href": "slides/workshop.html#run-it-end-to-end",
-    "title": "AI as a Research Tool",
-    "section": "Run It End to End",
-    "text": "Run It End to End\nRscript R/01_recode.R                       # csv  -&gt; data/wss_clean.rds\nRscript R/02_analysis.R                     # models, figures -&gt; output/\nRscript -e 'testthat::test_dir(\"tests/testthat\")'\nRscript -e 'shiny::runApp(\"app\")'\n\nWhy this order is enforced\nEvery number in the paper traces back through exactly one path. If the recode changes, the analysis and the app change with it, because neither one keeps its own private copy of the recoding logic. Ask the agent to add a recode to 02_analysis.R and it will happily do it — this is the rule you are enforcing against your own convenience."
-  },
-  {
-    "objectID": "slides/workshop.html#where-we-start",
-    "href": "slides/workshop.html#where-we-start",
-    "title": "AI as a Research Tool",
-    "section": "Where We Start",
-    "text": "Where We Start\n\n\n\n\nWeighted two-party Trump share\n2020\n2024\nChange\n\n\n\n\nNon-Latino\n.503 (n = 1,944)\n.511 (n = 2,828)\n+.008\n\n\nLatino\n.398 (n = 937)\n.419 (n = 786)\n+.021\n\n\n\n\n\nn_obs = 6,495 two-party voters · n_miss = 1,105 (non-voters, other candidates, ineligible) of 7,600 respondents.\n\n\nThe puzzle A two-point Latino shift, on 786 Latino respondents in 2024, is far from the double-digit national exit-poll story. Sample? Weights? Mode? Reported versus intended vote? That is the group task — not to reproduce a headline, but to work out what this sample can and cannot support.\n\n\nProduced by R/02_analysis.R from data/wss_clean.rds; weights are weight (2020) and weight_all (2024). Confidence intervals in the script use a Kish effective n, not a design-based variance."
-  },
-  {
-    "objectID": "slides/workshop.html#four-teams",
-    "href": "slides/workshop.html#four-teams",
-    "title": "AI as a Research Tool",
-    "section": "Four Teams",
-    "text": "Four Teams\n\n\nRecode Generations, income terciles, strength of partisanship — each checked against the codebook\nAnalysis brms logit; predicted probabilities for authoritarianism × Latino × year. Does vote_type (reported vs. intended) matter?\nShiny A state-by-year panel and a download button\nSkeptics Is this sample representative of Latino voters? Weighting, mode, and comparison with external estimates\n\n\n\nWorkflow for every team Branch → work with your agent → read the diff → report n_obs and n_miss → commit → pull request. Review someone else’s PR before you ask for yours."
-  },
-  {
-    "objectID": "slides/workshop.html#make-the-agent-prove-it",
-    "href": "slides/workshop.html#make-the-agent-prove-it",
-    "title": "AI as a Research Tool",
-    "section": "Make the Agent Prove It",
-    "text": "Make the Agent Prove It\n\ntest_that(\"authoritarianism is a 0-1 mean of four items\", {\n  wss &lt;- readRDS(\"data/wss_clean.rds\")\n  expect_true(all(wss$authoritarianism &gt;= 0 & wss$authoritarianism &lt;= 1, na.rm = TRUE))\n  expect_equal(nrow(wss), 7600)\n})\n\ntest_that(\"trump_vote is coded only for two-party voters\", {\n  wss &lt;- readRDS(\"data/wss_clean.rds\")\n  expect_setequal(unique(na.omit(wss$trump_vote)), c(0, 1))\n  expect_equal(sum(!is.na(wss$trump_vote)), 6495)\n})\n\n\nA test is how you make a verification permanent. Write one for every recode you accept from an agent: it costs a minute now and catches the silent change six weeks from now, when somebody “improves” the recode."
-  },
-  {
-    "objectID": "slides/workshop.html#section",
-    "href": "slides/workshop.html#section",
-    "title": "AI as a Research Tool",
+    "objectID": "03-git.html#the-model",
+    "href": "03-git.html#the-model",
+    "title": "5  Git workflow",
     "section": "",
-    "text": "Wrap-up\n\n\nWhat to take home\n\n\n\nThe repository is the safety net. Branch, diff, revert — then an agent editing your files is a convenience rather than a risk.\nThe instruction file is the real interface. One brief, every tool, short enough to be followed.\nAgents are strong where failure is loud and weak where it is silent. Research code is mostly the second kind.\nVerification is not optional and not vague: read the diff, cite the codebook, report n_obs and n_miss, write the test.\nOne pipeline, one path from raw data to the published number.\n\n\n\nToday’s deliverable: a merged pull request from every team, and a number each of us can defend."
+    "text": "Working directory → Staging area → Local repo → Remote (GitHub)\n     (edit)            (add)        (commit)        (push)\n                                         ←  (pull)  ←",
+    "crumbs": [
+      "The workflow",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Git workflow</span>"
+    ]
   },
   {
-    "objectID": "slides/workshop.html#section-1",
-    "href": "slides/workshop.html#section-1",
-    "title": "AI as a Research Tool",
+    "objectID": "03-git.html#clone-and-fork-for-later",
+    "href": "03-git.html#clone-and-fork-for-later",
+    "title": "5  Git workflow",
+    "section": "5.2 Clone (and fork, for later)",
+    "text": "5.2 Clone (and fork, for later)\nClone makes a copy on your computer. This is what you want today:\ngit clone https://github.com/crweber9874/UNM_Workshop.git\ncd UNM_Workshop\nYour edits stay local. You can commit, branch, and break things freely; none of it touches the original, because pushing is the only operation that would, and you can only push to repositories you have access to.\nFork makes a copy under your account, on the GitHub website. That is what you’d use to contribute to a project you cannot write to — fork, clone your fork, push, open a pull request. Worth knowing; not needed here.\n\nToday you only clone The repository is public, so read access is all you need — nobody has to be added to anything, and nothing you do locally can affect the original. Forking is for the day you want to send work back somewhere.",
+    "crumbs": [
+      "The workflow",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Git workflow</span>"
+    ]
+  },
+  {
+    "objectID": "03-git.html#the-everyday-loop",
+    "href": "03-git.html#the-everyday-loop",
+    "title": "5  Git workflow",
+    "section": "5.3 The everyday loop",
+    "text": "5.3 The everyday loop\ngit pull                     # pick up changes to the original\ngit status                   # what changed?\ngit add R/01_recode.R        # stage specific files (avoid `git add .` blindly)\ngit commit -m \"Recode age into generations\"\ngit diff HEAD~1              # read what you just committed\nA commit is a snapshot of your changes with a unique ID and a message. The message is for the version of you who, in four months, needs to know why age_group has four categories. Write it for that person.\nEvery command here works in your own clone with no write access to anything. push is the only one that needs somewhere you can write.",
+    "crumbs": [
+      "The workflow",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Git workflow</span>"
+    ]
+  },
+  {
+    "objectID": "03-git.html#branching-in-your-own-clone",
+    "href": "03-git.html#branching-in-your-own-clone",
+    "title": "5  Git workflow",
+    "section": "5.4 Branching in your own clone",
+    "text": "5.4 Branching in your own clone\ngit switch -c trying-something     # a branch costs nothing\n# ...edit, add, commit...\ngit switch main                    # back to where you started\ngit branch -D trying-something     # throw the experiment away\nThis is the whole safety net, and it is entirely local. Let the agent loose on a branch; if the result is wrong, delete the branch.",
+    "crumbs": [
+      "The workflow",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Git workflow</span>"
+    ]
+  },
+  {
+    "objectID": "03-git.html#when-to-use-what",
+    "href": "03-git.html#when-to-use-what",
+    "title": "5  Git workflow",
+    "section": "5.5 When to use what",
+    "text": "5.5 When to use what\n\n\n\n\n\n\n\n\n\nAction\nWhen\nCommand\nNeeds access?\n\n\n\n\nClone\nReading and running someone’s code\ngit clone &lt;url&gt;\nno\n\n\nPull\nPicking up later changes\ngit pull\nno\n\n\nBranch\nAny change you are not sure of\ngit switch -c name-topic\nno\n\n\nAdd\nChoosing what goes in the commit\ngit add R/01_recode.R\nno\n\n\nCommit\nSaving a coherent step locally\ngit commit -m \"message\"\nno\n\n\nDiff\nChecking what the agent did\ngit diff\nno\n\n\nFork\nYou want to send work back\ngh repo fork &lt;repo&gt; --clone\nyour account\n\n\nPush\nPublishing a branch\ngit push -u origin name-topic\nwrite\n\n\nPull request\nAsking for review and a merge\ngh pr create --fill\nwrite on a fork\n\n\n\nEverything in the “no” rows is all you need today — and all you need to use an agent safely on any repository, including your own.\n\nRules of the road Branch per task, never commit on main · small commits with clear messages · read the diff before you commit · never commit data you were not given, passwords, or .Renviron.",
+    "crumbs": [
+      "The workflow",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Git workflow</span>"
+    ]
+  },
+  {
+    "objectID": "03-git.html#merge-conflicts",
+    "href": "03-git.html#merge-conflicts",
+    "title": "5  Git workflow",
+    "section": "5.6 Merge conflicts",
+    "text": "5.6 Merge conflicts\n&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD\nyour version\n=======\ntheir version\n&gt;&gt;&gt;&gt;&gt;&gt;&gt; main\nKeep what is right, delete the markers, then git add and git commit. You can ask the agent — “resolve the merge conflict in R/01_recode.R, keeping both recodes” — and then read its diff.",
+    "crumbs": [
+      "The workflow",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Git workflow</span>"
+    ]
+  },
+  {
+    "objectID": "03-git.html#undo",
+    "href": "03-git.html#undo",
+    "title": "5  Git workflow",
+    "section": "5.7 Undo",
+    "text": "5.7 Undo\n\n\n\nSituation\nCommand\n\n\n\n\nSee what you changed\ngit diff\n\n\nDiscard edits to a file\ngit restore file.R\n\n\nUnstage\ngit restore --staged file.R\n\n\nFix the last commit message\ngit commit --amend\n\n\nUndo a commit, keeping the history\ngit revert &lt;hash&gt;\n\n\nThrow away a branch\ngit branch -D name-topic\n\n\nLook at the history\ngit log --oneline -10\n\n\n\n\nFollow along, if you like Clone the repo, make a branch, let an agent change one line of R/01_recode.R, run git diff, then git restore it. That is the loop everything else today sits inside.",
+    "crumbs": [
+      "The workflow",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Git workflow</span>"
+    ]
+  },
+  {
+    "objectID": "04-agents.html",
+    "href": "04-agents.html",
+    "title": "6  Agents: instructions & shortcuts",
     "section": "",
-    "text": "Thank You\n\n\nchrisweber@arizona.edu · crweber9874.github.io/UNM_Workshop"
+    "text": "6.1 How an agent “sees” this repo",
+    "crumbs": [
+      "The workflow",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Agents: instructions & shortcuts</span>"
+    ]
+  },
+  {
+    "objectID": "04-agents.html#how-an-agent-sees-this-repo",
+    "href": "04-agents.html#how-an-agent-sees-this-repo",
+    "title": "6  Agents: instructions & shortcuts",
+    "section": "",
+    "text": "On start, it loads instruction files: CLAUDE.md (Claude Code), AGENTS.md (Copilot, Codex, Cursor…), .github/copilot-instructions.md (Copilot).\nIt reads files you mention (@R/01_recode.R) or that it searches for.\nIt runs commands (R, git) — with your permission.\n\n\nThe instruction file is the project brief Layout, variable meanings, conventions, guardrails. Here CLAUDE.md contains one line — @AGENTS.md — so every tool in the room shares a single source of truth. Change the brief once and all of them follow it.",
+    "crumbs": [
+      "The workflow",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Agents: instructions & shortcuts</span>"
+    ]
+  },
+  {
+    "objectID": "04-agents.html#what-ours-says",
+    "href": "04-agents.html#what-ours-says",
+    "title": "6  Agents: instructions & shortcuts",
+    "section": "6.2 What ours says",
+    "text": "6.2 What ours says\n## Project\nDid Latino voters in the Western states shift toward Trump from 2020\nto 2024, and does authoritarianism condition that shift?\n\n## Layout\n- data/wss_2020_2024.csv  analysis file (read-only; never edit by hand)\n- R/01_recode.R           all recoding lives here\n- codebooks/              cite these when describing a variable\n\n## Rules\n- R + tidyverse, native pipe |&gt;. Minimal comments.\n- New recodes go in R/01_recode.R, not in analysis scripts.\n- Always report n_obs and n_miss with any model.\n- Use survey weights for population estimates; say when you don't.\n- Don't push to main without the user's say-so; prefer a branch + PR.",
+    "crumbs": [
+      "The workflow",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Agents: instructions & shortcuts</span>"
+    ]
+  },
+  {
+    "objectID": "04-agents.html#writing-a-good-agents.md-claude.md",
+    "href": "04-agents.html#writing-a-good-agents.md-claude.md",
+    "title": "6  Agents: instructions & shortcuts",
+    "section": "6.3 Writing a good AGENTS.md / CLAUDE.md",
+    "text": "6.3 Writing a good AGENTS.md / CLAUDE.md\n\nWhat the project is (one sentence) and the research question.\nWhere things live; which files are read-only.\nVariable definitions and where to cite them (codebook).\nConventions: language, style, where recodes go.\nGuardrails: report N and missingness, use weights, don’t push to main.\nKeep it short; agents follow concise rules better than essays.\n\nPersonal, all-project preferences go in ~/.claude/CLAUDE.md.",
+    "crumbs": [
+      "The workflow",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Agents: instructions & shortcuts</span>"
+    ]
+  },
+  {
+    "objectID": "04-agents.html#claude-code-shortcuts",
+    "href": "04-agents.html#claude-code-shortcuts",
+    "title": "6  Agents: instructions & shortcuts",
+    "section": "6.4 Claude Code shortcuts",
+    "text": "6.4 Claude Code shortcuts\n\n\n\nCommand / key\nDoes\n\n\n\n\n/init\nDraft a CLAUDE.md from the codebase\n\n\n/memory\nEdit instruction/memory files\n\n\n/agents\nCreate & manage subagents (e.g., a “codebook checker”)\n\n\n/clear\nFresh context (cheap; use between tasks)\n\n\n/compact\nSummarize long conversation\n\n\n/model\nSwitch model (smaller = cheaper)\n\n\n/cost, /usage\nTrack spending\n\n\n/review\nReview a pull request\n\n\n/permissions\nWhat it may run without asking\n\n\n/resume\nReturn to an earlier session\n\n\n/mcp\nConnect external tools\n\n\n@file\nPut a file in context\n\n\n!cmd\nRun a shell command directly\n\n\nShift+Tab\nCycle modes (plan / auto-accept)\n\n\nEsc / Esc Esc\nInterrupt / rewind",
+    "crumbs": [
+      "The workflow",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Agents: instructions & shortcuts</span>"
+    ]
+  },
+  {
+    "objectID": "04-agents.html#copilot-shortcuts",
+    "href": "04-agents.html#copilot-shortcuts",
+    "title": "6  Agents: instructions & shortcuts",
+    "section": "6.5 Copilot shortcuts",
+    "text": "6.5 Copilot shortcuts\n\n\n\nKey / command\nDoes\n\n\n\n\nTab / Esc\nAccept / dismiss suggestion\n\n\nCtrl/Cmd+I\nInline chat\n\n\n/explain, /fix, /tests, /doc\nChat slash commands\n\n\n@workspace, #file\nAdd repo or file context\n\n\nAgent mode\nMulti-file edits that run commands",
+    "crumbs": [
+      "The workflow",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Agents: instructions & shortcuts</span>"
+    ]
+  },
+  {
+    "objectID": "04-agents.html#division-of-labor",
+    "href": "04-agents.html#division-of-labor",
+    "title": "6  Agents: instructions & shortcuts",
+    "section": "6.6 Division of labor",
+    "text": "6.6 Division of labor\nCopilot is strongest at the next line — completions while you type. Claude Code is strongest at the next task — “add income terciles to the recode, rerun it, and show me what changed.” Use both.",
+    "crumbs": [
+      "The workflow",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Agents: instructions & shortcuts</span>"
+    ]
+  },
+  {
+    "objectID": "04-agents.html#spending-less",
+    "href": "04-agents.html#spending-less",
+    "title": "6  Agents: instructions & shortcuts",
+    "section": "6.7 Spending less",
+    "text": "6.7 Spending less\n\n/clear between unrelated tasks; long context is re-billed every turn.\nPoint at files (@R/02_analysis.R) rather than asking it to “look around.”\nPlan mode for anything large: approve the plan, then let it execute.\nA smaller model for routine edits and renames.\nOne well-specified request beats six vague corrections.\n\n\nThen verify Agents produce plausible code, and in research code failure is silent. Read the diff, check the coding against the codebook, report n_obs and n_miss, and write a test. That is Verification.",
+    "crumbs": [
+      "The workflow",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Agents: instructions & shortcuts</span>"
+    ]
+  },
+  {
+    "objectID": "05-pipeline.html",
+    "href": "05-pipeline.html",
+    "title": "\n7  The pipeline\n",
+    "section": "",
+    "text": "7.1 The question\nDid Latino voters in the Western states shift toward Trump between 2020 and 2024, and does authoritarianism condition that shift?\nWestern States Survey (YouGov), 2020 (n = 3,600) and 2024 (n = 4,000): Arizona, Colorado, Nevada, New Mexico, Utah. Codebooks: 2020, 2024.",
+    "crumbs": [
+      "The pipeline",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>The pipeline</span>"
+    ]
+  },
+  {
+    "objectID": "05-pipeline.html#the-question",
+    "href": "05-pipeline.html#the-question",
+    "title": "\n7  The pipeline\n",
+    "section": "",
+    "text": "latino — the YouGov race item (Hispanic).\n\nauthoritarianism — mean of four child-rearing pairs, 0–1, 1 = authoritarian response (auth1–auth4).\n\ntrump_vote — 1 Trump, 0 Biden/Harris, NA otherwise.\nWeights — weight in 2020, weight_all in 2024, combined as weight.\n\n\nCite the codebook, not the agent Every claim about a variable on this page traces to codebooks/ and the variable list in AGENTS.md. When an agent tells you what a variable means, that is a hypothesis.",
+    "crumbs": [
+      "The pipeline",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>The pipeline</span>"
+    ]
+  },
+  {
+    "objectID": "05-pipeline.html#one-stage-one-script",
+    "href": "05-pipeline.html#one-stage-one-script",
+    "title": "\n7  The pipeline\n",
+    "section": "\n7.2 One stage, one script",
+    "text": "7.2 One stage, one script\n\n\n00 build\nraw Stata → csv\n\n\n01 recode\ncsv → wss_clean.rds\n\n\n02 analysis\nmodels → output/\n\n\napp\nShiny explorer\n\n\npublish\nquarto → gh-pages\n\n\n\n\nStage\nFile\nProduces\nChapter\n\n\n\nBuild\nR/00_build_data.R\n\ndata/wss_2020_2024.csv (raw files not distributed)\nThe data\n\n\nRecode\nR/01_recode.R\ndata/wss_clean.rds\nThe recode\n\n\nAnalyze\nR/02_analysis.R\n\noutput/*.png, model summaries\nThe analysis\n\n\nCheck\ntests/testthat/\npass / fail\nThe tests\n\n\nExplore\napp/app.R\ninteractive app\nThe app\n\n\nPublish\nquarto publish gh-pages\nthis book\nPublishing\n\n\n\nThe chapters that follow run these scripts, so their tables and figures are whatever the code currently produces — not transcriptions of a run from some earlier afternoon.",
+    "crumbs": [
+      "The pipeline",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>The pipeline</span>"
+    ]
+  },
+  {
+    "objectID": "05-pipeline.html#run-it-end-to-end",
+    "href": "05-pipeline.html#run-it-end-to-end",
+    "title": "\n7  The pipeline\n",
+    "section": "\n7.3 Run it end to end",
+    "text": "7.3 Run it end to end\nRscript R/01_recode.R                       # csv  -&gt; data/wss_clean.rds\nRscript R/02_analysis.R                     # models, figures -&gt; output/\nRscript -e 'testthat::test_dir(\"tests/testthat\")'\nRscript -e 'shiny::runApp(\"app\")'\nR/00_build_data.R needs the raw Stata files, which are not distributed; the CSV it produces is in the repository.\n\nWhy the order is enforced Every number traces back through exactly one path. If the recode changes, the analysis and the app change with it, because neither keeps its own private copy of the recoding logic. Ask an agent to add a recode to 02_analysis.R and it will happily do it — this is the rule you are enforcing against your own convenience.",
+    "crumbs": [
+      "The pipeline",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>The pipeline</span>"
+    ]
+  },
+  {
+    "objectID": "05-pipeline.html#where-we-start",
+    "href": "05-pipeline.html#where-we-start",
+    "title": "\n7  The pipeline\n",
+    "section": "\n7.4 Where we start",
+    "text": "7.4 Where we start\nWeighted two-party Trump share:\n\n\n\n2020\n2024\nChange\n\n\n\nNon-Latino\n.503 (n = 1,944)\n.511 (n = 2,828)\n+.008\n\n\nLatino\n.398 (n = 937)\n.419 (n = 786)\n+.021\n\n\n\n\n\n\nRecomputed on every render, from data/wss_clean.rds.\n\nlatino\ntrump_2020\ntrump_2024\nn_2020\nn_2024\n\n\n\nNon-Latino\n0.503\n0.511\n1944\n2828\n\n\nLatino\n0.398\n0.419\n937\n786\n\n\n\n\n\n\n#&gt;   n_obs  n_miss n_total \n#&gt;    6495    1105    7600\n\nn_miss here is non-voters, other candidates, and the ineligible — everyone for whom a two-party vote is undefined.\n\nThe puzzle A two-point Latino shift, estimated on 786 Latino respondents in 2024, is far from the double-digit national exit-poll story. Sample? Weights? Mode? Reported versus intended vote? That is the interesting part — not reproducing a headline, but establishing what this sample can and cannot support.\n\nSource: R/02_analysis.R run on data/wss_clean.rds. The intervals in that script use a Kish effective n, not a design-based variance — fixing that would be a reasonable first change to make.",
+    "crumbs": [
+      "The pipeline",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>The pipeline</span>"
+    ]
+  },
+  {
+    "objectID": "05-pipeline.html#four-directions-this-could-go",
+    "href": "05-pipeline.html#four-directions-this-could-go",
+    "title": "\n7  The pipeline\n",
+    "section": "\n7.5 Four directions this could go",
+    "text": "7.5 Four directions this could go\nAny one of these is a complete demonstration of the loop — prompt, diff, n_obs, test. We walk through one; the rest are here to run later, on this repo or your own data.\n\n\nRecode — add generation, income terciles, and a strength-of-partisanship measure to R/01_recode.R. Check each against the codebook, and add a test per variable.\n\nAnalysis — Bayesian logit with brms; predicted probabilities for authoritarianism × Latino × year. Does the reported/intended distinction (vote_type) matter?\n\nShiny — add a state-by-year panel and a download button to app/app.R.\n\nSkepticism — is this sample representative of Latino voters? Interrogate the weights, the mode, and the comparison with external estimates.\n\n\nThe loop, whichever you pick Branch → prompt the agent → read the diff → report n_obs and n_miss → write the test → commit. All of it in your own clone.",
+    "crumbs": [
+      "The pipeline",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>The pipeline</span>"
+    ]
+  },
+  {
+    "objectID": "05-pipeline.html#starting-prompts-worth-stealing",
+    "href": "05-pipeline.html#starting-prompts-worth-stealing",
+    "title": "\n7  The pipeline\n",
+    "section": "\n7.6 Starting prompts worth stealing",
+    "text": "7.6 Starting prompts worth stealing\nRead AGENTS.md and R/01_recode.R. Add an income-tercile variable built from\nfaminc, using survey weights. Do not touch anything else. Show me the diff.\n\nRead codebooks/wss2024_codebook.pdf for pid7 and tell me whether\nR/01_recode.R codes party3 correctly. Quote the codebook.\n\nRefit the model in R/02_analysis.R with brms, bernoulli family, weakly\ninformative priors. Report n_obs and n_miss. Do not drop the weights.\nEach of these is narrow, names its files, and asks for evidence. That is the whole technique.",
+    "crumbs": [
+      "The pipeline",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>The pipeline</span>"
+    ]
+  },
+  {
+    "objectID": "06-data.html",
+    "href": "06-data.html",
+    "title": "\n8  The data\n",
+    "section": "",
+    "text": "8.1 What is in it\nWestern States Survey (YouGov), fielded in 2020 and 2024 in Arizona, Colorado, Nevada, New Mexico, and Utah. R/00_build_data.R reads the two raw Stata files, harmonizes them, and writes the one analysis file distributed here. The raw files are not distributed; the CSV is.\ntibble(\n  variable = names(wss_raw),\n  type     = map_chr(wss_raw, ~ class(.x)[1]),\n  n_miss   = map_int(wss_raw, ~ sum(is.na(.x))),\n  distinct = map_int(wss_raw, n_distinct)\n) |&gt;\n  knitr::kable()\n\n\nTable 8.1: Columns of data/wss_2020_2024.csv.\n\n\n\n\nvariable\ntype\nn_miss\ndistinct\n\n\n\nid\ncharacter\n0\n7600\n\n\nyear\nnumeric\n0\n2\n\n\nstate\ncharacter\n0\n5\n\n\nweight\nnumeric\n0\n3561\n\n\nvote_choice\ncharacter\n569\n5\n\n\nvote_type\ncharacter\n569\n3\n\n\ntrump_vote\nnumeric\n1105\n3\n\n\nage\nnumeric\n0\n77\n\n\nfemale\nnumeric\n0\n2\n\n\nrace\ncharacter\n0\n8\n\n\nlatino\nnumeric\n0\n2\n\n\neduc\nnumeric\n0\n6\n\n\ncollege\nnumeric\n0\n2\n\n\nfaminc\nnumeric\n682\n17\n\n\npid7\nnumeric\n309\n8\n\n\nideo5\nnumeric\n687\n6\n\n\nauth1\nnumeric\n5\n3\n\n\nauth2\nnumeric\n3\n3\n\n\nauth3\nnumeric\n2\n3\n\n\nauth4\nnumeric\n8\n3\nThe substantive columns, per the codebooks in codebooks/:",
+    "crumbs": [
+      "The pipeline",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>The data</span>"
+    ]
+  },
+  {
+    "objectID": "06-data.html#what-is-in-it",
+    "href": "06-data.html#what-is-in-it",
+    "title": "\n8  The data\n",
+    "section": "",
+    "text": "Variable\nMeaning\n\n\n\n\nyear, state\n\nsurvey year; AZ, CO, NV, NM, UT\n\n\nweight\nsurvey weight (see below)\n\n\nvote_choice\nTrump / Democrat / Other / Did not vote\n\n\nvote_type\nwhether the vote was reported or intended\n\n\n\ntrump_vote\n1 Trump, 0 Biden/Harris, NA otherwise\n\n\n\nage, female, race, latino\n\ndemographics\n\n\n\neduc (1–6), college, faminc (1–16)\neducation and income\n\n\n\npid7, ideo5\n\nparty identification and ideology\n\n\n\nauth1–auth4\n\nchild-rearing items; 1 = authoritarian response\n\n\n\n\nThe weight is already harmonized The 2020 file calls it weight and the 2024 file calls it weight_all; R/00_build_data.R renames the latter, so this file has a single weight column. An agent told “use the 2024 weight” will go looking for weight_all and not find it. This is exactly the kind of thing that belongs in AGENTS.md.",
+    "crumbs": [
+      "The pipeline",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>The data</span>"
+    ]
+  },
+  {
+    "objectID": "06-data.html#the-outcome",
+    "href": "06-data.html#the-outcome",
+    "title": "\n8  The data\n",
+    "section": "\n8.2 The outcome",
+    "text": "8.2 The outcome\ntrump_vote is defined only for two-party voters, which is where most of the missingness lives:\n\ncount(wss_raw, year, vote_choice) |&gt;\n  pivot_wider(names_from = year, values_from = n)\n#&gt; # A tibble: 5 × 3\n#&gt;   vote_choice  `2020` `2024`\n#&gt;   &lt;chr&gt;         &lt;int&gt;  &lt;int&gt;\n#&gt; 1 Democrat       1717   1936\n#&gt; 2 Did not vote     78    217\n#&gt; 3 Other           126    115\n#&gt; 4 Trump          1164   1678\n#&gt; 5 &lt;NA&gt;            515     54\n\n\nwss_raw |&gt;\n  summarise(n_obs  = sum(!is.na(trump_vote)),\n            n_miss = sum(is.na(trump_vote)),\n            .by = year)\n#&gt; # A tibble: 2 × 3\n#&gt;    year n_obs n_miss\n#&gt;   &lt;dbl&gt; &lt;int&gt;  &lt;int&gt;\n#&gt; 1  2020  2881    719\n#&gt; 2  2024  3614    386\n\nReported and intended vote are not the same measurement, and the mix differs by year — something the analysis chapter has to take seriously:\n\ncount(wss_raw, year, vote_type) |&gt;\n  pivot_wider(names_from = year, values_from = n)\n#&gt; # A tibble: 3 × 3\n#&gt;   vote_type `2020` `2024`\n#&gt;   &lt;chr&gt;      &lt;int&gt;  &lt;int&gt;\n#&gt; 1 intended     636   1846\n#&gt; 2 reported    2449   2100\n#&gt; 3 &lt;NA&gt;         515     54",
+    "crumbs": [
+      "The pipeline",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>The data</span>"
+    ]
+  },
+  {
+    "objectID": "06-data.html#the-authoritarianism-items",
+    "href": "06-data.html#the-authoritarianism-items",
+    "title": "\n8  The data\n",
+    "section": "\n8.3 The authoritarianism items",
+    "text": "8.3 The authoritarianism items\nFour forced-choice child-rearing pairs, each scored 1 for the authoritarian response:\n\nwss_raw |&gt;\n  select(year, auth1:auth4) |&gt;\n  pivot_longer(auth1:auth4, names_to = \"item\") |&gt;\n  summarise(mean = mean(value, na.rm = TRUE),\n            n_miss = sum(is.na(value)),\n            .by = c(year, item)) |&gt;\n  pivot_wider(names_from = year, values_from = c(mean, n_miss)) |&gt;\n  knitr::kable(digits = 3)\n\n\n\nitem\nmean_2020\nmean_2024\nn_miss_2020\nn_miss_2024\n\n\n\nauth1\n0.563\n0.541\n2\n3\n\n\nauth2\n0.385\n0.383\n1\n2\n\n\nauth3\n0.308\n0.346\n2\n0\n\n\nauth4\n0.519\n0.506\n1\n7\n\n\n\n\n\nNothing has been recoded yet. That is the next chapter, and it is deliberately the only place where recoding happens.",
+    "crumbs": [
+      "The pipeline",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>The data</span>"
+    ]
+  },
+  {
+    "objectID": "07-recode.html",
+    "href": "07-recode.html",
+    "title": "\n9  The recode\n",
+    "section": "",
+    "text": "9.1 The script\nOne rule governs this chapter: every derived variable is created in R/01_recode.R, and nowhere else. Analysis scripts read the result; they never recode. The rule exists because an agent asked to “add a measure” will otherwise add it wherever it is currently looking, and two months later two scripts disagree about what party3 means.\n#&gt; # Recode: data/wss_2020_2024.csv -&gt; data/wss_clean.rds\n#&gt; library(tidyverse)\n#&gt; source(\"R/functions.R\")\n#&gt; \n#&gt; wss &lt;- read_csv(\"data/wss_2020_2024.csv\", show_col_types = FALSE)\n#&gt; stopifnot(all(c(\"auth1\", \"auth2\", \"auth3\", \"auth4\", \"pid7\", \"age\") %in% names(wss)))\n#&gt; \n#&gt; wss &lt;- wss |&gt;\n#&gt;   mutate(\n#&gt;     authoritarianism = auth_scale(pick(auth1:auth4)),\n#&gt;     auth_group = bin_auth(authoritarianism),\n#&gt;     age_group  = bin_age(age),\n#&gt;     party3     = pid_to_party3(pid7),\n#&gt;     race4      = fct_lump_n(race, 3, other_level = \"Other\") |&gt; fct_infreq(),\n#&gt;     latino     = factor(latino, 0:1, c(\"Non-Latino\", \"Latino\")),\n#&gt;     year       = factor(year)\n#&gt;   )\n#&gt; \n#&gt; stopifnot(all(between(wss$authoritarianism, 0, 1), na.rm = TRUE))\n#&gt; write_rds(wss, \"data/wss_clean.rds\")",
+    "crumbs": [
+      "The pipeline",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>The recode</span>"
+    ]
+  },
+  {
+    "objectID": "07-recode.html#running-it",
+    "href": "07-recode.html#running-it",
+    "title": "\n9  The recode\n",
+    "section": "\n9.2 Running it",
+    "text": "9.2 Running it\n\nsource(\"R/01_recode.R\")\nwss &lt;- read_rds(\"data/wss_clean.rds\")\ndim(wss)\n#&gt; [1] 7600   25\n\nIt writes data/wss_clean.rds, which is git-ignored: the artifact is cheap to rebuild and the script is the thing worth versioning.",
+    "crumbs": [
+      "The pipeline",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>The recode</span>"
+    ]
+  },
+  {
+    "objectID": "07-recode.html#what-each-line-produced",
+    "href": "07-recode.html#what-each-line-produced",
+    "title": "\n9  The recode\n",
+    "section": "\n9.3 What each line produced",
+    "text": "9.3 What each line produced\n\nwss |&gt; count(auth_group)\n#&gt; # A tibble: 4 × 2\n#&gt;   auth_group     n\n#&gt;   &lt;fct&gt;      &lt;int&gt;\n#&gt; 1 Low         3488\n#&gt; 2 Middle      3001\n#&gt; 3 High        1110\n#&gt; 4 &lt;NA&gt;           1\n\n\nwss |&gt; count(age_group)\n#&gt; # A tibble: 4 × 2\n#&gt;   age_group     n\n#&gt;   &lt;fct&gt;     &lt;int&gt;\n#&gt; 1 18-29      1822\n#&gt; 2 30-44      2007\n#&gt; 3 45-64      2343\n#&gt; 4 65+        1428\n\n\nwss |&gt; count(party3)\n#&gt; # A tibble: 4 × 2\n#&gt;   party3          n\n#&gt;   &lt;chr&gt;       &lt;int&gt;\n#&gt; 1 Democrat     3461\n#&gt; 2 Independent  1193\n#&gt; 3 Republican   2637\n#&gt; 4 &lt;NA&gt;          309\n\n\nwss |&gt; count(latino, year)\n#&gt; # A tibble: 4 × 3\n#&gt;   latino     year      n\n#&gt;   &lt;fct&gt;      &lt;fct&gt; &lt;int&gt;\n#&gt; 1 Non-Latino 2020   2294\n#&gt; 2 Non-Latino 2024   3094\n#&gt; 3 Latino     2020   1306\n#&gt; 4 Latino     2024    906\n\nauthoritarianism is the row mean of the four items, so it is bounded 0–1 by construction — and worth checking rather than assuming:\n\nsummary(wss$authoritarianism)\n#&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's \n#&gt;  0.0000  0.0000  0.5000  0.4439  0.7500  1.0000       1\n\n\nrowMeans(..., na.rm = TRUE) is a decision, not a default A respondent who answered one of four items gets a score built from that one item. That may be what you want, or it may not; either way it is an imputation rule, and it should be a deliberate choice rather than an argument an agent supplied because it suppresses NAs. A stricter version requires a minimum number of items:\nauth_n = rowSums(!is.na(pick(auth1:auth4))),\nauthoritarianism = if_else(auth_n &gt;= 3,\n                           rowMeans(pick(auth1:auth4), na.rm = TRUE),\n                           NA_real_)",
+    "crumbs": [
+      "The pipeline",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>The recode</span>"
+    ]
+  },
+  {
+    "objectID": "07-recode.html#how-much-did-the-recode-cost-us",
+    "href": "07-recode.html#how-much-did-the-recode-cost-us",
+    "title": "\n9  The recode\n",
+    "section": "\n9.4 How much did the recode cost us?",
+    "text": "9.4 How much did the recode cost us?\nDerived variables inherit missingness from their inputs. Always know how much:\n\nwss |&gt;\n  summarise(across(c(authoritarianism, auth_group, age_group, party3, latino),\n                   ~ sum(is.na(.x)))) |&gt;\n  pivot_longer(everything(), names_to = \"variable\", values_to = \"n_miss\") |&gt;\n  mutate(pct = round(100 * n_miss / nrow(wss), 1)) |&gt;\n  knitr::kable()\n\n\n\nvariable\nn_miss\npct\n\n\n\nauthoritarianism\n1\n0.0\n\n\nauth_group\n1\n0.0\n\n\nage_group\n0\n0.0\n\n\nparty3\n309\n4.1\n\n\nlatino\n0\n0.0",
+    "crumbs": [
+      "The pipeline",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>The recode</span>"
+    ]
+  },
+  {
+    "objectID": "07-recode.html#asking-an-agent-to-extend-it",
+    "href": "07-recode.html#asking-an-agent-to-extend-it",
+    "title": "\n9  The recode\n",
+    "section": "\n9.5 Asking an agent to extend it",
+    "text": "9.5 Asking an agent to extend it\nA usable prompt is narrow, names its file, and asks for evidence:\nRead AGENTS.md and R/01_recode.R. Add an income-tercile variable built from\nfaminc, weighted by `weight`. Add it to R/01_recode.R only. Then show me\nthe diff and a count() of the new variable.\nThen check three things before you keep it: that the cutpoints are what you’d have chosen, that faminc really runs 1–16 with no missing-data codes hiding inside that range (the codebook, not range(), settles this), and that the row count of wss_clean.rds has not changed. The next chapter uses these variables; the one after makes the checks permanent.",
+    "crumbs": [
+      "The pipeline",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>The recode</span>"
+    ]
+  },
+  {
+    "objectID": "08-analysis.html",
+    "href": "08-analysis.html",
+    "title": "\n10  The analysis\n",
+    "section": "",
+    "text": "10.1 Weighted two-party Trump share\nEvery number below rests on those 6,495 respondents. Report that pair with every model you show anyone, including yourself.\nshares &lt;- voters |&gt;\n  summarise(trump = weighted.mean(trump_vote, weight),\n            n     = n(),\n            n_eff = sum(weight)^2 / sum(weight^2),\n            .by   = c(year, latino)) |&gt;\n  mutate(se        = sqrt(trump * (1 - trump) / n_eff),\n         trump_low = trump - 1.96 * se,\n         trump_upp = trump + 1.96 * se)\n\nshares |&gt;\n  select(year, latino, trump, n, n_eff, trump_low, trump_upp) |&gt;\n  arrange(latino, year) |&gt;\n  knitr::kable(digits = 3)\n\n\nTable 10.1: Weighted two-party Trump share, by year and ethnicity.\n\n\n\n\nyear\nlatino\ntrump\nn\nn_eff\ntrump_low\ntrump_upp\n\n\n\n2020\nNon-Latino\n0.503\n1944\n1664.053\n0.478\n0.527\n\n\n2024\nNon-Latino\n0.511\n2828\n2040.561\n0.490\n0.533\n\n\n2020\nLatino\n0.398\n937\n478.528\n0.354\n0.442\n\n\n2024\nLatino\n0.419\n786\n452.405\n0.374\n0.465\nggplot(shares, aes(year, trump, colour = latino, group = latino)) +\n  geom_pointrange(aes(ymin = trump_low, ymax = trump_upp)) +\n  geom_line() +\n  labs(x = NULL, y = \"Two-party Trump share (weighted)\", colour = NULL) +\n  theme_minimal()\n\n\n\n\n\n\nFigure 10.1: Two-party Trump share with 95% intervals from a Kish effective n.\nThe Latino shift is about two points, on 786 Latino respondents in 2024 — nothing like the double-digit national exit-poll story. Whether that is a real difference, a weighting artifact, a mode difference, or the reported-versus-intended mix is the interesting question, and this table cannot settle it alone.",
+    "crumbs": [
+      "The pipeline",
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>The analysis</span>"
+    ]
+  },
+  {
+    "objectID": "08-analysis.html#weighted-two-party-trump-share",
+    "href": "08-analysis.html#weighted-two-party-trump-share",
+    "title": "\n10  The analysis\n",
+    "section": "",
+    "text": "The interval is approximate, and the approximation matters n_eff is Kish’s effective sample size, which discounts for unequal weights but ignores clustering and stratification. For anything you would publish, use a design-based variance:\nlibrary(survey)\ndes &lt;- svydesign(ids = ~1, weights = ~weight, data = voters)\nsvyby(~trump_vote, ~interaction(year, latino), des, svymean)\nAn agent asked for “confidence intervals on a weighted mean” will usually hand you the Kish version without mentioning the assumption. That is not a bug in the agent; it is the thing you are responsible for noticing.",
+    "crumbs": [
+      "The pipeline",
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>The analysis</span>"
+    ]
+  },
+  {
+    "objectID": "08-analysis.html#does-authoritarianism-condition-the-shift",
+    "href": "08-analysis.html#does-authoritarianism-condition-the-shift",
+    "title": "\n10  The analysis\n",
+    "section": "\n10.2 Does authoritarianism condition the shift?",
+    "text": "10.2 Does authoritarianism condition the shift?\n\nfit &lt;- glm(trump_vote ~ latino * year * authoritarianism + age + female + college,\n           family = quasibinomial, weights = weight, data = voters)\n\nc(n_obs = nobs(fit), n_miss = nrow(voters) - nobs(fit))\n#&gt;  n_obs n_miss \n#&gt;   6494      1\n\nThe model drops cases the descriptive table kept — listwise deletion on the covariates. That gap is the single most common way a sample quietly shrinks.\n\nbroom::tidy(fit) |&gt;\n  mutate(term = str_replace_all(term, c(\"latino\" = \"\", \"year\" = \"year \"))) |&gt;\n  knitr::kable(digits = 3)\n\n\nTable 10.2: Quasibinomial logit coefficients.\n\n\n\n\n\n\n\n\n\n\n\nterm\nestimate\nstd.error\nstatistic\np.value\n\n\n\n(Intercept)\n-1.020\n0.106\n-9.587\n0.000\n\n\nLatino\n-0.063\n0.183\n-0.345\n0.730\n\n\nyear 2024\n0.113\n0.094\n1.192\n0.233\n\n\nauthoritarianism\n2.127\n0.142\n15.001\n0.000\n\n\nage\n0.008\n0.001\n5.691\n0.000\n\n\nfemale\n-0.360\n0.053\n-6.781\n0.000\n\n\ncollege\n-0.145\n0.055\n-2.644\n0.008\n\n\nLatino:year 2024\n0.059\n0.256\n0.231\n0.817\n\n\nLatino:authoritarianism\n-1.191\n0.292\n-4.076\n0.000\n\n\nyear 2024:authoritarianism\n-0.270\n0.182\n-1.484\n0.138\n\n\nLatino:year 2024:authoritarianism\n0.096\n0.403\n0.238\n0.812\n\n\n\n\n\n\n\n\nInteractions on the logit scale are close to unreadable, so look at predictions instead:\n\ngrid &lt;- expand_grid(\n  latino           = levels(voters$latino),\n  year             = levels(voters$year),\n  authoritarianism = seq(0, 1, 0.05),\n  age              = mean(voters$age, na.rm = TRUE),\n  female           = 0,\n  college          = 0\n) |&gt;\n  mutate(latino = factor(latino, levels(voters$latino)),\n         year   = factor(year, levels(voters$year)))\n\npred &lt;- bind_cols(grid, as_tibble(predict(fit, grid, type = \"link\", se.fit = TRUE))) |&gt;\n  mutate(p   = plogis(fit),\n         low = plogis(fit - 1.96 * se.fit),\n         upp = plogis(fit + 1.96 * se.fit))\n\nggplot(pred, aes(authoritarianism, p, colour = year, fill = year)) +\n  geom_ribbon(aes(ymin = low, ymax = upp), alpha = 0.15, colour = NA) +\n  geom_line() +\n  facet_wrap(~ latino) +\n  labs(x = \"Authoritarianism (0–1)\", y = \"Pr(Trump vote)\",\n       colour = NULL, fill = NULL) +\n  theme_minimal()\n\n\n\n\n\n\nFigure 10.2: Predicted probability of a Trump vote across the authoritarianism scale.\n\n\n\n\nRead it carefully: the question is not whether the lines slope — they do, in both groups — but whether the gap between years changes across the scale. On this sample those intervals are wide enough that honest answers include “we cannot tell.”",
+    "crumbs": [
+      "The pipeline",
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>The analysis</span>"
+    ]
+  },
+  {
+    "objectID": "08-analysis.html#the-bayesian-version",
+    "href": "08-analysis.html#the-bayesian-version",
+    "title": "\n10  The analysis\n",
+    "section": "\n10.3 The Bayesian version",
+    "text": "10.3 The Bayesian version\nbrms is the better tool here: priors on an interaction-heavy model, and posterior summaries you can actually interpret. It is not run in the book because compiling takes longer than the whole render.\nlibrary(brms)\nfit_b &lt;- brm(\n  trump_vote | weights(weight) ~ latino * year * authoritarianism +\n    age + female + college,\n  family  = bernoulli(),\n  prior   = c(prior(normal(0, 1), class = \"b\"),\n              prior(normal(0, 2), class = \"Intercept\")),\n  data = voters, chains = 4, cores = 4, backend = \"cmdstanr\", seed = 1\n)\nfit_b                                            # n_obs is in the output header\npp_check(fit_b)\nconditional_effects(fit_b, \"authoritarianism:latino\")\n\nweights() in brms is not survey weighting It treats each weight as a case replication, which gives you the point estimates but understates uncertainty for a complex design. If the weights carry a design, say so in the paper, or move to a design-based estimator. This is worth stating out loud because it is precisely the distinction an agent will flatten.\n\nThe figures this chapter draws are also written to output/ by R/02_analysis.R, which is git-ignored — the repository keeps the script, not the picture.",
+    "crumbs": [
+      "The pipeline",
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>The analysis</span>"
+    ]
+  },
+  {
+    "objectID": "09-tests.html",
+    "href": "09-tests.html",
+    "title": "\n11  The tests\n",
+    "section": "",
+    "text": "11.1 What testthat is\nA test is how you make a verification permanent. You will check a recode once by hand; you will not check it again in six weeks when somebody — you, a collaborator, an agent — “improves” it. testthat turns the check into something that fails on its own.\nR’s unit-testing package. A test file is ordinary R code that asserts rather than prints: it states what must be true and fails loudly when it is not. Files live in tests/testthat/ and are named test-*.R.\nThe string is the failure message, so write it as a claim.",
+    "crumbs": [
+      "The pipeline",
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>The tests</span>"
+    ]
+  },
+  {
+    "objectID": "09-tests.html#what-testthat-is",
+    "href": "09-tests.html#what-testthat-is",
+    "title": "\n11  The tests\n",
+    "section": "",
+    "text": "test_that(\"what must be true\", {\n  expect_true(...)\n})\n\n\n\nExpectation\nAsserts\n\n\n\nexpect_equal(x, y)\nequal within numerical tolerance\n\n\nexpect_identical(x, y)\nexactly identical\n\n\nexpect_true(x)\nall of x is TRUE\n\n\n\nexpect_setequal(x, y)\nsame values, any order\n\n\nexpect_length(x, n)\nlength is n\n\n\n\nexpect_error(f())\nit does fail\n\n\nexpect_no_warning(f())\nit runs clean\n\n\nskip(\"reason\")\nnot applicable in this environment",
+    "crumbs": [
+      "The pipeline",
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>The tests</span>"
+    ]
+  },
+  {
+    "objectID": "09-tests.html#two-kinds-of-test",
+    "href": "09-tests.html#two-kinds-of-test",
+    "title": "\n11  The tests\n",
+    "section": "\n11.2 Two kinds of test",
+    "text": "11.2 Two kinds of test\nThe suite is split by what each test needs in order to run, because that is what determines how fast it is and how precisely it points at a failure.\n\n\n\n\n\n\n\n\nUnit\nIntegration\n\n\n\nFiles\ntest-unit-*.R\ntest-integration-*.R\n\n\nWhat it tests\none function\nthe pieces working together\n\n\nInput\nsynthetic, written in the test\nthe real CSV, the built .rds, the app\n\n\nFails when\nthe function’s logic is wrong\nthe wiring is wrong\n\n\nRuns in\nmilliseconds\nseconds\n\n\n\nA unit test for bin_age() tells you the breaks moved. An integration test on data/wss_clean.rds tells you something upstream changed. You want both: the first is precise, the second is what actually catches the agent that edited the recode and broke the app.\n\nUnit tests need units A 200-line script has nothing to unit-test. The reason R/functions.R exists — pure helpers taking data in and returning data out, no reading, no writing — is that it makes the recode’s logic testable without the survey file at all. Extracting the functions came first; the tests came second.\n\n\n11.2.1 Unit: the recode helpers\n\n#&gt; # UNIT. Pure recode helpers, synthetic input, no survey file touched.\n#&gt; library(tidyverse)\n#&gt; source(repo_path(\"R/functions.R\"))\n#&gt; \n#&gt; test_that(\"auth_scale averages the four items onto 0-1\", {\n#&gt;   items &lt;- tibble(a = c(0, 1, 0.5), b = c(0, 1, 0.5), c = c(0, 1, 0), d = c(0, 1, 1))\n#&gt;   expect_equal(auth_scale(items), c(0, 1, 0.5))\n#&gt; })\n#&gt; \n#&gt; test_that(\"auth_scale ignores partial missingness but keeps all-missing as NA\", {\n#&gt;   items &lt;- tibble(a = c(1, NA), b = c(NA, NA), c = c(1, NA), d = c(NA, NA))\n#&gt;   expect_equal(auth_scale(items), c(1, NA_real_))\n#&gt; })\n#&gt; \n#&gt; test_that(\"auth_scale rejects anything that is not four items\", {\n#&gt;   expect_error(auth_scale(tibble(a = 1, b = 0, c = 1)))\n#&gt; })\n#&gt; \n#&gt; test_that(\"bin_auth cuts at .25 and .75, inclusive on the low side\", {\n#&gt;   expect_equal(\n#&gt;     as.character(bin_auth(c(0, .25, .26, .75, .76, 1))),\n#&gt;     c(\"Low\", \"Low\", \"Middle\", \"Middle\", \"High\", \"High\")\n#&gt;   )\n#&gt; })\n#&gt; \n#&gt; test_that(\"bin_age uses the documented breaks and excludes under-18\", {\n#&gt;   expect_equal(\n#&gt;     as.character(bin_age(c(18, 29, 30, 44, 45, 64, 65, 92))),\n#&gt;     c(\"18-29\", \"18-29\", \"30-44\", \"30-44\", \"45-64\", \"45-64\", \"65+\", \"65+\")\n#&gt;   )\n#&gt;   expect_true(is.na(bin_age(17)))\n#&gt; })\n#&gt; \n#&gt; test_that(\"pid_to_party3 follows the codebook's 1-7 scale\", {\n#&gt;   expect_equal(\n#&gt;     pid_to_party3(1:7),\n#&gt;     c(\"Democrat\", \"Democrat\", \"Democrat\", \"Independent\",\n#&gt;       \"Republican\", \"Republican\", \"Republican\")\n#&gt;   )\n#&gt;   expect_true(is.na(pid_to_party3(NA_real_)))\n#&gt; })\n\nEvery input here is written out in the test. Nothing on disk can make these pass or fail, so when one goes red the fault is in the function and nowhere else.\n\n11.2.2 Unit: the estimator\n\n#&gt; # UNIT. trump_share() against a toy frame whose answer is known by hand.\n#&gt; library(tidyverse)\n#&gt; source(repo_path(\"R/functions.R\"))\n#&gt; \n#&gt; toy &lt;- tibble(\n#&gt;   year       = factor(c(2020, 2020, 2020, 2024, 2024)),\n#&gt;   latino     = factor(c(\"Latino\", \"Latino\", \"Non-Latino\", \"Latino\", \"Latino\")),\n#&gt;   trump_vote = c(1, 0, 1, 1, NA),\n#&gt;   weight     = c(3, 1, 1, 1, 1)\n#&gt; )\n#&gt; \n#&gt; test_that(\"unweighted share is the plain mean of observed votes\", {\n#&gt;   out &lt;- trump_share(toy, \"latino\", weighted = FALSE) |&gt; filter(year == \"2020\", latino == \"Latino\")\n#&gt;   expect_equal(out$trump, 0.5)\n#&gt; })\n#&gt; \n#&gt; test_that(\"weights shift the share as specified\", {\n#&gt;   out &lt;- trump_share(toy, \"latino\", weighted = TRUE) |&gt; filter(year == \"2020\", latino == \"Latino\")\n#&gt;   expect_equal(out$trump, 0.75)\n#&gt; })\n#&gt; \n#&gt; test_that(\"n_obs and n_miss are reported and sum to the cell size\", {\n#&gt;   out &lt;- trump_share(toy, \"latino\") |&gt; filter(year == \"2024\", latino == \"Latino\")\n#&gt;   expect_equal(out$n_obs, 1L)\n#&gt;   expect_equal(out$n_miss, 1L)\n#&gt; })\n#&gt; \n#&gt; test_that(\"rows missing the grouping variable are dropped, not silently pooled\", {\n#&gt;   with_na &lt;- toy |&gt; mutate(latino = factor(c(NA, \"Latino\", \"Non-Latino\", \"Latino\", \"Latino\")))\n#&gt;   expect_false(any(is.na(trump_share(with_na, \"latino\")$latino)))\n#&gt; })\n#&gt; \n#&gt; test_that(\"an unknown grouping column fails loudly\", {\n#&gt;   expect_error(trump_share(toy, \"not_a_column\"))\n#&gt; })\n\nA five-row frame whose weighted mean you can do in your head is worth more than a thousand real rows whose answer you would have to trust.\n\n11.2.3 Integration: the pipeline\n\n#&gt; # INTEGRATION. The artifact R/01_recode.R actually produced, from the real CSV.\n#&gt; library(tidyverse)\n#&gt; \n#&gt; rds &lt;- repo_path(\"data/wss_clean.rds\")\n#&gt; if (!file.exists(rds)) skip(\"data/wss_clean.rds not built; run Rscript R/01_recode.R\")\n#&gt; wss &lt;- read_rds(rds)\n#&gt; \n#&gt; test_that(\"the recode keeps every respondent\", {\n#&gt;   expect_equal(nrow(wss), 7600)\n#&gt;   expect_setequal(levels(wss$year), c(\"2020\", \"2024\"))\n#&gt; })\n#&gt; \n#&gt; test_that(\"every derived variable the recode promises is present\", {\n#&gt;   expect_true(all(c(\"authoritarianism\", \"auth_group\", \"age_group\",\n#&gt;                     \"party3\", \"race4\", \"latino\") %in% names(wss)))\n#&gt; })\n#&gt; \n#&gt; test_that(\"authoritarianism is a 0-1 mean of four items\", {\n#&gt;   expect_true(all(wss$authoritarianism &gt;= 0 & wss$authoritarianism &lt;= 1, na.rm = TRUE))\n#&gt;   expect_setequal(levels(wss$auth_group), c(\"Low\", \"Middle\", \"High\"))\n#&gt; })\n#&gt; \n#&gt; test_that(\"trump_vote is coded only for two-party voters\", {\n#&gt;   expect_setequal(unique(na.omit(wss$trump_vote)), c(0, 1))\n#&gt;   expect_equal(sum(!is.na(wss$trump_vote)), 6495)\n#&gt; })\n#&gt; \n#&gt; test_that(\"latino and party3 take the documented values\", {\n#&gt;   expect_setequal(levels(wss$latino), c(\"Non-Latino\", \"Latino\"))\n#&gt;   expect_setequal(na.omit(unique(wss$party3)), c(\"Democrat\", \"Independent\", \"Republican\"))\n#&gt; })\n#&gt; \n#&gt; test_that(\"weights are positive where a vote is observed\", {\n#&gt;   voters &lt;- wss[!is.na(wss$trump_vote), ]\n#&gt;   expect_true(all(voters$weight &gt; 0))\n#&gt;   expect_equal(sum(is.na(voters$weight)), 0)\n#&gt; })\n#&gt; \n#&gt; test_that(\"the recode is reproducible from the CSV it documents\", {\n#&gt;   csv &lt;- repo_path(\"data/wss_2020_2024.csv\")\n#&gt;   skip_if_not(file.exists(csv))\n#&gt;   raw &lt;- read_csv(csv, show_col_types = FALSE)\n#&gt;   expect_equal(nrow(raw), nrow(wss))\n#&gt;   expect_true(all(c(\"auth1\", \"auth2\", \"auth3\", \"auth4\", \"pid7\") %in% names(raw)))\n#&gt; })\n\nFour properties worth asserting about any recode, all of them here: the row count is unchanged, derived scales are in range, categorical variables take only documented values, and the analysis N is what you think it is.\n\n11.2.4 Integration: the app\n\n#&gt; # INTEGRATION. The Shiny server with the real data behind it: inputs in, table out.\n#&gt; library(shiny)\n#&gt; library(tidyverse)\n#&gt; \n#&gt; app_dir &lt;- repo_path(\"app\")\n#&gt; if (!file.exists(repo_path(\"data/wss_clean.rds\"))) {\n#&gt;   skip(\"data/wss_clean.rds not built; run Rscript R/01_recode.R\")\n#&gt; }\n#&gt; \n#&gt; test_that(\"the app reacts to its inputs and returns one row per year and group\", {\n#&gt;   testServer(app_dir, {\n#&gt;     session$setInputs(state = c(\"AZ\", \"NM\"), by = \"latino\", wt = TRUE)\n#&gt;     out &lt;- est()\n#&gt;     expect_setequal(as.character(out$year), c(\"2020\", \"2024\"))\n#&gt;     expect_setequal(as.character(out$latino), c(\"Latino\", \"Non-Latino\"))\n#&gt;     expect_true(all(out$trump &gt;= 0 & out$trump &lt;= 1))\n#&gt;     expect_true(all(c(\"n_obs\", \"n_miss\") %in% names(out)))\n#&gt;   })\n#&gt; })\n#&gt; \n#&gt; test_that(\"the weights toggle changes the estimate it claims to change\", {\n#&gt;   testServer(app_dir, {\n#&gt;     session$setInputs(state = c(\"AZ\", \"CO\", \"NV\", \"NM\", \"UT\"), by = \"latino\", wt = TRUE)\n#&gt;     weighted &lt;- est()$trump\n#&gt;     session$setInputs(wt = FALSE)\n#&gt;     expect_false(isTRUE(all.equal(weighted, est()$trump)))\n#&gt;   })\n#&gt; })\n#&gt; \n#&gt; test_that(\"narrowing the state filter never grows the sample\", {\n#&gt;   testServer(app_dir, {\n#&gt;     session$setInputs(state = c(\"AZ\", \"CO\", \"NV\", \"NM\", \"UT\"), by = \"auth_group\", wt = TRUE)\n#&gt;     all_states &lt;- sum(est()$n_obs)\n#&gt;     session$setInputs(state = \"AZ\")\n#&gt;     expect_lte(sum(est()$n_obs), all_states)\n#&gt;   })\n#&gt; })\n\nshiny::testServer() runs the server function without a browser: set inputs, read the reactives. It caught a real bug while this chapter was being written — the server was declared function(input, output), and testServer() requires session as well.",
+    "crumbs": [
+      "The pipeline",
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>The tests</span>"
+    ]
+  },
+  {
+    "objectID": "09-tests.html#running-them",
+    "href": "09-tests.html#running-them",
+    "title": "\n11  The tests\n",
+    "section": "\n11.3 Running them",
+    "text": "11.3 Running them\n\ntestthat::test_dir(\"tests/testthat\", reporter = \"progress\")\n#&gt; ✔ | F W  S  OK | Context\n#&gt; \n#&gt; ⠏ |          0 | integration-app\n#&gt; \n#&gt; ⠋ |          1 | integration-app                                                \n#&gt; ⠹ |          3 | integration-app\n#&gt; \n#&gt; ⠼ |          5 | integration-app\n#&gt; \n#&gt; ⠴ |          6 | integration-app                                                \n#&gt; ✔ |          6 | integration-app [1.7s]\n#&gt; \n#&gt; ⠏ |          0 | integration-pipeline                                           \n#&gt; ⠙ |         12 | integration-pipeline                                           \n#&gt; ✔ |         13 | integration-pipeline\n#&gt; \n#&gt; ⠏ |          0 | unit-estimates                                                 \n#&gt; ✔ |          6 | unit-estimates\n#&gt; \n#&gt; ⠏ |          0 | unit-recode                                                    \n#&gt; ✔ |          8 | unit-recode\n#&gt; \n#&gt; ══ Results ═════════════════════════════════════════════════════════════════════\n#&gt; Duration: 2.1 s\n#&gt; \n#&gt; [ FAIL 0 | WARN 0 | SKIP 0 | PASS 33 ]\n\nFrom the shell, which is what you would put in CI:\nRscript -e 'testthat::test_dir(\"tests/testthat\")'",
+    "crumbs": [
+      "The pipeline",
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>The tests</span>"
+    ]
+  },
+  {
+    "objectID": "09-tests.html#what-a-failure-looks-like",
+    "href": "09-tests.html#what-a-failure-looks-like",
+    "title": "\n11  The tests\n",
+    "section": "\n11.4 What a failure looks like",
+    "text": "11.4 What a failure looks like\nChange a recode and the claim goes red. Here the assertion is deliberately wrong:\n\nlibrary(testthat)\nwss &lt;- readRDS(\"data/wss_clean.rds\")\n\ntest_that(\"trump_vote is coded for every respondent\", {\n  expect_equal(sum(!is.na(wss$trump_vote)), nrow(wss))\n})\n#&gt; ── Failure: trump_vote is coded for every respondent ───────────────────────────\n#&gt; Expected `sum(!is.na(wss$trump_vote))` to equal `nrow(wss)`.\n#&gt; Differences:\n#&gt; 1/1 mismatches\n#&gt; [1] 6495 - 7600 == -1105\n#&gt; Error:\n#&gt; ! Test failed with 1 failure and 0 successes.\n\nThat is the useful output: the claim, the expected value, the actual value. A silent recode error produces a number; a test produces this.",
+    "crumbs": [
+      "The pipeline",
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>The tests</span>"
+    ]
+  },
+  {
+    "objectID": "09-tests.html#tests-worth-adding",
+    "href": "09-tests.html#tests-worth-adding",
+    "title": "\n11  The tests\n",
+    "section": "\n11.5 Tests worth adding",
+    "text": "11.5 Tests worth adding\n\nOne per derived variable, asserting range and allowed values.\nOne asserting nrow() after the recode — the cheapest guard against a join that multiplied rows.\nOne asserting the analysis N, so a change in missingness cannot pass unnoticed.\n\nexpect_error() on the input guard: if someone hands the recode a file without auth1:auth4, it should fail rather than produce NaN.\n\n\nA good use of an agent “Read R/01_recode.R and write a testthat test for every derived variable: range, allowed values, and row count. Do not change the recode.”\nThen read the tests. They are far easier to check than the recode they protect, and reading them is how you find out whether the agent understood the codebook or guessed.",
+    "crumbs": [
+      "The pipeline",
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>The tests</span>"
+    ]
+  },
+  {
+    "objectID": "10-app-and-publishing.html",
+    "href": "10-app-and-publishing.html",
+    "title": "\n12  The app, and publishing\n",
+    "section": "",
+    "text": "12.1 Anatomy of a Shiny app\nTwo stages are left: an explorer so that people can interrogate the estimates themselves, and the command that puts this book on the web.\nEvery Shiny app is three objects and one idea.\nThe idea is reactivity. You never write “when the user clicks, recompute.” You declare what each output is, in terms of inputs, and Shiny works out what to re-run when something changes.\nThree kinds of object in that chain, and the distinction is the whole framework:",
+    "crumbs": [
+      "The pipeline",
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>The app, and publishing</span>"
+    ]
+  },
+  {
+    "objectID": "10-app-and-publishing.html#anatomy-of-a-shiny-app",
+    "href": "10-app-and-publishing.html#anatomy-of-a-shiny-app",
+    "title": "\n12  The app, and publishing\n",
+    "section": "",
+    "text": "Piece\nWhat it is\nIn this app\n\n\n\nui\na nested list of HTML widgets\nfluidPage(sidebarLayout(...))\n\n\nserver\na function of input, output, session\n\ncomputes the estimates, draws the plot\n\n\nshinyApp(ui, server)\nwires them together and serves them\nthe last line of the file\n\n\n\n\n\n\ninput$by\nthe control\n\n\nest()\nreactive\n\n\noutput$plot\nrender\n\n\n\n\n\ninput$x — read-only, set by the browser. Touching input$state anywhere makes that code depend on it.\n\nreactive({ ... }) — a computation that caches and re-runs only when something it read has changed. est() is called by both the plot and the table, and runs once.\n\nrender*({ ... }) — an output. It re-runs when a dependency changes and writes into output$plot.\n\n\nThe two mistakes agents make here Asking for a reactive’s value outside a reactive context (est() at the top level — “operation not allowed without an active reactive context”), and recomputing the same summary separately in each render* block instead of sharing one reactive(). The second one is not an error; it is just the app doing the work twice.\n\n\n12.1.1 This app, line by line\n\n#&gt; library(shiny)\n#&gt; library(tidyverse)\n#&gt; source(here::here(\"R/functions.R\"))\n#&gt; \n#&gt; wss &lt;- read_rds(here::here(\"data/wss_clean.rds\"))\n#&gt; \n#&gt; ui &lt;- fluidPage(\n#&gt;   titlePanel(\"Western States Survey: Trump vote, 2020 vs 2024\"),\n#&gt;   sidebarLayout(\n#&gt;     sidebarPanel(\n#&gt;       checkboxGroupInput(\"state\", \"State\", sort(unique(wss$state)), sort(unique(wss$state))),\n#&gt;       selectInput(\"by\", \"Compare by\", c(\"latino\", \"race4\", \"auth_group\", \"age_group\", \"party3\")),\n#&gt;       checkboxInput(\"wt\", \"Use survey weights\", TRUE)\n#&gt;     ),\n#&gt;     mainPanel(plotOutput(\"plot\"), tableOutput(\"tab\"))\n#&gt;   )\n#&gt; )\n#&gt; \n#&gt; server &lt;- function(input, output, session) {\n#&gt;   est &lt;- reactive({\n#&gt;     wss |&gt;\n#&gt;       filter(state %in% input$state) |&gt;\n#&gt;       trump_share(input$by, weighted = input$wt)\n#&gt;   })\n#&gt;   output$plot &lt;- renderPlot(\n#&gt;     ggplot(est(), aes(year, trump, colour = .data[[input$by]], group = .data[[input$by]])) +\n#&gt;       geom_point(size = 3) + geom_line() +\n#&gt;       scale_y_continuous(labels = scales::percent, limits = c(0, 1)) +\n#&gt;       labs(x = NULL, y = \"Two-party Trump share\", colour = NULL) +\n#&gt;       theme_minimal(base_size = 15)\n#&gt;   )\n#&gt;   output$tab &lt;- renderTable(est())\n#&gt; }\n#&gt; \n#&gt; shinyApp(ui, server)\n\nRscript -e 'shiny::runApp(\"app\")'\nRead it top to bottom:\n\n\nLoad once, outside server. Code above ui runs a single time when the app starts, not per user and not per click. The data read belongs there.\n\nsource(\"R/functions.R\"). The app calls trump_share() — the same function the analysis script calls. The app holds no analysis logic of its own, so it cannot drift away from the paper.\n\nThe UI names the inputs. inputId = \"by\" in the UI is input$by in the server. That string is the entire contract between the two halves.\n\n.data[[input$by]] — the tidy-evaluation form for a column chosen at runtime. An agent will often write get(input$by) or paste strings together; both work until they don’t.\n\nA weights toggle. Making “weighted or not” visible in the interface is honest, and it shows the audience how much the weighting is doing.\n\nn_obs and n_miss in the table. Every point in the plot has a sample size behind it, and some of them are small.\n\n12.1.2 Why it is testable\nserver is an ordinary R function, so it can be run without a browser — shiny::testServer() sets inputs and reads the reactives back. That is what the app’s integration tests do. Two habits make an app testable at all: keep the computation in a named function outside the app, and keep the server body thin enough to read.\n\nWhat this app would need before anyone else used it Cell-size suppression, for one — a filtered panel can easily land on fewer than 30 respondents, and a point estimate drawn from them invites exactly the over-reading this project is about. Intervals, too; the plot shows points with no uncertainty at all.",
+    "crumbs": [
+      "The pipeline",
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>The app, and publishing</span>"
+    ]
+  },
+  {
+    "objectID": "10-app-and-publishing.html#publishing",
+    "href": "10-app-and-publishing.html#publishing",
+    "title": "\n12  The app, and publishing\n",
+    "section": "\n12.2 Publishing",
+    "text": "12.2 Publishing\nThe site, the book, and the slides are one Quarto project:\nquarto render                 # build everything into _site/\nquarto preview                # live reload while writing\nquarto publish gh-pages       # render, then push to the gh-pages branch\nquarto publish gh-pages commits the rendered output to a gh-pages branch and leaves your source branch alone. GitHub Pages serves it at crweber9874.github.io/UNM_Workshop.\n\n12.2.1 Freeze, and why it is committed\nexecute:\n  freeze: auto\nChapters that run R store their results in _freeze/. A rebuild re-runs only what changed, which keeps the render fast and means the book can be rebuilt on a machine without the data. Delete _freeze/ and render again when you want to prove the whole thing still reproduces.\n\n12.2.2 What is deliberately not committed\n\n\n\n\n\n\n\n\nNot committed\nWhy\n\n\n\ndata/wss_clean.rds\nregenerate it: Rscript R/01_recode.R\n\n\noutput/\nfigures and tables are rebuilt by R/02_analysis.R\n\n\n_site/\nrendered output; gh-pages holds the published copy\n\n\n.Renviron, .env\nsecrets never belong in a repository\n\n\nraw .dta files\nnot ours to distribute\n\n\n\n\n\nThe principle: commit the instructions for producing a thing, not the thing — unless the thing is expensive to produce and cheap to store, which is the argument for _freeze/.",
+    "crumbs": [
+      "The pipeline",
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>The app, and publishing</span>"
+    ]
+  },
+  {
+    "objectID": "10-app-and-publishing.html#the-whole-pipeline-one-command-at-a-time",
+    "href": "10-app-and-publishing.html#the-whole-pipeline-one-command-at-a-time",
+    "title": "\n12  The app, and publishing\n",
+    "section": "\n12.3 The whole pipeline, one command at a time",
+    "text": "12.3 The whole pipeline, one command at a time\nRscript R/01_recode.R                              # csv  -&gt; data/wss_clean.rds\nRscript R/02_analysis.R                            # models, figures -&gt; output/\nRscript -e 'testthat::test_dir(\"tests/testthat\")'  # checks pass?\nRscript -e 'shiny::runApp(\"app\")'                  # explore\nquarto render                                      # book + slides -&gt; _site/\nquarto publish gh-pages                            # publish\nSix commands, one direction, no step that depends on something a person remembered to do by hand. That is the standard an agent has to be held to as well — and how you hold it there is the last chapter.",
+    "crumbs": [
+      "The pipeline",
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>The app, and publishing</span>"
+    ]
+  },
+  {
+    "objectID": "11-verification.html",
+    "href": "11-verification.html",
+    "title": "13  Verification",
+    "section": "",
+    "text": "13.1 The four-step minimum\nAgents produce plausible code. Verification is the part of the workflow that is yours, and it is short enough to do every single time.",
+    "crumbs": [
+      "Checking the work",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Verification</span>"
+    ]
+  },
+  {
+    "objectID": "11-verification.html#the-four-step-minimum",
+    "href": "11-verification.html#the-four-step-minimum",
+    "title": "13  Verification",
+    "section": "",
+    "text": "Read the diff. git diff before you commit, or the diff in the pull request. If you cannot explain a change, do not merge it.\nCheck the coding against the codebook. Open the PDF. Confirm the response options, the missing-data codes, and the direction of the scale.\nReport n_obs and n_miss. Every model, every time. If the N moved and nobody said why, cases were silently dropped.\nWrite the test. A check you run once is a check you will stop running.",
+    "crumbs": [
+      "Checking the work",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Verification</span>"
+    ]
+  },
+  {
+    "objectID": "11-verification.html#reporting-n",
+    "href": "11-verification.html#reporting-n",
+    "title": "13  Verification",
+    "section": "13.2 Reporting N",
+    "text": "13.2 Reporting N\nvoters &lt;- wss |&gt; filter(!is.na(trump_vote))\ncat(\"n_obs =\", nrow(voters),\n    \"| n_miss =\", nrow(wss) - nrow(voters), \"\\n\")\n\nfit &lt;- glm(trump_vote ~ latino * year, family = quasibinomial,\n           weights = weight, data = voters)\ncat(\"n_obs =\", nobs(fit), \"| n_miss =\", nrow(voters) - nobs(fit), \"\\n\")\nThe second pair matters most: listwise deletion inside a model formula is the most common way a sample shrinks without anyone noticing.",
+    "crumbs": [
+      "Checking the work",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Verification</span>"
+    ]
+  },
+  {
+    "objectID": "11-verification.html#turning-a-check-into-a-test",
+    "href": "11-verification.html#turning-a-check-into-a-test",
+    "title": "13  Verification",
+    "section": "13.3 Turning a check into a test",
+    "text": "13.3 Turning a check into a test\nTests live in tests/testthat/ and run with:\nRscript -e 'testthat::test_dir(\"tests/testthat\")'\ntest_that(\"authoritarianism is a 0-1 mean of four items\", {\n  wss &lt;- readRDS(\"data/wss_clean.rds\")\n  expect_true(all(wss$authoritarianism &gt;= 0 &\n                  wss$authoritarianism &lt;= 1, na.rm = TRUE))\n})\n\ntest_that(\"trump_vote is coded only for two-party voters\", {\n  wss &lt;- readRDS(\"data/wss_clean.rds\")\n  expect_setequal(unique(na.omit(wss$trump_vote)), c(0, 1))\n})\n\nA good use of an agent “Read R/01_recode.R and write a testthat test for every derived variable: range, allowed values, and row count. Do not change the recode.” Then read the tests — they are far easier to check than the recode itself, and they will outlive this workshop.",
+    "crumbs": [
+      "Checking the work",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Verification</span>"
+    ]
+  },
+  {
+    "objectID": "11-verification.html#checking-an-agents-factual-claims",
+    "href": "11-verification.html#checking-an-agents-factual-claims",
+    "title": "13  Verification",
+    "section": "13.4 Checking an agent’s factual claims",
+    "text": "13.4 Checking an agent’s factual claims\n\n\n\n\n\n\n\nClaim it makes\nHow you check it\n\n\n\n\n“pid7 runs 1–7 with 4 as independent”\nThe codebook, not the data’s range\n\n\n“I dropped non-voters”\nn_miss, and count() on the raw variable\n\n\n“This uses survey weights”\nRead the call. Look for weights =\n\n\n“The 2024 weight is weight”\nIt is weight_all. See AGENTS.md\n\n\n“Smith (2019) shows…”\nSearch for the citation. Assume it is invented\n\n\n\n\nReproducibility is the real test Delete data/wss_clean.rds and output/, then run the pipeline from the top. If the numbers come back identical, the work is reproducible. If they do not, something lives in a console somewhere instead of in a script.",
+    "crumbs": [
+      "Checking the work",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Verification</span>"
+    ]
+  },
+  {
+    "objectID": "11-verification.html#what-to-trust",
+    "href": "11-verification.html#what-to-trust",
+    "title": "13  Verification",
+    "section": "13.5 What to trust",
+    "text": "13.5 What to trust\n\nTrust code you have read and can explain.\nTrust numbers that a script regenerates from raw data.\nDo not trust a result that exists only in a chat transcript.\nDo not trust your own memory of what you accepted ten minutes ago. That is what the commit history is for.",
+    "crumbs": [
+      "Checking the work",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Verification</span>"
+    ]
   }
 ]

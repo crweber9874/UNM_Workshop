@@ -1071,18 +1071,18 @@ Christopher R. Weber
 <h2>The Premise</h2>
 <div style="font-size: 0.62em; line-height: 1.5;">
 <ul>
-<li>A coding agent is a <strong>collaborator with no memory and no stake in being right</strong>. It writes plausible code quickly, and plausible is not the same as correct.</li>
-<li>The useful question is not <em>can it write the model?</em> It is <strong>what work can I delegate, and how do I check it?</strong></li>
+<li>A coding agent is a <strong>collaborator with no memory</strong></li>
+<li>The way I use it: Not to write the code, but to help me find it. It is <strong>what work can I delegate, and how do I check it?</strong></li>
 <li>Three things make delegation safe: a <strong>repository</strong> (so every change is visible and reversible), an <strong>instruction file</strong> (so the agent knows the project), and a <strong>habit of verification</strong> (so you catch what it got wrong).</li>
-<li>Everything today runs on one shared repo and one real research question.</li>
+<li>Today is a <strong>walkthrough</strong> on one public repo and one real research question — follow along if you like, or just watch and take the repo home.</li>
 </ul>
 </div>
 <div style="font-size: 0.68em; margin-top: 1.1em; border-left: 3px solid #2a78d6; padding-left: 0.9em; color: #3d3d3d; line-height: 1.55;">
 <p><strong>Three goals</strong></p>
 <ol type="1">
-<li>Everyone can <strong>clone, branch, and open a pull request</strong> on a shared project.</li>
-<li>Everyone has an agent that <strong>knows this project</strong> through an instructions file.</li>
-<li>We answer one substantive question together — and <strong>check the machine’s work</strong>.</li>
+<li>See the whole loop once — <strong>clone, branch, diff, undo</strong> — on a real project.</li>
+<li>See how an agent comes to <strong>know a project</strong> through an instructions file.</li>
+<li>Watch one substantive question get answered, and watch us <strong>check the machine’s work</strong>.</li>
 </ol>
 </div>
 </section>
@@ -1090,49 +1090,53 @@ Christopher R. Weber
 <h2>The Day</h2>
 <div class="item-list">
 <ul>
-<li><span class="tag">0 · Framing</span> What agents do, and where they fail silently</li>
-<li><span class="tag">1 · Setup</span> GitHub, Copilot, Claude Code, Codespaces</li>
-<li><span class="tag">2 · Git</span> Pull, branch, commit, push, pull request</li>
-<li><span class="tag">3 · Agents</span> <code>AGENTS.md</code>, slash commands, cost discipline</li>
-<li><span class="tag">4 · Pipeline</span> Recode → model → app → published site</li>
-<li><span class="tag">5 · Verify</span> Reading the diff, citing the codebook, writing the test</li>
+<li><span class="tag">Framing</span> What agents do, and where they fail silently</li>
+<li><span class="tag">Setup</span> GitHub, Copilot, Claude Code, Codespaces</li>
+<li><span class="tag">Git</span> Pull, branch, commit, push, pull request</li>
+<li><span class="tag">Agents</span> <code>AGENTS.md</code>, slash commands, cost discipline</li>
+<li><span class="tag">Pipeline</span> Recode → model → app → published site</li>
+<li><span class="tag">Verify</span> Reading the diff, citing the codebook, writing the test</li>
+<li><span class="tag">In the wild</span> The same workflow on a production project: the Arizona Voter Project</li>
 </ul>
 </div>
 <div class="slide-source">
 <p>Slides, instructions, and data: <a href="https://crweber9874.github.io/UNM_Workshop/" class="uri">https://crweber9874.github.io/UNM_Workshop/</a> · Repository: <a href="https://github.com/crweber9874/UNM_Workshop" class="uri">https://github.com/crweber9874/UNM_Workshop</a></p>
 </div>
-</section>
-<section id="software-engineering-vs.-research-code" class="slide level2">
-<h2>Software Engineering vs. Research Code</h2>
-<div class="columns">
-<div class="column" style="width:48%;">
-<div class="contest-card card-trad">
-<p><span class="card-label">SOFTWARE</span></p>
-<p>Tests tell you it works. The spec is written down. Correctness is checkable by the machine.</p>
-<ul>
-<li>Agents are strong here</li>
-<li>Failures are loud</li>
-</ul>
-</div>
-</div><div class="column" style="width:4%;">
-
-</div><div class="column" style="width:48%;">
-<div class="contest-card card-subv">
-<p><span class="card-label">RESEARCH</span></p>
-<p>The spec lives in a codebook and your judgment. A wrong recode runs fine and produces a publishable number.</p>
-<ul>
-<li>Agents are confidently wrong here</li>
-<li>Failures are <strong>silent</strong></li>
-</ul>
-</div>
-</div></div>
-<div class="slide-note">
-<p>This asymmetry drives every rule we adopt today. The agent can scaffold, refactor, document, and debug. It cannot know that <code>pid7 == 8</code> is “not sure” rather than “strong Republican” unless the codebook says so and you make it read it.</p>
-</div>
+<!-- AI-drafted (Claude Code); reviewed by CRW -->
 </section>
 <section>
+<section id="framing" class="title-slide slide level1 divider center">
+<h1>Framing</h1>
+
+</section>
+<section id="what-a-language-model-is" class="slide level2">
+<h2>What a Language Model Is</h2>
+<div style="font-size: 0.62em; line-height: 1.5;">
+<p>Start with a model you already estimate. The outcome is the <strong>next token</strong>; the categories are a fixed vocabulary of perhaps 100,000 of them. That is a <strong>multinomial logit</strong>:</p>
+<p><span class="math display">\[\Pr(w_t = k \mid \text{context}) = \frac{\exp(\mathbf{x}_t&#39;\boldsymbol{\beta}_k)}{\sum_j \exp(\mathbf{x}_t&#39;\boldsymbol{\beta}_j)}\]</span></p>
+<p>Everything else is a solution to one problem: <strong>what is <span class="math inline">\(\mathbf{x}_t\)</span>?</strong> The context is a sequence of arbitrary length, not a fixed design matrix.</p>
+</div>
+<div class="exp-block">
+<p><span class="exp-head">The neural network is learned measurement</span></p>
+<p>A layer is a set of <strong>latent variables</strong> — linear combinations passed through a nonlinearity — and the next layer takes those as its indicators. Stack ~100 of them and you have learned a representation instead of specifying one. <strong>Attention</strong> makes the coefficients context-dependent: each token’s features are a weighted average of the other tokens’, with weights estimated from the sequence itself. A varying-coefficient model, fit rather than imposed. “Bank” near <em>river</em> is not “bank” near <em>loan</em>.</p>
+</div>
+</section>
+<section id="two-estimation-stages" class="slide level2">
+<h2>Two Estimation Stages</h2>
+<div class="item-list">
+<ul>
+<li><span class="tag">Pretraining</span> MLE by stochastic gradient descent on trillions of tokens. Billions of parameters, no closed form, no standard errors, no identification claim — the parameters are not interpretable and were never meant to be</li>
+<li><span class="tag">Alignment</span> A reward model is fit to human pairwise comparisons — a <strong>Bradley–Terry</strong> model of “which answer is better” — then the policy is shifted toward preferred completions</li>
+</ul>
+</div>
+<div class="exp-block">
+<p><span class="exp-head">Why this matters for how you use it</span></p>
+<p>Fluency and instruction-following come from the <em>second</em> stage. Factual accuracy is in neither loss function. The object is a <strong>conditional distribution over text, sampled at temperature</strong> — so it is a predictive model, run far out of sample, with no uncertainty estimate attached. It will produce a plausible variable name, a plausible citation, and a plausible coefficient with equal confidence. That is the whole case for verification.</p>
+</div>
+</section></section>
+<section>
 <section id="setup" class="title-slide slide level1 divider center">
-<h1>1 · Setup</h1>
+<h1>Setup</h1>
 
 </section>
 <section id="why-a-repository-at-all" class="slide level2">
@@ -1162,11 +1166,12 @@ Christopher R. Weber
 │   └── wss_clean.rds      built by R/01_recode.R
 ├── codebooks/             2020 &amp; 2024 survey codebooks (PDF)
 ├── R/
+│   ├── functions.R        pure helpers, shared and unit-tested
 │   ├── 00_build_data.R    raw Stata → csv (instructor only)
 │   ├── 01_recode.R        all recoding lives here
 │   └── 02_analysis.R      models and figures → output/
 ├── app/app.R              Shiny explorer
-├── tests/testthat/        checks on the recodes
+├── tests/testthat/        test-unit-* and test-integration-*
 ├── slides/                these slides
 └── .devcontainer/         one-click Codespace</code></pre>
 </div>
@@ -1200,12 +1205,12 @@ Christopher R. Weber
 <p><span class="limits-head">Housekeeping</span> The free tier is 60 core-hours a month. <strong>Stop your codespace when you are done</strong> — it bills while it idles.</p>
 </div>
 <div class="turn">
-<p><span class="turn-head">Your turn</span> 1. Open the repository and start a codespace (or clone locally). 2. In the terminal: <code>gh auth status</code> — are you signed in? 3. Start <code>claude</code>, then type <code>/init</code> and read what it writes about this project.</p>
+<p><span class="turn-head">Follow along, if you like</span> 1. Open the repository and start a codespace (or clone locally). 2. In the terminal: <code>gh auth status</code> — are you signed in? 3. Start <code>claude</code>, then type <code>/init</code> and read what it writes about this project.</p>
 </div>
 </section></section>
 <section>
 <section id="git" class="title-slide slide level1 divider center">
-<h1>2 · Git</h1>
+<h1>Git</h1>
 
 </section>
 <section id="the-model" class="slide level2">
@@ -1232,66 +1237,71 @@ Christopher R. Weber
 <p>Changes move left to right, one deliberate step at a time, and come back with <code>git pull</code>. The staging area exists so that you commit <em>some</em> of your changes — the finished recode, not the half-written one beside it.</p>
 </div>
 </section>
-<section id="fork-vs.-clone" class="slide level2">
-<h2>Fork vs. Clone</h2>
+<section id="clone-and-fork-for-later" class="slide level2">
+<h2>Clone, and Fork for Later</h2>
 <div class="columns">
 <div class="column" style="width:48%;">
 <div class="contest-card card-trad">
-<p><span class="card-label">FORK</span></p>
-<p>A copy of someone else’s repository <strong>under your account</strong>, made on the GitHub website.</p>
+<p><span class="card-label">CLONE — today</span></p>
+<p>A copy of a repository <strong>on your computer</strong>, made with <code>git clone &lt;url&gt;</code>.</p>
 <ul>
-<li>Use it to contribute where you lack write access</li>
-<li>Fork + clone + pull request = open-source collaboration</li>
+<li>Needs only read access; this repo is public</li>
+<li>Commit, branch, break things — it stays local</li>
 </ul>
 </div>
 </div><div class="column" style="width:4%;">
 
 </div><div class="column" style="width:48%;">
 <div class="contest-card card-subv">
-<p><span class="card-label">CLONE</span></p>
-<p>A copy of a repository <strong>on your computer</strong>, made with <code>git clone &lt;url&gt;</code>.</p>
+<p><span class="card-label">FORK — for later</span></p>
+<p>A copy <strong>under your account</strong>, made on the GitHub website.</p>
 <ul>
-<li>Your edits stay local until you push</li>
-<li>You can only push to repos you have access to</li>
+<li>For contributing where you lack write access</li>
+<li>Fork + clone + pull request = open-source collaboration</li>
 </ul>
 </div>
 </div></div>
 <div class="slide-note">
-<p>Today everyone is a <strong>collaborator on one repo</strong>, so you clone and work on branches. Send me your GitHub username if you are not added yet; fork instead if you would rather keep your work separate.</p>
+<p>Today: <strong>clone</strong>. The repository is public, so you only need read access — nobody has to be added to anything, and nothing you do locally can affect the original. Forking is for the day you want to send work back somewhere.</p>
 </div>
 </section>
 <section id="get-the-repository" class="slide level2">
 <h2>Get the Repository</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a></a><span class="fu">git</span> clone https://github.com/crweber9874/UNM_Workshop.git</span>
-<span id="cb2-2"><a></a><span class="bu">cd</span> UNM_Workshop</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href></a><span class="fu">git</span> clone https://github.com/crweber9874/UNM_Workshop.git</span>
+<span id="cb2-2"><a href></a><span class="bu">cd</span> UNM_Workshop</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div style="font-size: 0.62em; line-height: 1.5; margin-top: 0.6em;">
 <p>From RStudio you can do all of this in <strong>Tools → Terminal → New Terminal</strong>, or point-and-click in the <strong>Git</strong> tab. The commands are the same underneath, and the terminal is what you will be able to explain to a collaborator — or to an agent.</p>
 </div>
 </section>
 <section id="the-everyday-loop" class="slide level2">
 <h2>The Everyday Loop</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a></a><span class="fu">git</span> pull                        <span class="co"># ALWAYS first: get everyone else&#39;s work</span></span>
-<span id="cb3-2"><a></a><span class="fu">git</span> status                      <span class="co"># what did I change?</span></span>
-<span id="cb3-3"><a></a><span class="fu">git</span> add R/01_recode.R           <span class="co"># stage specific files, not `git add .` blindly</span></span>
-<span id="cb3-4"><a></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;Add generation recode&quot;</span></span>
-<span id="cb3-5"><a></a><span class="fu">git</span> push</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href></a><span class="fu">git</span> pull                        <span class="co"># pick up changes to the original</span></span>
+<span id="cb3-2"><a href></a><span class="fu">git</span> status                      <span class="co"># what did I change?</span></span>
+<span id="cb3-3"><a href></a><span class="fu">git</span> add R/01_recode.R           <span class="co"># stage specific files, not `git add .` blindly</span></span>
+<span id="cb3-4"><a href></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;Add generation recode&quot;</span></span>
+<span id="cb3-5"><a href></a><span class="fu">git</span> diff HEAD~1                 <span class="co"># read what you just committed</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="exp-block">
 <p><span class="exp-head">What a commit is</span></p>
 <p>A snapshot of your changes with a unique ID and a message. The message is for the version of you who, in four months, needs to know why <code>age_group</code> has four categories. Write it for that person.</p>
 </div>
+<div class="slide-source">
+<p><code>pull</code>, <code>add</code>, <code>commit</code> and <code>diff</code> all work in your own clone, with no write access to anything. <code>push</code> is the only one that needs somewhere you can write.</p>
+</div>
 </section>
-<section id="working-together-without-collisions" class="slide level2">
-<h2>Working Together Without Collisions</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a></a><span class="fu">git</span> pull</span>
-<span id="cb4-2"><a></a><span class="fu">git</span> switch <span class="at">-c</span> weber-recode-generation    <span class="co"># your own branch</span></span>
-<span id="cb4-3"><a></a><span class="co"># ...edit, add, commit...</span></span>
-<span id="cb4-4"><a></a><span class="fu">git</span> push <span class="at">-u</span> origin weber-recode-generation</span>
-<span id="cb4-5"><a></a><span class="ex">gh</span> pr create <span class="at">--fill</span>                      <span class="co"># open a pull request</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="branching-in-your-own-clone" class="slide level2">
+<h2>Branching in Your Own Clone</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href></a><span class="fu">git</span> switch <span class="at">-c</span> trying-something     <span class="co"># a branch costs nothing</span></span>
+<span id="cb4-2"><a href></a><span class="co"># ...edit, add, commit...</span></span>
+<span id="cb4-3"><a href></a><span class="fu">git</span> switch main                    <span class="co"># back to where you started</span></span>
+<span id="cb4-4"><a href></a><span class="fu">git</span> branch <span class="at">-D</span> trying-something     <span class="co"># throw the experiment away</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div style="font-size: 0.62em; line-height: 1.5; margin-top: 0.5em;">
-<p>Someone reviews the pull request on GitHub and merges it. Then everyone returns to a common base: <code>git switch main &amp;&amp; git pull</code>.</p>
+<p>This is the whole safety net, and it is entirely local — no account, no permissions, no collaborators. Let the agent loose on a branch; if the result is wrong, delete the branch.</p>
 </div>
 <div class="limits">
-<p><span class="limits-head">Rules of the road</span> Pull before you start, push when you stop · one person per file where possible (recode / analysis / app) · small commits with clear messages · never commit data you were not given, passwords, or <code>.Renviron</code>.</p>
+<p><span class="limits-head">Rules of the road</span> Branch per task, never commit on <code>main</code> · small commits with clear messages · never commit data you were not given, passwords, or <code>.Renviron</code>.</p>
+</div>
+<div class="slide-source">
+<p>Pushing, forks and pull requests matter when you share a repo with someone. Not needed today — you only need to read this one.</p>
 </div>
 </section>
 <section id="when-to-use-what" class="slide level2">
@@ -1299,60 +1309,79 @@ Christopher R. Weber
 <div class="cmd-table">
 <table class="caption-top">
 <colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
 </colgroup>
 <thead>
 <tr class="header">
 <th>Action</th>
 <th>When</th>
 <th>Command</th>
+<th>Needs access?</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td><strong>Fork</strong></td>
-<td>Contributing without write access</td>
-<td>on github.com</td>
+<td><strong>Clone</strong></td>
+<td>Reading and running someone’s code</td>
+<td><code>git clone &lt;url&gt;</code></td>
+<td>no</td>
 </tr>
 <tr class="even">
-<td><strong>Clone</strong></td>
-<td>Getting a repo onto your machine</td>
-<td><code>git clone &lt;url&gt;</code></td>
+<td><strong>Pull</strong></td>
+<td>Picking up later changes</td>
+<td><code>git pull</code></td>
+<td>no</td>
 </tr>
 <tr class="odd">
-<td><strong>Pull</strong></td>
-<td>Before you start working</td>
-<td><code>git pull</code></td>
-</tr>
-<tr class="even">
 <td><strong>Branch</strong></td>
 <td>Any change you are not sure of</td>
 <td><code>git switch -c name-topic</code></td>
+<td>no</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><strong>Add</strong></td>
 <td>Choosing what goes in the commit</td>
 <td><code>git add R/01_recode.R</code></td>
+<td>no</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><strong>Commit</strong></td>
 <td>Saving a coherent step locally</td>
 <td><code>git commit -m &quot;message&quot;</code></td>
-</tr>
-<tr class="odd">
-<td><strong>Push</strong></td>
-<td>Publishing your branch</td>
-<td><code>git push -u origin name-topic</code></td>
+<td>no</td>
 </tr>
 <tr class="even">
+<td><strong>Diff</strong></td>
+<td>Checking what the agent did</td>
+<td><code>git diff</code></td>
+<td>no</td>
+</tr>
+<tr class="odd">
+<td><strong>Fork</strong></td>
+<td>You want to send work back</td>
+<td><code>gh repo fork &lt;repo&gt; --clone</code></td>
+<td>your account</td>
+</tr>
+<tr class="even">
+<td><strong>Push</strong></td>
+<td>Publishing a branch</td>
+<td><code>git push -u origin name-topic</code></td>
+<td>write</td>
+</tr>
+<tr class="odd">
 <td><strong>Pull request</strong></td>
 <td>Asking for review and a merge</td>
 <td><code>gh pr create --fill</code></td>
+<td>write on a fork</td>
 </tr>
 </tbody>
 </table>
+</div>
+<div class="slide-source">
+<p>Everything above the line is all you need today — and all you need to use an agent safely on any repository, including your own.</p>
 </div>
 </section>
 <section id="conflicts-and-undo" class="slide level2">
@@ -1404,13 +1433,10 @@ their version
 </table>
 </div>
 </div></div>
-<div class="turn">
-<p><span class="turn-head">Your turn</span> Create a branch, add a file <code>tmp/&lt;lastname&gt;.qmd</code> with a sentence about your own data, commit it, push it, and open a pull request.</p>
-</div>
 </section></section>
 <section>
 <section id="agents" class="title-slide slide level1 divider center">
-<h1>3 · Agents</h1>
+<h1>Agents</h1>
 
 </section>
 <section id="how-an-agent-sees-this-repository" class="slide level2">
@@ -1430,24 +1456,24 @@ their version
 <section id="anatomy-of-a-good-agents.md" class="slide level2">
 <h2>Anatomy of a Good <code>AGENTS.md</code></h2>
 <div class="tight-code">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb6-1"><a></a><span class="fu">## Project</span></span>
-<span id="cb6-2"><a></a>Did Latino voters in the Western states shift toward Trump from 2020</span>
-<span id="cb6-3"><a></a>to 2024, and does authoritarianism condition that shift?</span>
-<span id="cb6-4"><a></a></span>
-<span id="cb6-5"><a></a><span class="fu">## Layout</span></span>
-<span id="cb6-6"><a></a><span class="ss">- </span>data/wss_2020_2024.csv  analysis file (read-only; never edit by hand)</span>
-<span id="cb6-7"><a></a><span class="ss">- </span>R/01_recode.R           all recoding lives here</span>
-<span id="cb6-8"><a></a><span class="ss">- </span>codebooks/              cite these when describing a variable</span>
-<span id="cb6-9"><a></a></span>
-<span id="cb6-10"><a></a><span class="fu">## Rules</span></span>
-<span id="cb6-11"><a></a><span class="ss">- </span>R + tidyverse, native pipe |&gt;. Minimal comments.</span>
-<span id="cb6-12"><a></a><span class="ss">- </span>New recodes go in R/01_recode.R, not in analysis scripts.</span>
-<span id="cb6-13"><a></a><span class="ss">- </span>Always report n_obs and n_miss with any model.</span>
-<span id="cb6-14"><a></a><span class="ss">- </span>Use survey weights for population estimates; say when you don&#39;t.</span>
-<span id="cb6-15"><a></a><span class="ss">- </span>Don&#39;t push to main without the user&#39;s say-so; prefer a branch + PR.</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb6-1"><a href></a><span class="fu">## Project</span></span>
+<span id="cb6-2"><a href></a>Did Latino voters in the Western states shift toward Trump from 2020</span>
+<span id="cb6-3"><a href></a>to 2024, and does authoritarianism condition that shift?</span>
+<span id="cb6-4"><a href></a></span>
+<span id="cb6-5"><a href></a><span class="fu">## Layout</span></span>
+<span id="cb6-6"><a href></a><span class="ss">- </span>data/wss_2020_2024.csv  analysis file (read-only; never edit by hand)</span>
+<span id="cb6-7"><a href></a><span class="ss">- </span>R/01_recode.R           all recoding lives here</span>
+<span id="cb6-8"><a href></a><span class="ss">- </span>codebooks/              cite these when describing a variable</span>
+<span id="cb6-9"><a href></a></span>
+<span id="cb6-10"><a href></a><span class="fu">## Rules</span></span>
+<span id="cb6-11"><a href></a><span class="ss">- </span>R + tidyverse, native pipe |&gt;. Minimal comments.</span>
+<span id="cb6-12"><a href></a><span class="ss">- </span>New recodes go in R/01_recode.R, not in analysis scripts.</span>
+<span id="cb6-13"><a href></a><span class="ss">- </span>Always report n_obs and n_miss with any model.</span>
+<span id="cb6-14"><a href></a><span class="ss">- </span>Use survey weights for population estimates; say when you don&#39;t.</span>
+<span id="cb6-15"><a href></a><span class="ss">- </span>Don&#39;t push to main without the user&#39;s say-so; prefer a branch + PR.</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="slide-note">
-<p>What the project is · where things live · which files are read-only · variable definitions and where to <strong>cite</strong> them · conventions · guardrails. Keep it short: agents follow concise rules far better than essays. Bootstrap one with <code>/init</code>, then <strong>edit it yourself</strong> — the draft will be describing your code, not your intentions.</p>
+<p>What the project is · where things live · which files are read-only · variable definitions and where to <strong>cite</strong> them · conventions · guardrails. Keep it short: agents follow concise rules far better than essays.</p>
 </div>
 </section>
 <section id="claude-code-what-you-actually-type" class="slide level2">
@@ -1607,7 +1633,7 @@ their version
 </section></section>
 <section>
 <section id="the-pipeline" class="title-slide slide level1 divider center">
-<h1>4 · The Pipeline</h1>
+<h1>The Pipeline</h1>
 
 </section>
 <section id="the-question" class="slide level2">
@@ -1703,10 +1729,10 @@ their version
 </section>
 <section id="run-it-end-to-end" class="slide level2">
 <h2>Run It End to End</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a></a><span class="ex">Rscript</span> R/01_recode.R                       <span class="co"># csv  -&gt; data/wss_clean.rds</span></span>
-<span id="cb7-2"><a></a><span class="ex">Rscript</span> R/02_analysis.R                     <span class="co"># models, figures -&gt; output/</span></span>
-<span id="cb7-3"><a></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">&#39;testthat::test_dir(&quot;tests/testthat&quot;)&#39;</span></span>
-<span id="cb7-4"><a></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">&#39;shiny::runApp(&quot;app&quot;)&#39;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href></a><span class="ex">Rscript</span> R/01_recode.R                       <span class="co"># csv  -&gt; data/wss_clean.rds</span></span>
+<span id="cb7-2"><a href></a><span class="ex">Rscript</span> R/02_analysis.R                     <span class="co"># models, figures -&gt; output/</span></span>
+<span id="cb7-3"><a href></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">&#39;testthat::test_dir(&quot;tests/testthat&quot;)&#39;</span></span>
+<span id="cb7-4"><a href></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">&#39;shiny::runApp(&quot;app&quot;)&#39;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="exp-block">
 <p><span class="exp-head">Why this order is enforced</span></p>
 <p>Every number in the paper traces back through exactly one path. If the recode changes, the analysis and the app change with it, because neither one keeps its own private copy of the recoding logic. Ask the agent to add a recode to <code>02_analysis.R</code> and it will happily do it — this is the rule you are enforcing against your own convenience.</p>
@@ -1744,14 +1770,14 @@ their version
 <p>n_obs = 6,495 two-party voters · n_miss = 1,105 (non-voters, other candidates, ineligible) of 7,600 respondents.</p>
 </div>
 <div class="limits">
-<p><span class="limits-head">The puzzle</span> A two-point Latino shift, on 786 Latino respondents in 2024, is far from the double-digit national exit-poll story. Sample? Weights? Mode? Reported versus intended vote? <strong>That is the group task</strong> — not to reproduce a headline, but to work out what this sample can and cannot support.</p>
+<p><span class="limits-head">The puzzle</span> A two-point Latino shift, on 786 Latino respondents in 2024, is far from the double-digit national exit-poll story. Sample? Weights? Mode? Reported versus intended vote? <strong>That is the interesting part</strong> — not reproducing a headline, but working out what this sample can and cannot support.</p>
 </div>
 <div class="slide-source">
 <p>Produced by <code>R/02_analysis.R</code> from <code>data/wss_clean.rds</code>; weights are <code>weight</code> (2020) and <code>weight_all</code> (2024). Confidence intervals in the script use a Kish effective <em>n</em>, not a design-based variance.</p>
 </div>
 </section>
-<section id="four-teams" class="slide level2">
-<h2>Four Teams</h2>
+<section id="four-things-we-can-demonstrate" class="slide level2">
+<h2>Four Things We Can Demonstrate</h2>
 <div class="item-list">
 <ul>
 <li><span class="tag">Recode</span> Generations, income terciles, strength of partisanship — each checked against the codebook</li>
@@ -1760,28 +1786,246 @@ their version
 <li><span class="tag">Skeptics</span> Is this sample representative of Latino voters? Weighting, mode, and comparison with external estimates</li>
 </ul>
 </div>
-<div class="turn">
-<p><span class="turn-head">Workflow for every team</span> Branch → work with your agent → <strong>read the diff</strong> → report <code>n_obs</code> and <code>n_miss</code> → commit → pull request. Review someone else’s PR before you ask for yours.</p>
+<div class="slide-note">
+<p>We will walk one of these through the whole loop — prompt, diff, <code>n_obs</code>, test — and the rest are here as worked examples you can run later on the repo, or on your own data.</p>
+</div>
+</section>
+<section id="what-testthat-is" class="slide level2">
+<h2>What <code>testthat</code> Is</h2>
+<div style="font-size: 0.6em; line-height: 1.5;">
+<p>R’s unit-testing package. A test file is just R code that <strong>asserts</strong> rather than prints: it says what must be true, and fails loudly when it is not. One file per concern, in <code>tests/testthat/</code>, named <code>test-*.R</code>.</p>
+</div>
+<div class="columns">
+<div class="column" style="width:46%;">
+<div class="tight-code">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href></a><span class="co"># tests/testthat/test-unit-recode.R</span></span>
+<span id="cb8-2"><a href></a><span class="fu">library</span>(testthat)</span>
+<span id="cb8-3"><a href></a>wss <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;data/wss_clean.rds&quot;</span>)</span>
+<span id="cb8-4"><a href></a></span>
+<span id="cb8-5"><a href></a><span class="fu">test_that</span>(<span class="st">&quot;auth scale is bounded&quot;</span>, {</span>
+<span id="cb8-6"><a href></a>  <span class="fu">expect_true</span>(<span class="fu">all</span>(</span>
+<span id="cb8-7"><a href></a>    wss<span class="sc">$</span>authoritarianism <span class="sc">&gt;=</span> <span class="dv">0</span> <span class="sc">&amp;</span></span>
+<span id="cb8-8"><a href></a>    wss<span class="sc">$</span>authoritarianism <span class="sc">&lt;=</span> <span class="dv">1</span>,</span>
+<span id="cb8-9"><a href></a>    <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb8-10"><a href></a>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div style="font-size: 0.5em; color: #6b6b6b; line-height: 1.4;">
+<p><code>test_that(&quot;what must be true&quot;, { expectations })</code> — the string is the failure message, so write it as a claim.</p>
+</div>
+</div><div class="column" style="width:4%;">
+
+</div><div class="column" style="width:50%;">
+<div class="cmd-table">
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th>Expectation</th>
+<th>Asserts</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>expect_equal(x, y)</code></td>
+<td>equal within tolerance</td>
+</tr>
+<tr class="even">
+<td><code>expect_identical(x, y)</code></td>
+<td>exactly identical</td>
+</tr>
+<tr class="odd">
+<td><code>expect_true(x)</code></td>
+<td>all of <code>x</code> is <code>TRUE</code></td>
+</tr>
+<tr class="even">
+<td><code>expect_setequal(x, y)</code></td>
+<td>same values, any order</td>
+</tr>
+<tr class="odd">
+<td><code>expect_length(x, n)</code></td>
+<td>length is <code>n</code></td>
+</tr>
+<tr class="even">
+<td><code>expect_error(f())</code></td>
+<td>it <em>does</em> fail</td>
+</tr>
+<tr class="odd">
+<td><code>expect_no_warning(f())</code></td>
+<td>it runs clean</td>
+</tr>
+<tr class="even">
+<td><code>skip(&quot;reason&quot;)</code></td>
+<td>not applicable here</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div></div>
+<div class="slide-source">
+<p>Run them: <code>Rscript -e &#39;testthat::test_dir(&quot;tests/testthat&quot;)&#39;</code> → <code>[ FAIL 0 | WARN 0 | SKIP 0 | PASS 10 ]</code>. Inside a package it is <code>devtools::test()</code>, and <code>usethis::use_test(&quot;recode&quot;)</code> creates the file.</p>
+</div>
+</section>
+<section id="unit-vs.-integration" class="slide level2">
+<h2>Unit vs. Integration</h2>
+<div class="columns">
+<div class="column" style="width:48%;">
+<div class="contest-card card-trad">
+<p><span class="card-label">UNIT — <code>test-unit-*.R</code></span></p>
+<p>One function, <strong>synthetic input written in the test</strong>. Nothing on disk can make it pass or fail.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href></a><span class="fu">expect_equal</span>(<span class="fu">pid_to_party3</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">7</span>),</span>
+<span id="cb9-2"><a href></a>  <span class="fu">c</span>(<span class="st">&quot;Democrat&quot;</span>,<span class="st">&quot;Democrat&quot;</span>,<span class="st">&quot;Democrat&quot;</span>,</span>
+<span id="cb9-3"><a href></a>    <span class="st">&quot;Independent&quot;</span>,<span class="st">&quot;Republican&quot;</span>,</span>
+<span id="cb9-4"><a href></a>    <span class="st">&quot;Republican&quot;</span>,<span class="st">&quot;Republican&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Milliseconds. Tells you <strong>where</strong> it broke.</p>
+</div>
+</div><div class="column" style="width:4%;">
+
+</div><div class="column" style="width:48%;">
+<div class="contest-card card-subv">
+<p><span class="card-label">INTEGRATION — <code>test-integration-*.R</code></span></p>
+<p>The pieces together: real CSV, built <code>.rds</code>, the live Shiny server.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href></a><span class="fu">testServer</span>(<span class="st">&quot;app&quot;</span>, {</span>
+<span id="cb10-2"><a href></a>  session<span class="sc">$</span><span class="fu">setInputs</span>(<span class="at">by =</span> <span class="st">&quot;latino&quot;</span>,</span>
+<span id="cb10-3"><a href></a>                    <span class="at">wt =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb10-4"><a href></a>  <span class="fu">expect_true</span>(<span class="fu">all</span>(<span class="fu">est</span>()<span class="sc">$</span>trump <span class="sc">&lt;=</span> <span class="dv">1</span>))</span>
+<span id="cb10-5"><a href></a>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Seconds. Tells you <strong>that</strong> it broke.</p>
+</div>
+</div></div>
+<div class="slide-note">
+<p>Unit tests need <strong>units</strong>. A 200-line script has nothing to unit-test — which is why the pure helpers live in <code>R/functions.R</code>. Extracting the function comes first; the test comes second.</p>
 </div>
 </section>
 <section id="make-the-agent-prove-it" class="slide level2">
 <h2>Make the Agent Prove It</h2>
 <div class="tight-code">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a></a><span class="fu">test_that</span>(<span class="st">&quot;authoritarianism is a 0-1 mean of four items&quot;</span>, {</span>
-<span id="cb8-2"><a></a>  wss <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;data/wss_clean.rds&quot;</span>)</span>
-<span id="cb8-3"><a></a>  <span class="fu">expect_true</span>(<span class="fu">all</span>(wss<span class="sc">$</span>authoritarianism <span class="sc">&gt;=</span> <span class="dv">0</span> <span class="sc">&amp;</span> wss<span class="sc">$</span>authoritarianism <span class="sc">&lt;=</span> <span class="dv">1</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb8-4"><a></a>  <span class="fu">expect_equal</span>(<span class="fu">nrow</span>(wss), <span class="dv">7600</span>)</span>
-<span id="cb8-5"><a></a>})</span>
-<span id="cb8-6"><a></a></span>
-<span id="cb8-7"><a></a><span class="fu">test_that</span>(<span class="st">&quot;trump_vote is coded only for two-party voters&quot;</span>, {</span>
-<span id="cb8-8"><a></a>  wss <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;data/wss_clean.rds&quot;</span>)</span>
-<span id="cb8-9"><a></a>  <span class="fu">expect_setequal</span>(<span class="fu">unique</span>(<span class="fu">na.omit</span>(wss<span class="sc">$</span>trump_vote)), <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>))</span>
-<span id="cb8-10"><a></a>  <span class="fu">expect_equal</span>(<span class="fu">sum</span>(<span class="sc">!</span><span class="fu">is.na</span>(wss<span class="sc">$</span>trump_vote)), <span class="dv">6495</span>)</span>
-<span id="cb8-11"><a></a>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href></a><span class="fu">test_that</span>(<span class="st">&quot;authoritarianism is a 0-1 mean of four items&quot;</span>, {</span>
+<span id="cb11-2"><a href></a>  wss <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;data/wss_clean.rds&quot;</span>)</span>
+<span id="cb11-3"><a href></a>  <span class="fu">expect_true</span>(<span class="fu">all</span>(wss<span class="sc">$</span>authoritarianism <span class="sc">&gt;=</span> <span class="dv">0</span> <span class="sc">&amp;</span> wss<span class="sc">$</span>authoritarianism <span class="sc">&lt;=</span> <span class="dv">1</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb11-4"><a href></a>  <span class="fu">expect_equal</span>(<span class="fu">nrow</span>(wss), <span class="dv">7600</span>)</span>
+<span id="cb11-5"><a href></a>})</span>
+<span id="cb11-6"><a href></a></span>
+<span id="cb11-7"><a href></a><span class="fu">test_that</span>(<span class="st">&quot;trump_vote is coded only for two-party voters&quot;</span>, {</span>
+<span id="cb11-8"><a href></a>  wss <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;data/wss_clean.rds&quot;</span>)</span>
+<span id="cb11-9"><a href></a>  <span class="fu">expect_setequal</span>(<span class="fu">unique</span>(<span class="fu">na.omit</span>(wss<span class="sc">$</span>trump_vote)), <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>))</span>
+<span id="cb11-10"><a href></a>  <span class="fu">expect_equal</span>(<span class="fu">sum</span>(<span class="sc">!</span><span class="fu">is.na</span>(wss<span class="sc">$</span>trump_vote)), <span class="dv">6495</span>)</span>
+<span id="cb11-11"><a href></a>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="slide-note">
 <p>A test is how you make a verification <strong>permanent</strong>. Write one for every recode you accept from an agent: it costs a minute now and catches the silent change six weeks from now, when somebody “improves” the recode.</p>
 </div>
+</section>
+<section id="anatomy-of-a-shiny-app" class="slide level2">
+<h2>Anatomy of a Shiny App</h2>
+<div style="font-size: 0.6em; line-height: 1.5;">
+<p>Three objects — <code>ui</code> (nested HTML widgets), <code>server</code> (a function of <code>input</code>, <code>output</code>, <code>session</code>), and <code>shinyApp(ui, server)</code> — and one idea: <strong>reactivity</strong>. You never write “when the user clicks, recompute.” You declare what each output <em>is</em>, and Shiny re-runs what depends on what changed.</p>
+</div>
+<div class="pipeline">
+<div class="stage">
+<p><span class="name">input$by</span></p>
+<p><span class="sub">the control</span></p>
+</div>
+<div class="stage">
+<p><span class="name">est()</span></p>
+<p><span class="sub">reactive — caches</span></p>
+</div>
+<div class="stage">
+<p><span class="name">output$plot</span></p>
+<p><span class="sub">render</span></p>
+</div>
+</div>
+<div class="item-list">
+<ul>
+<li><span class="tag">input$x</span> Read-only, set by the browser. Reading it creates the dependency</li>
+<li><span class="tag">reactive()</span> Caches, and re-runs only when something it read changed. <code>est()</code> is used by both plot and table — computed once</li>
+<li><span class="tag">render*()</span> An output; re-runs on change and writes into <code>output$plot</code></li>
+</ul>
+</div>
+<div class="limits">
+<p><span class="limits-head">The two mistakes agents make</span> Calling a reactive outside a reactive context — <em>“operation not allowed without an active reactive context”</em> — and recomputing the same summary in every <code>render*</code> block instead of sharing one <code>reactive()</code>.</p>
+</div>
+</section>
+<section id="the-app-holds-no-analysis-logic" class="slide level2">
+<h2>The App Holds No Analysis Logic</h2>
+<div class="tight-code">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href></a><span class="fu">source</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;R/functions.R&quot;</span>))          <span class="co"># same helpers as the analysis</span></span>
+<span id="cb12-2"><a href></a>wss <span class="ot">&lt;-</span> <span class="fu">read_rds</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;data/wss_clean.rds&quot;</span>))   <span class="co"># loads once, outside server</span></span>
+<span id="cb12-3"><a href></a></span>
+<span id="cb12-4"><a href></a>server <span class="ot">&lt;-</span> <span class="cf">function</span>(input, output, session) {        <span class="co"># session: needed by testServer()</span></span>
+<span id="cb12-5"><a href></a>  est <span class="ot">&lt;-</span> <span class="fu">reactive</span>({</span>
+<span id="cb12-6"><a href></a>    wss <span class="sc">|&gt;</span> <span class="fu">filter</span>(state <span class="sc">%in%</span> input<span class="sc">$</span>state) <span class="sc">|&gt;</span> <span class="fu">trump_share</span>(input<span class="sc">$</span>by, <span class="at">weighted =</span> input<span class="sc">$</span>wt)</span>
+<span id="cb12-7"><a href></a>  })</span>
+<span id="cb12-8"><a href></a>  output<span class="sc">$</span>plot <span class="ot">&lt;-</span> <span class="fu">renderPlot</span>(<span class="fu">ggplot</span>(<span class="fu">est</span>(), <span class="fu">aes</span>(year, trump, <span class="at">colour =</span> .data[[input<span class="sc">$</span>by]], ...)))</span>
+<span id="cb12-9"><a href></a>  output<span class="sc">$</span>tab  <span class="ot">&lt;-</span> <span class="fu">renderTable</span>(<span class="fu">est</span>())</span>
+<span id="cb12-10"><a href></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="item-list">
+<ul>
+<li><span class="tag">One source of truth</span> The app calls <code>trump_share()</code>, the same function the paper calls — it cannot drift</li>
+<li><span class="tag"><code>.data[[input$by]]</code></span> Tidy evaluation for a column chosen at runtime, not <code>get()</code> and not pasted strings</li>
+<li><span class="tag">n_obs, n_miss on screen</span> Every point has a sample size behind it, and some are small</li>
+<li><span class="tag">Testable</span> <code>server</code> is an ordinary function: <code>testServer()</code> sets inputs and reads reactives, no browser</li>
+</ul>
+</div>
+<div class="slide-source">
+<p>Running it: <code>Rscript -e &#39;shiny::runApp(&quot;app&quot;)&#39;</code>. The app reads the recode’s <strong>output</strong>, never the raw CSV.</p>
+</div>
+</section></section>
+<section>
+<section id="in-the-wild" class="title-slide slide level1 divider center">
+<h1>In the Wild</h1>
+
+</section>
+<section id="a-bigger-case-the-arizona-voter-project" class="slide level2">
+<h2>A Bigger Case: The Arizona Voter Project</h2>
+<div style="font-size: 0.6em; line-height: 1.5;">
+<p>Everything so far has been one CSV and three scripts. The same workflow scales: the <a href="https://voterproject.arizona.edu">Arizona Voter Project</a> is a public-facing data project at the University of Arizona — statewide voter file, geocoded addresses, harmonized surveys, election returns — built and maintained with agent assistance throughout.</p>
+</div>
+<div class="columns">
+<div class="column" style="width:48%;">
+<div class="contest-card card-trad">
+<p><span class="card-label">THE PIECES</span></p>
+<ul>
+<li>Voter-file and address tables in a <strong>warehouse</strong> (BigQuery), queried from R</li>
+<li><strong>Geocoding</strong> addresses to tract and block group</li>
+<li>A <strong>harmonized survey panel</strong> for over-time estimates</li>
+<li><strong>Aggregation</strong> to county / tract / district, with small-cell suppression</li>
+<li>An <strong>Angular widget bundle</strong> ported into the public site</li>
+</ul>
+</div>
+</div><div class="column" style="width:4%;">
+
+</div><div class="column" style="width:48%;">
+<div class="contest-card card-subv">
+<p><span class="card-label">WHAT THE AGENT DOES</span></p>
+<ul>
+<li>Writes the <strong>query</strong>, the recode, the aggregation — the boilerplate</li>
+<li>Runs <strong>repeatable procedures</strong> captured as skills: “geocode the backlog,” “rebuild the widgets”</li>
+<li>Does <strong>not</strong> decide what a measure means, which weight applies, or whether a number is publishable</li>
+</ul>
+</div>
+</div></div>
+<div class="slide-note">
+<p>The scale changes; the discipline does not. Same three guardrails — a repository, a written brief, and verification before anything is published.</p>
+</div>
+</section>
+<section id="why-it-works-at-that-scale" class="slide level2">
+<h2>Why It Works at That Scale</h2>
+<div class="item-list">
+<ul>
+<li><span class="tag">Procedures, not prompts</span> A recurring task — geocode a new build, refresh the aggregates, ship the site bundle — is written down once as a <strong>skill</strong> the agent loads, rather than re-explained each session</li>
+<li><span class="tag">Cost guards in code</span> A warehouse query <strong>dry-runs</strong> and refuses to scan past a byte budget. The guardrail is in the function, not in the instructions</li>
+<li><span class="tag">Suppression as a rule</span> Small cells are suppressed in the aggregation step, so no downstream chart can leak one</li>
+<li><span class="tag">One brief, many repos</span> Each repository carries its own <code>AGENTS.md</code>; the agent reads the project before touching it</li>
+</ul>
+</div>
+<div class="exp-block">
+<p><span class="exp-head">The transferable lesson</span></p>
+<p>Agents are most useful where a task is <strong>specified and repeated</strong> — and most dangerous where a task is <strong>judgment</strong>. The way to get the first without the second is to make the specified parts executable: a skill, a test, a cost guard, a suppression threshold. Anything left to prose will eventually be ignored.</p>
+</div>
+<div class="slide-source">
+<p><a href="https://voterproject.arizona.edu" class="uri">https://voterproject.arizona.edu</a> · Structure described by the instructor; no project data appears in this workshop repository.</p>
+</div>
+<!-- AI-drafted (Claude Code); reviewed by CRW -->
 </section>
 <section id="section" class="slide level2 conclusion">
 <h2></h2>
@@ -1801,7 +2045,7 @@ their version
 </ol>
 </div>
 <div class="close">
-<p><strong>Today’s deliverable:</strong> a merged pull request from every team, and a number each of us can defend.</p>
+<p><strong>This was a walkthrough, not an assignment.</strong> Everything shown is in the repository: clone it, run it, and take the workflow — brief, pipeline, diff, test — to your own project.</p>
 </div>
 </section>
 <section id="section-1" class="slide level2 thankyou">
@@ -1812,7 +2056,6 @@ their version
 <div class="ty-contact">
 <p><a href="mailto:chrisweber@arizona.edu">chrisweber@arizona.edu</a> · <a href="https://crweber9874.github.io/UNM_Workshop/">crweber9874.github.io/UNM_Workshop</a></p>
 </div>
-
 
 </section></section>
     </div>
@@ -3095,7 +3338,7 @@ window.QuartoSupport = function () {
         }
           var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
           var mailtoRegex = new RegExp(/^mailto:/);
-            var filterRegex = new RegExp("https:\/\/crweber9874\.github\.io\/UNM_Workshop\/");
+            var filterRegex = new RegExp('/' + window.location.host + '/');
           var isInternal = (href) => {
               return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
           }
